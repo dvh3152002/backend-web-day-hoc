@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -58,8 +59,9 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/signin","/api/signup","/api/user/**","/api/course/**"
-                        ,"/api/post/**","/api/file/**").permitAll()
+                .requestMatchers("/api/signin","/api/signup","/api/user/**",
+                        "/api/post/**","/api/file/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/course/**").permitAll()
                 .requestMatchers("/api/course/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
         httpSecurity.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);

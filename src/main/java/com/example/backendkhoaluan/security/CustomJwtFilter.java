@@ -31,10 +31,10 @@ public class CustomJwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getTokenFromHeader(request);
         if (token != null) {
-            String id=jwtUtilsHelper.verifyToken(token);
+            String email=jwtUtilsHelper.verifyToken(token);
 
-            if(id!=null){
-                UserDetails userDetails=customUserDetailService.loadUserById(Integer.parseInt(id));
+            if(email!=null){
+                UserDetails userDetails=customUserDetailService.loadUserByUsername(email);
                 if(userDetails != null) {
                     // Nếu người dùng hợp lệ, set thông tin cho Seturity Context
                     UsernamePasswordAuthenticationToken

@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.Range;
 @Data
 public class GetCourseRequest extends CustomCourseQuery.CourseFilterParam {
     @Min(value = 0, message = Constants.ErrorMessageCourseValidation.START_SIZE)
-    private Integer start = 0;
+    private int start = 0;
     @Range(min = 5, max = 50, message = Constants.ErrorMessageCourseValidation.LIMIT_SIZE)
-    private Integer limit = 10;
+    private int limit = 10;
 }

@@ -1,10 +1,10 @@
 package com.example.backendkhoaluan.controller;
 
-import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.request.UserRequest;
+import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
-import com.example.backendkhoaluan.payload.response.DataResponse;
+import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.service.imp.UserService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
@@ -12,15 +12,16 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
-public class LoginController {
+public class AuthController {
+    @Autowired
+    private AuthService authService;
+
     @Autowired
     private UserService userService;
 
@@ -34,20 +35,16 @@ public class LoginController {
 
     @PostMapping("/signin")
     public BaseResponse signin(@Valid @RequestBody SignInRequest data) {
-        UsersDTO userDTO = userService.checkLogin(data.getEmail(), data.getPassword());
-        DataResponse baseResponse = new DataResponse();
+        AuthResponse authResponse=authService.signIn(data);
 
-        UsernamePasswordAuthenticationToken user = new UsernamePasswordAuthenticationToken(data.getEmail(), data.getPassword());
-        Authentication authentication = authenticationManager.authenticate(user);
-        authentication.getAuthorities();
+        return BaseResponse.success(authResponse);
+    }
 
-        String token = jwtUtilsHelper.generateToken(String.valueOf(userDTO.getId()));
+    @PostMapping("/refreshToken")
+    public BaseResponse refreshToken(@RequestBody AuthResponse data) {
+        AuthResponse authResponse=authService.refreshToken(data);
 
-        baseResponse.setData(token);
-
-        log.info("Response: " + baseResponse);
-
-        return BaseResponse.success(token);
+        return BaseResponse.success(authResponse);
     }
 
     @PostMapping("/signup")

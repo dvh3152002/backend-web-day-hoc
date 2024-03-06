@@ -119,7 +119,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UsersDTO checkLogin(String email, String password) {
-        User user = usersRepository.findByEmail(email);
+        User user = usersRepository.findByEmail(email).orElseThrow();
         if (user != null) {
             if (passwordEncoder.matches(password, user.getPassword())) {
                 UsersDTO userDTO = new UsersDTO();
