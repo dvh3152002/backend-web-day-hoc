@@ -1,50 +1,66 @@
 package com.example.backendkhoaluan.service;
 
-import com.example.backendkhoaluan.dto.RoleDTO;
-import com.example.backendkhoaluan.dto.UserDTO;
-import com.example.backendkhoaluan.entity.CourseEntity;
-import com.example.backendkhoaluan.entity.RoleEntity;
-import com.example.backendkhoaluan.entity.UserEntity;
-import com.example.backendkhoaluan.payload.request.SignUpRequest;
-import com.example.backendkhoaluan.repository.UserRepository;
+import com.example.backendkhoaluan.dto.RolesDTO;
+import com.example.backendkhoaluan.dto.UsersDTO;
+import com.example.backendkhoaluan.entities.Orders;
+import com.example.backendkhoaluan.entities.RatingCourse;
+import com.example.backendkhoaluan.entities.Role;
+import com.example.backendkhoaluan.entities.User;
+import com.example.backendkhoaluan.exception.DeleteException;
+import com.example.backendkhoaluan.exception.InsertException;
+import com.example.backendkhoaluan.exception.UpdateException;
+import com.example.backendkhoaluan.payload.request.UserRequest;
+import com.example.backendkhoaluan.repository.RatingCourseRepository;
+import com.example.backendkhoaluan.repository.UsersRepository;
+import com.example.backendkhoaluan.service.imp.FilesStorageService;
+import com.example.backendkhoaluan.service.imp.OrderService;
 import com.example.backendkhoaluan.service.imp.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserServiceImp implements UserService {
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private FilesStorageService filesStorageService;
+
+    @Autowired
+    private RatingCourseRepository ratingCourseRepository;
+
+    @Autowired
+    private OrderService orderService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UserDTO> getAllUser(int page, int size) {
-        PageRequest pageRequest=PageRequest.of(page, size);
-        Page<UserEntity> listData= userRepository.findAll(pageRequest);
+    public List<UsersDTO> getAllUser(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<User> listData = usersRepository.findAll(pageRequest);
 
-        List<UserDTO> userDTOList = new ArrayList<>();
+        List<UsersDTO> userDTOList = new ArrayList<>();
 
-        for (UserEntity user : listData) {
-            UserDTO userDTO=new UserDTO();
+        for (User user : listData) {
+            UsersDTO userDTO = new UsersDTO();
             userDTO.setId(user.getId());
             userDTO.setAddress(user.getAddress());
             userDTO.setFullname(user.getFullname());
             userDTO.setEmail(user.getEmail());
 
-            RoleDTO roleDTO=new RoleDTO();
-            roleDTO.setId(user.getRole().getId());
-            roleDTO.setName(user.getRole().getName());
-
-            userDTO.setRole(roleDTO);
+            userDTO.setIdRole(user.getRole().getId());
 
             userDTOList.add(userDTO);
         }
@@ -53,44 +69,67 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UserDTO findById(int id) {
-        Optional<UserEntity> userOptional= userRepository.findById(id);
-        UserDTO userDTO=new UserDTO();
-        if(userOptional.isPresent()){
-            userOptional.ifPresent(user->{
+    public UsersDTO findById(int id) {
+        Optional<User> userOptional = usersRepository.findById(id);
+        UsersDTO userDTO = new UsersDTO();
+        if (userOptional.isPresent()) {
+            userOptional.ifPresent(user -> {
                 userDTO.setEmail(user.getEmail());
                 userDTO.setAddress(user.getAddress());
                 userDTO.setFullname(user.getFullname());
                 userDTO.setId(user.getId());
 
-                RoleDTO roleDTO=new RoleDTO();
+                RolesDTO roleDTO = new RolesDTO();
                 roleDTO.setId(user.getRole().getId());
                 roleDTO.setName(user.getRole().getName());
 
-                userDTO.setRole(roleDTO);
+                if(user.getAvatar()!=null) {
+                    if(!user.getAvatar().trim().equals("")){
+                        userDTO.setAvatar("http://localhost:8081/api/file/" + user.getAvatar());
+                    }
+                }
+
+                userDTO.setIdRole(user.getRole().getId());
             });
             return userDTO;
         }
         return null;
     }
 
+    @Transactional
     @Override
-    public UserDTO checkLogin(String email, String password) {
-        UserEntity user= userRepository.findByEmail(email);
-        if(user!=null){
-            if(passwordEncoder.matches(password,user.getPassword())) {
-                UserDTO userDTO=new UserDTO();
+    public void deleteUser(int id) {
+        try {
+            Optional<User> users = usersRepository.findById(id);
+            users.ifPresent(data -> {
+                List<RatingCourse> listRatingCourses = ratingCourseRepository.findByUser(data);
+                listRatingCourses.forEach(ratingCourse -> {
+                    ratingCourseRepository.delete(ratingCourse);
+                });
+                List<Orders> listOrders = orderService.findByUser(data);
+                listOrders.forEach(orders -> {
+                    orderService.deleteOrder(orders);
+                });
+            });
+            usersRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new DeleteException("Xóa người dùng thất bại", e.getLocalizedMessage());
+        }
+    }
+
+    @Override
+    public UsersDTO checkLogin(String email, String password) {
+        User user = usersRepository.findByEmail(email);
+        if (user != null) {
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                UsersDTO userDTO = new UsersDTO();
 
                 userDTO.setEmail(user.getEmail());
                 userDTO.setAddress(user.getAddress());
                 userDTO.setFullname(user.getFullname());
                 userDTO.setId(user.getId());
 
-                RoleDTO roleDTO=new RoleDTO();
-                roleDTO.setId(user.getRole().getId());
-                roleDTO.setName(user.getRole().getName());
-
-                userDTO.setRole(roleDTO);
+                userDTO.setIdRole(user.getRole().getId());
 
                 return userDTO;
             }
@@ -98,26 +137,55 @@ public class UserServiceImp implements UserService {
         return null;
     }
 
+    @Transactional
     @Override
-    public boolean addUser(SignUpRequest signUpRequest) {
-        RoleEntity roleEntity = new RoleEntity();
-        roleEntity.setId(signUpRequest.getRoleId());
-
-        UserEntity userEntity = new UserEntity();
-        userEntity.setFullname(signUpRequest.getFullname());
-        userEntity.setPassword(signUpRequest.getPassword());
-        userEntity.setAddress(signUpRequest.getAddress());
-        userEntity.setEmail(signUpRequest.getEmail());
-        userEntity.setAvatar(signUpRequest.getAvartar());
-        userEntity.setRole(roleEntity);
-
+    public String createUser(UserRequest userRequest, MultipartFile avatar) {
         try {
-            userRepository.save(userEntity);
+            log.info("createUser - request: {}", userRequest);
+            Role roleEntity = new Role();
+            roleEntity.setId(userRequest.getRoleId());
 
-            return true;
+            User userEntity = new User();
+            userEntity.setFullname(userRequest.getFullname());
+            userEntity.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+            userEntity.setAddress(userRequest.getAddress());
+            userEntity.setEmail(userRequest.getEmail());
+            if (avatar != null) {
+                String fileName=filesStorageService.save(avatar);
+                userEntity.setAvatar(fileName);
+            }
+            userEntity.setRole(roleEntity);
+            usersRepository.save(userEntity);
+            return "Thêm người dùng thành công";
+        }catch (Exception e){
+            throw new InsertException("Thêm người dùng thất bại",e.getLocalizedMessage());
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(int id, UserRequest userRequest, MultipartFile avatar) {
+        try {
+            Optional<User> user = usersRepository.findById(id);
+            user.ifPresent(userEntity->{
+                Role roleEntity = new Role();
+                roleEntity.setId(userRequest.getRoleId());
+                userEntity.setFullname(userRequest.getFullname());
+                userEntity.setAddress(userRequest.getAddress());
+                if (avatar != null) {
+                    if(userEntity.getAvatar()!=null) {
+                        if (!userEntity.getAvatar().trim().equals("")) {
+                            filesStorageService.deleteAll(userEntity.getAvatar());
+                            String fileName = filesStorageService.save(avatar);
+                            userEntity.setAvatar(fileName);
+                        }
+                    }
+                }
+                userEntity.setRole(roleEntity);
+                usersRepository.save(userEntity);
+            });
         } catch (Exception e) {
-            System.out.println("Lỗi: " + e.getLocalizedMessage());
-            return false;
+            throw new UpdateException("Cập nhật người dùng thất bại", e.getLocalizedMessage());
         }
     }
 }

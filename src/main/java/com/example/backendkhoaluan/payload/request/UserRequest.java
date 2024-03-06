@@ -1,24 +1,32 @@
 package com.example.backendkhoaluan.payload.request;
 
-import jakarta.validation.constraints.*;
+import com.example.backendkhoaluan.constant.Constants;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class SignUpRequest {
-    @Email(regexp = ".+[@].+[\\.].+",message = "Email không hợp lệ")
-    @NotBlank(message = "Thiếu email")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UserRequest {
+    @Email(regexp = ".+[@].+[\\.].+",message = Constants.ErrorMessageUserValidation.INVALID_EMAIL)
+    @NotBlank(message = Constants.ErrorMessageUserValidation.EMAIL_NOT_BLANK)
     private String email;
 
-    @NotBlank(message = "Thiếu password")
-    @Size(min = 6, message = "Password phải từ 6 kí tự trở lên")
+    @Size(min = 6,max=15, message = Constants.ErrorMessageUserValidation.PASSWORD_SIZE)
     private String password;
 
-    @NotBlank(message = "Thiếu họ tên")
+    @NotBlank(message = Constants.ErrorMessageUserValidation.FULLNAME_NOT_BLANK)
+//    @SpecialCharaters
     private String fullname;
 
-    @NotBlank(message = "Thiếu địa chỉ")
+    @NotBlank(message = Constants.ErrorMessageUserValidation.ADDRESS_NOT_BLANK)
     private String address;
 
-    private String avatar;
     private int roleId=2;
 }

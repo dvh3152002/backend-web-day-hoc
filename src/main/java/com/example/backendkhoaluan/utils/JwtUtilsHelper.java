@@ -26,13 +26,13 @@ public class JwtUtilsHelper {
         return jws;
     }
 
-    public boolean verifyToken(String token){
+    public String verifyToken(String token){
         try {
             SecretKey key= Keys.hmacShaKeyFor(Decoders.BASE64.decode(privateKey));
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-            return true;
+
+            return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload().getSubject();
         }catch (Exception e){
-            return false;
+            return null;
         }
     }
 }

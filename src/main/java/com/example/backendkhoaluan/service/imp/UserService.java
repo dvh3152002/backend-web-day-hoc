@@ -1,15 +1,16 @@
 package com.example.backendkhoaluan.service.imp;
 
-import com.example.backendkhoaluan.dto.UserDTO;
-import com.example.backendkhoaluan.entity.UserEntity;
-import com.example.backendkhoaluan.payload.request.SignUpRequest;
-import org.springframework.stereotype.Service;
+import com.example.backendkhoaluan.dto.UsersDTO;
+import com.example.backendkhoaluan.payload.request.UserRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserDTO> getAllUser(int page, int size);
-    UserDTO checkLogin(String email,String password);
-    UserDTO findById(int id);
-    boolean addUser(SignUpRequest signUpRequest);
+    List<UsersDTO> getAllUser(int page, int size);
+    UsersDTO checkLogin(String email,String password);
+    UsersDTO findById(int id);
+    void deleteUser(int id);
+    String createUser(UserRequest userRequest, MultipartFile avatar);
+    void updateUser(int id, UserRequest userRequest, MultipartFile avatar);
 }
