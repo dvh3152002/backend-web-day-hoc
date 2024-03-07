@@ -33,6 +33,7 @@ public class AuthServiceImp implements AuthService {
             String refreshToken=jwtUtilsHelper.generateRefreshToken(new HashMap<>(),user.getEmail());
 
             AuthResponse authResponse=new AuthResponse();
+            authResponse.setRole(user.getRole().getName());
             authResponse.setAccessToken(jwt);
             authResponse.setRefreshToken(refreshToken);
 
@@ -49,6 +50,7 @@ public class AuthServiceImp implements AuthService {
         User user=usersRepository.findByEmail(email).orElseThrow();
         if (jwtUtilsHelper.isTokenValid(authResponse.getRefreshToken(),user.getEmail())){
             String jwt=jwtUtilsHelper.generateToken(user.getEmail());
+            authResponse.setRole(user.getRole().getName());
             response.setAccessToken(jwt);
             response.setRefreshToken(authResponse.getAccessToken());
         }

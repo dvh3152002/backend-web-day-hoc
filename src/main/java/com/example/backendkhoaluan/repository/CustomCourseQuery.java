@@ -1,5 +1,6 @@
 package com.example.backendkhoaluan.repository;
 
+import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.entities.Courses;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.utils.CriteriaBuilderUtils;
@@ -25,6 +26,8 @@ public class CustomCourseQuery {
         private Integer maxPrice;
         private Integer idUser;
         private Double rating;
+        private String sortField;
+        private String sortType;
     }
 
     public static Specification<Courses> getFilterCourse(CourseFilterParam param) {
@@ -48,6 +51,16 @@ public class CustomCourseQuery {
             if(param.getRating()!=null) {
                 query.groupBy(root.get("id"));
                 query.having(criteriaBuilder.equal(criteriaBuilder.avg(root.get("listRatingCourses").get("ratePoint")), param.getRating()));
+            }
+            if (param.sortField != null && !param.sortField.equals("")) {
+                if (param.sortType.equals(Constants.SortType.DESC) || param.sortType.equals("")) {
+                    query.orderBy(criteriaBuilder.desc(root.get(param.sortField)));
+                }
+                if (param.sortType.equals(Constants.SortType.ASC)) {
+                    query.orderBy(criteriaBuilder.asc(root.get(param.sortField)));
+                }
+            } else {
+                query.orderBy(criteriaBuilder.desc(root.get("id")));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });

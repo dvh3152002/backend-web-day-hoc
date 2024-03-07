@@ -9,6 +9,8 @@ public interface Constants {
         String FULLNAME_NOT_SPECIAL_CHARATERS = "Họ tên không được có ký tự đặc biệt";
         String FULLNAME_NOT_BLANK="Họ tên không được để trống";
         String ADDRESS_NOT_BLANK="Địa chỉ không được để trống";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String LIMIT_SIZE = "Số lượng người dùng trong một trang là từ 5 đến 30 người";
     }
 
     interface ErrorMessageCourseValidation {
@@ -21,5 +23,10 @@ public interface Constants {
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng khóa học trong một trang là từ 5 đến 30 khóa học";
 
+    }
+
+    interface SortType {
+        String DESC = "DESC";
+        String ASC = "ASC";
     }
 }

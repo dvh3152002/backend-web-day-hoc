@@ -9,7 +9,10 @@ import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.exception.UpdateException;
+import com.example.backendkhoaluan.payload.request.GetUserRequest;
 import com.example.backendkhoaluan.payload.request.UserRequest;
+import com.example.backendkhoaluan.repository.CustomCourseQuery;
+import com.example.backendkhoaluan.repository.CustomeUserQuery;
 import com.example.backendkhoaluan.repository.RatingCourseRepository;
 import com.example.backendkhoaluan.repository.UsersRepository;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
@@ -19,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,25 +51,9 @@ public class UserServiceImp implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public List<UsersDTO> getAllUser(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<User> listData = usersRepository.findAll(pageRequest);
-
-        List<UsersDTO> userDTOList = new ArrayList<>();
-
-        for (User user : listData) {
-            UsersDTO userDTO = new UsersDTO();
-            userDTO.setId(user.getId());
-            userDTO.setAddress(user.getAddress());
-            userDTO.setFullname(user.getFullname());
-            userDTO.setEmail(user.getEmail());
-
-            userDTO.setIdRole(user.getRole().getId());
-
-            userDTOList.add(userDTO);
-        }
-
-        return userDTOList;
+    public Page<User> getAllUser(CustomeUserQuery.UserFilterParam param, PageRequest pageRequest) {
+        Specification<User> specification=CustomeUserQuery.getFilterUser(param);
+        return usersRepository.findAll(specification,pageRequest);
     }
 
     @Override

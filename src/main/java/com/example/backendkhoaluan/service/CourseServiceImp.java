@@ -9,7 +9,6 @@ import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.payload.request.CreateCourseRequest;
 import com.example.backendkhoaluan.repository.CoursesRepository;
 import com.example.backendkhoaluan.repository.CustomCourseQuery;
-import com.example.backendkhoaluan.repository.RatingCourseRepository;
 import com.example.backendkhoaluan.service.imp.CourseService;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +28,6 @@ import java.util.Optional;
 public class CourseServiceImp implements CourseService {
     @Autowired
     private CoursesRepository coursesRepository;
-
-    @Autowired
-    private RatingCourseRepository ratingCourseRepository;
 
     @Autowired
     private FilesStorageService filesStorageService;
