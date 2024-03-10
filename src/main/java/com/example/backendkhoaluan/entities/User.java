@@ -1,9 +1,10 @@
 package com.example.backendkhoaluan.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
@@ -33,9 +34,11 @@ public class User {
     @JoinColumn(name = "id_role")
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private Set<RatingCourse> listRatingCourses;
+    private List<RatingCourse> listRatingCourses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private Set<Orders> listOrders;
+    private List<Orders> listOrders;
 }

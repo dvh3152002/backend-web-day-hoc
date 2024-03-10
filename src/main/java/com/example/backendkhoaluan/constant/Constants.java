@@ -18,10 +18,18 @@ public interface Constants {
         String PRICE_NOT_BLANK="Giá khóa học không được để trống";
         String NAME_NOT_SPECIAL_CHARATERS="Tên khóa học không được có kí tự đặc biệt";
         String DESCRIPTION_NOT_BLANK="Mô tả không được để trống";
-//        String IMAGE_NOT_BLANK="Ảnh khóa học không được để trống";
+        //        String IMAGE_NOT_BLANK="Ảnh khóa học không được để trống";
         String USER_ID_NOT_BLANK="Thiếu người dạy khóa học";
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng khóa học trong một trang là từ 5 đến 30 khóa học";
+
+    }
+
+    interface ErrorMessagePostValidation {
+        String TITLE_NOT_BLANK="Tiêu đề bài viết không được để trống";
+        String DESCRIPTION_NOT_BLANK="Mô tả bài viết không được để trống";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String LIMIT_SIZE = "Số lượng bài viết trong một trang là từ 5 đến 50 bài viết";
 
     }
 

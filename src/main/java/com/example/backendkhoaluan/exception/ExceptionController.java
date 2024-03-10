@@ -7,7 +7,6 @@ import com.example.backendkhoaluan.payload.response.ErrorDetail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,42 +36,42 @@ public class ExceptionController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @Order(-1)
-    public ResponseEntity<?> handlerInsertException(InsertException e){
+    public BaseResponse handlerInsertException(InsertException e){
         log.error("InsertException: {}", e);
         DataResponse dataResponse=new DataResponse();
         dataResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         dataResponse.setMessage(e.getTitleError());
         dataResponse.setSuccess(false);
 
-        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
+        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({DeleteException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @Order(-1)
-    public ResponseEntity<?> handlerDeleteException(DeleteException e){
+    public BaseResponse handlerDeleteException(DeleteException e){
         log.error("DeleteException: {}", e);
         DataResponse dataResponse=new DataResponse();
         dataResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         dataResponse.setMessage(e.getTitleError());
         dataResponse.setSuccess(false);
 
-        return new ResponseEntity<>(dataResponse, HttpStatus.OK);
+        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({UpdateException.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @Order(-1)
-    public ResponseEntity<?> handlerUpdateException(UpdateException e){
+    public BaseResponse handlerUpdateException(UpdateException e){
         log.error("UpdateException: {}", e);
         DataResponse dataResponse=new DataResponse();
         dataResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         dataResponse.setMessage(e.getTitleError());
         dataResponse.setSuccess(false);
 
-        return new ResponseEntity<>(dataResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

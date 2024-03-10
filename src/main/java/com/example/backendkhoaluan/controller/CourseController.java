@@ -36,7 +36,7 @@ public class CourseController {
 
     }
 
-    @GetMapping("/get-all")
+    @GetMapping("/getList")
     public BaseListResponse<CoursesDTO> getAllCourse(@Valid GetCourseRequest request) {
         log.info("request: {}",request);
         Page<Courses> page=courseService.getAllCourse(request, PageRequest.of(request.getStart(),request.getLimit()));
