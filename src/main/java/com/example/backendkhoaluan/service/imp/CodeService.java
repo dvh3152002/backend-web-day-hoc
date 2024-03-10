@@ -1,9 +1,9 @@
 package com.example.backendkhoaluan.service.imp;
 
-import com.example.backendkhoaluan.entities.Code;
+import com.example.backendkhoaluan.entities.Codes;
 
 import java.util.List;
 
 public interface CodeService {
-    public void deleteAll(List<Code> codeList);
+    public void deleteAll(List<Codes> codesList);
 }

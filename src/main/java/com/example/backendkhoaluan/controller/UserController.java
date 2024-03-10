@@ -49,7 +49,7 @@ public class UserController {
 
     @PutMapping(value = "/{id}")
     public BaseResponse updateUser(@PathVariable("id") int id, @Valid @RequestBody UserRequest userRequest,
-                                        @RequestPart(name = "file", required = false) MultipartFile file) {
+                                        @RequestParam(name = "file", required = false) MultipartFile file) {
         log.info("user :{}", userRequest);
         log.info("file :{}", file);
         userService.updateUser(id, userRequest, file);

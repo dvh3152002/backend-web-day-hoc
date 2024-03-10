@@ -11,6 +11,7 @@ public interface Constants {
         String ADDRESS_NOT_BLANK="Địa chỉ không được để trống";
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng người dùng trong một trang là từ 5 đến 30 người";
+        String NOT_FIND_USER_BY_ID = "Không tìm thấy người dùng có ID là: ";
     }
 
     interface ErrorMessageCourseValidation {
@@ -22,7 +23,7 @@ public interface Constants {
         String USER_ID_NOT_BLANK="Thiếu người dạy khóa học";
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng khóa học trong một trang là từ 5 đến 30 khóa học";
-
+        String NOT_FIND_COURSE_BY_ID = "Không tìm thấy khóa học có ID là: ";
     }
 
     interface ErrorMessagePostValidation {
@@ -30,7 +31,15 @@ public interface Constants {
         String DESCRIPTION_NOT_BLANK="Mô tả bài viết không được để trống";
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng bài viết trong một trang là từ 5 đến 50 bài viết";
+        String NOT_FIND_POST_BY_ID = "Không tìm thấy bài viết có ID là: ";
+    }
 
+    interface ErrorMessageCategoryValidation {
+        String TITLE_NOT_BLANK="Tiêu đề bài viết không được để trống";
+        String DESCRIPTION_NOT_BLANK="Mô tả bài viết không được để trống";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String LIMIT_SIZE = "Số lượng bài viết trong một trang là từ 5 đến 50 bài viết";
+        String NOT_FIND_CATEGORY_BY_ID = "Không tìm thấy danh mục có ID là: ";
     }
 
     interface SortType {

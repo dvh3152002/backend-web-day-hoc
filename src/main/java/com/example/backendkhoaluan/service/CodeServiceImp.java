@@ -1,6 +1,6 @@
 package com.example.backendkhoaluan.service;
 
-import com.example.backendkhoaluan.entities.Code;
+import com.example.backendkhoaluan.entities.Codes;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.repository.CodesRepository;
 import com.example.backendkhoaluan.service.imp.CodeService;
@@ -17,9 +17,9 @@ public class CodeServiceImp implements CodeService {
 
     @Override
     @Transactional
-    public void deleteAll(List<Code> codeList) {
+    public void deleteAll(List<Codes> codesList) {
         try {
-            codesRepository.deleteAll(codeList);
+            codesRepository.deleteAll(codesList);
         }catch (Exception e){
             throw new DeleteException("Xóa code thất bại",e.getLocalizedMessage());
         }

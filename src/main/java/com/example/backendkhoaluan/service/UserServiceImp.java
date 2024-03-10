@@ -1,11 +1,13 @@
 package com.example.backendkhoaluan.service;
 
+import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.RolesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.Orders;
 import com.example.backendkhoaluan.entities.RatingCourse;
 import com.example.backendkhoaluan.entities.Role;
 import com.example.backendkhoaluan.entities.User;
+import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.exception.UpdateException;
@@ -52,36 +54,35 @@ public class UserServiceImp implements UserService {
 
     @Override
     public Page<User> getAllUser(CustomeUserQuery.UserFilterParam param, PageRequest pageRequest) {
-        Specification<User> specification=CustomeUserQuery.getFilterUser(param);
-        return usersRepository.findAll(specification,pageRequest);
+        Specification<User> specification = CustomeUserQuery.getFilterUser(param);
+        return usersRepository.findAll(specification, pageRequest);
     }
 
     @Override
     public UsersDTO findById(int id) {
         Optional<User> userOptional = usersRepository.findById(id);
-        UsersDTO userDTO = new UsersDTO();
-        if (userOptional.isPresent()) {
-            userOptional.ifPresent(user -> {
-                userDTO.setEmail(user.getEmail());
-                userDTO.setAddress(user.getAddress());
-                userDTO.setFullname(user.getFullname());
-                userDTO.setId(user.getId());
-
-                RolesDTO roleDTO = new RolesDTO();
-                roleDTO.setId(user.getRole().getId());
-                roleDTO.setName(user.getRole().getName());
-
-                if(user.getAvatar()!=null) {
-                    if(!user.getAvatar().trim().equals("")){
-                        userDTO.setAvatar("http://localhost:8081/api/file/" + user.getAvatar());
-                    }
-                }
-
-                userDTO.setIdRole(user.getRole().getId());
-            });
-            return userDTO;
+        if (!userOptional.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
         }
-        return null;
+        User user = userOptional.get();
+        UsersDTO userDTO = new UsersDTO();
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setFullname(user.getFullname());
+        userDTO.setId(user.getId());
+
+        RolesDTO roleDTO = new RolesDTO();
+        roleDTO.setId(user.getRole().getId());
+        roleDTO.setName(user.getRole().getName());
+
+        if (user.getAvatar() != null) {
+            if (!user.getAvatar().trim().equals("")) {
+                userDTO.setAvatar("http://localhost:8081/api/file/" + user.getAvatar());
+            }
+        }
+
+        userDTO.setIdRole(user.getRole().getId());
+        return userDTO;
     }
 
     @Transactional
@@ -89,15 +90,17 @@ public class UserServiceImp implements UserService {
     public void deleteUser(int id) {
         try {
             Optional<User> users = usersRepository.findById(id);
-            users.ifPresent(data -> {
-                List<RatingCourse> listRatingCourses = ratingCourseRepository.findByUser(data);
-                listRatingCourses.forEach(ratingCourse -> {
-                    ratingCourseRepository.delete(ratingCourse);
-                });
-                List<Orders> listOrders = orderService.findByUser(data);
-                listOrders.forEach(orders -> {
-                    orderService.deleteOrder(orders);
-                });
+            if (!users.isPresent()) {
+                throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
+            }
+            User data = users.get();
+            List<RatingCourse> listRatingCourses = ratingCourseRepository.findByUser(data);
+            listRatingCourses.forEach(ratingCourse -> {
+                ratingCourseRepository.delete(ratingCourse);
+            });
+            List<Orders> listOrders = orderService.findByUser(data);
+            listOrders.forEach(orders -> {
+                orderService.deleteOrder(orders);
             });
             usersRepository.deleteById(id);
         } catch (Exception e) {
@@ -107,22 +110,24 @@ public class UserServiceImp implements UserService {
 
     @Override
     public UsersDTO checkLogin(String email, String password) {
-        User user = usersRepository.findByEmail(email).orElseThrow();
-        if (user != null) {
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                UsersDTO userDTO = new UsersDTO();
-
-                userDTO.setEmail(user.getEmail());
-                userDTO.setAddress(user.getAddress());
-                userDTO.setFullname(user.getFullname());
-                userDTO.setId(user.getId());
-
-                userDTO.setIdRole(user.getRole().getId());
-
-                return userDTO;
-            }
+        Optional<User> users = usersRepository.findByEmail(email);
+        if (!users.isPresent()) {
+            throw new DataNotFoundException("Email hoặc mật khẩu không đúng");
         }
-        return null;
+        User user = users.get();
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new DataNotFoundException("Email hoặc mật khẩu không đúng");
+        }
+        UsersDTO userDTO = new UsersDTO();
+
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setFullname(user.getFullname());
+        userDTO.setId(user.getId());
+
+        userDTO.setIdRole(user.getRole().getId());
+
+        return userDTO;
     }
 
     @Transactional
@@ -139,14 +144,14 @@ public class UserServiceImp implements UserService {
             userEntity.setAddress(userRequest.getAddress());
             userEntity.setEmail(userRequest.getEmail());
             if (avatar != null) {
-                String fileName=filesStorageService.save(avatar);
+                String fileName = filesStorageService.save(avatar);
                 userEntity.setAvatar(fileName);
             }
             userEntity.setRole(roleEntity);
             usersRepository.save(userEntity);
             return "Thêm người dùng thành công";
-        }catch (Exception e){
-            throw new InsertException("Thêm người dùng thất bại",e.getLocalizedMessage());
+        } catch (Exception e) {
+            throw new InsertException("Thêm người dùng thất bại", e.getLocalizedMessage());
         }
     }
 
@@ -154,24 +159,26 @@ public class UserServiceImp implements UserService {
     @Override
     public void updateUser(int id, UserRequest userRequest, MultipartFile avatar) {
         try {
-            Optional<User> user = usersRepository.findById(id);
-            user.ifPresent(userEntity->{
-                Role roleEntity = new Role();
-                roleEntity.setId(userRequest.getRoleId());
-                userEntity.setFullname(userRequest.getFullname());
-                userEntity.setAddress(userRequest.getAddress());
-                if (avatar != null) {
-                    if(userEntity.getAvatar()!=null) {
-                        if (!userEntity.getAvatar().trim().equals("")) {
-                            filesStorageService.deleteAll(userEntity.getAvatar());
-                            String fileName = filesStorageService.save(avatar);
-                            userEntity.setAvatar(fileName);
-                        }
+            Optional<User> users = usersRepository.findById(id);
+            if (!users.isPresent()) {
+                throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
+            }
+            User userEntity = users.get();
+            Role roleEntity = new Role();
+            roleEntity.setId(userRequest.getRoleId());
+            userEntity.setFullname(userRequest.getFullname());
+            userEntity.setAddress(userRequest.getAddress());
+            if (avatar != null) {
+                if (userEntity.getAvatar() != null) {
+                    if (!userEntity.getAvatar().trim().equals("")) {
+                        filesStorageService.deleteAll(userEntity.getAvatar());
+                        String fileName = filesStorageService.save(avatar);
+                        userEntity.setAvatar(fileName);
                     }
                 }
-                userEntity.setRole(roleEntity);
-                usersRepository.save(userEntity);
-            });
+            }
+            userEntity.setRole(roleEntity);
+            usersRepository.save(userEntity);
         } catch (Exception e) {
             throw new UpdateException("Cập nhật người dùng thất bại", e.getLocalizedMessage());
         }

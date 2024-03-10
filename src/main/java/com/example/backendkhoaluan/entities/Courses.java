@@ -34,6 +34,10 @@ public class Courses {
     @JoinColumn(name = "id_user")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "id_category")
+    private Categories category;
+
     @OneToMany(mappedBy = "course",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<RatingCourse> listRatingCourses;
 
@@ -41,5 +45,5 @@ public class Courses {
     private Set<OrderDetail> listOrderDetails;
 
     @OneToMany(mappedBy = "course")
-    private Set<Lesson> listLessons;
+    private Set<Lessons> listLessons;
 }

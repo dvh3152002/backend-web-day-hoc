@@ -1,7 +1,9 @@
 package com.example.backendkhoaluan.service;
 
+import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.PostsDTO;
 import com.example.backendkhoaluan.entities.Post;
+import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.UpdateException;
 import com.example.backendkhoaluan.payload.request.PostRequest;
@@ -30,16 +32,18 @@ public class PostServiceImp implements PostService {
     @Override
     @Transactional
     public PostsDTO getById(int id) {
-        Optional<Post> post=postsRepository.findById(id);
-        PostsDTO postDTO=new PostsDTO();
+        Optional<Post> post = postsRepository.findById(id);
+        if (!post.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessagePostValidation.NOT_FIND_POST_BY_ID + id);
+        }
+        PostsDTO postDTO = new PostsDTO();
 
-        post.ifPresent(data->{
-            postDTO.setDescription(data.getDescription());
-            postDTO.setCreateDate(data.getCreateDate());
-            postDTO.setListCodes(data.getListCodes());
-            postDTO.setId(data.getId());
-            postDTO.setTitle(data.getTitle());
-        });
+        Post data = post.get();
+        postDTO.setDescription(data.getDescription());
+        postDTO.setCreateDate(data.getCreateDate());
+        postDTO.setListCodes(data.getListCodes());
+        postDTO.setId(data.getId());
+        postDTO.setTitle(data.getTitle());
         return postDTO;
     }
 
@@ -53,15 +57,18 @@ public class PostServiceImp implements PostService {
     @Transactional
     public void updatePost(int id, PostRequest request) {
         try {
-            Post post=postsRepository.findById(id).orElseThrow();
-
+            Optional<Post> postOptional = postsRepository.findById(id);
+            if (!postOptional.isPresent()) {
+                throw new DataNotFoundException(Constants.ErrorMessagePostValidation.NOT_FIND_POST_BY_ID + id);
+            }
+            Post post = postOptional.get();
             post.setDescription(request.getDescription());
             post.setCreateDate(new Date());
             post.setTitle(request.getTitle());
 
             postsRepository.save(post);
-        }catch (Exception e){
-            throw new UpdateException("Cập nhật bài viết thất bại",e.getLocalizedMessage());
+        } catch (Exception e) {
+            throw new UpdateException("Cập nhật bài viết thất bại", e.getLocalizedMessage());
         }
     }
 
@@ -69,13 +76,15 @@ public class PostServiceImp implements PostService {
     @Transactional
     public void deleteById(int id) {
         try {
-            Optional<Post> post=postsRepository.findById(id);
-            post.ifPresent(data->{
-                codesRepository.deleteAll(data.getListCodes());
-            });
-            postsRepository.delete(post.get());
-        }catch (Exception e){
-            throw new DeleteException("Xóa bài viết thất bại",e.getLocalizedMessage());
+            Optional<Post> postOptional = postsRepository.findById(id);
+            if (!postOptional.isPresent()) {
+                throw new DataNotFoundException(Constants.ErrorMessagePostValidation.NOT_FIND_POST_BY_ID + id);
+            }
+            Post post = postOptional.get();
+            codesRepository.deleteAll(post.getListCodes());
+            postsRepository.delete(post);
+        } catch (Exception e) {
+            throw new DeleteException("Xóa bài viết thất bại", e.getLocalizedMessage());
         }
     }
 
@@ -83,15 +92,15 @@ public class PostServiceImp implements PostService {
     @Transactional
     public void createPost(PostRequest request) {
         try {
-            Post post=new Post();
+            Post post = new Post();
 
             post.setDescription(request.getDescription());
             post.setCreateDate(new Date());
             post.setTitle(request.getTitle());
 
             postsRepository.save(post);
-        }catch (Exception e){
-            throw new UpdateException("Thêm bài viết thất bại",e.getLocalizedMessage());
+        } catch (Exception e) {
+            throw new UpdateException("Thêm bài viết thất bại", e.getLocalizedMessage());
         }
     }
 }

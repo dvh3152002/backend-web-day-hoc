@@ -12,4 +12,5 @@ public class CoursesDTO {
     private String image;
     private Double rating;
     private Integer idUser;
+    private String categoryName;
 }

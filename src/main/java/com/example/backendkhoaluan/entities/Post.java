@@ -25,5 +25,5 @@ public class Post {
     private Date createDate;
 
     @OneToMany(mappedBy = "post",fetch = FetchType.EAGER)
-    private List<Code> listCodes;
+    private List<Codes> listCodes;
 }

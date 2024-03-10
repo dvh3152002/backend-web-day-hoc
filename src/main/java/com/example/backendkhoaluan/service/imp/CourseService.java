@@ -16,5 +16,6 @@ public interface CourseService {
     void deleteCourse(int id);
     CoursesDTO getCourseById(int id);
     void save(CreateCourseRequest courseResponse, MultipartFile file);
+    void updateCourse(int id,CreateCourseRequest createCourseRequest, MultipartFile file);
     double calculatorRating(List<RatingCourse> listRating);
 }

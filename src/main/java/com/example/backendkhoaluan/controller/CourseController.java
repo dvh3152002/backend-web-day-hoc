@@ -30,9 +30,17 @@ public class CourseController {
 
     @PostMapping("/insert")
     public BaseResponse insertCourse(@ModelAttribute CreateCourseRequest createCourseRequest,
-                                          @RequestPart MultipartFile file) {
+                                     @RequestPart MultipartFile file) {
         courseService.save(createCourseRequest, file);
         return BaseResponse.success("Thêm khóa học thành công");
+
+    }
+
+    @PutMapping("/{id}")
+    public BaseResponse updateCourse(@PathVariable int id,@ModelAttribute CreateCourseRequest createCourseRequest,
+                                     @RequestPart MultipartFile file) {
+        courseService.updateCourse(id,createCourseRequest, file);
+        return BaseResponse.success("Cập nhật khóa học thành công");
 
     }
 
@@ -50,6 +58,7 @@ public class CourseController {
                     courseDTO.setDiscount(data.getDiscount());
                     courseDTO.setIdUser(data.getUser().getId());
                     courseDTO.setImage("http://localhost:8081/api/file/"+data.getImage());
+                    courseDTO.setCategoryName(data.getCategory().getName());
                     courseDTO.setRating(courseService.calculatorRating(data.getListRatingCourses()));
                     return courseDTO;
                 }).collect(Collectors.toList());

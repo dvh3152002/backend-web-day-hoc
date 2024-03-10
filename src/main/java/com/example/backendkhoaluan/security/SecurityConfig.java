@@ -61,8 +61,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/signin","/api/signup","/api/refreshToken","/api/user/**",
                         "/api/post/**","/api/file/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/course/**").permitAll()
-                .requestMatchers("/api/course/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**").permitAll()
+                .requestMatchers("/api/course/**","/api/categories/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
         httpSecurity.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
