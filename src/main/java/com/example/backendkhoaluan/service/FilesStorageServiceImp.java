@@ -1,5 +1,7 @@
 package com.example.backendkhoaluan.service;
 
+import com.example.backendkhoaluan.exception.InsertException;
+import com.example.backendkhoaluan.exception.UpdateException;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.utils.FileUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,10 +26,11 @@ public class FilesStorageServiceImp implements FilesStorageService {
     private String rootName;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, InsertException.class, UpdateException.class})
     public String save(MultipartFile file) {
         try {
             Path root = Paths.get(rootName);
-            String fileName=FileUtils.setFileName(file.getOriginalFilename());
+            String fileName = FileUtils.setFileName(file.getOriginalFilename());
             Files.copy(file.getInputStream(), root.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
             return fileName;
         } catch (Exception e) {
@@ -55,6 +59,7 @@ public class FilesStorageServiceImp implements FilesStorageService {
     }
 
     @Override
+    @Transactional
     public void deleteAll(String fileName) {
         log.info("file: ",rootName+ File.separator+fileName);
         Path root = Paths.get(rootName+ File.separator+fileName);

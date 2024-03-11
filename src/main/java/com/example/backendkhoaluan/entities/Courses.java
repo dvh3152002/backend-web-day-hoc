@@ -19,7 +19,7 @@ public class Courses {
     private String name;
 
     @Column(name = "price")
-    private Double price;
+    private Integer price;
 
     @Column(name = "discount")
     private Integer discount;
@@ -42,8 +42,8 @@ public class Courses {
     private List<RatingCourse> listRatingCourses;
 
     @OneToMany(mappedBy = "course")
-    private Set<OrderDetail> listOrderDetails;
+    private List<OrderDetail> listOrderDetails;
 
     @OneToMany(mappedBy = "course")
-    private Set<Lessons> listLessons;
+    private List<Lessons> listLessons;
 }

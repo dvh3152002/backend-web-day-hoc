@@ -13,16 +13,16 @@ spring:
     allow-circular-references: true
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 3GB
+      max-request-size: 3GB
 jwt:
   privateKey: UvmX3g7ww8TZ/PNE+GdL/HaQPlOGs0V3pCoGpB8hxkE=
 root:
   path:
-    upload: D:\front-end\backend-khoa-luan\upload\image
+    upload: D:\upload\image
 logging:
   file:
-    name: D:\front-end\backend-khoa-luan\log\logger.log
+    name: D:\front-end\khoaluan\backend-web-day-hoc\log\logger.log
   logback:
     rollingpolicy:
       max-file-size: 200MB

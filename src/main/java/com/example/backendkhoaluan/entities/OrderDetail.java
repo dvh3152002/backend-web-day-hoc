@@ -3,6 +3,8 @@ package com.example.backendkhoaluan.entities;
 import com.example.backendkhoaluan.entities.keys.KeyOrderDetail;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 
@@ -14,7 +16,7 @@ public class OrderDetail{
     private KeyOrderDetail keyOrderDetail;
 
     @Column(name = "price")
-    private Double price;
+    private Integer price;
 
     @Column(name = "create_date")
     private Date createDate;
@@ -24,6 +26,7 @@ public class OrderDetail{
     private Orders order;
 
     @ManyToOne
-    @JoinColumn(name = "id_course")
+    @JoinColumn(name = "id_course",foreignKey = @ForeignKey(name = "FK_course_id_Order_detail"))
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Courses course;
 }

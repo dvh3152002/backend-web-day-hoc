@@ -16,8 +16,17 @@ public class FileController {
     @Autowired
     private FilesStorageService filesStorageService;
 
-    @GetMapping("/{fileName}")
-    public ResponseEntity<?> downloadFile(@PathVariable String fileName) {
+    @GetMapping("/image/{fileName}")
+    public ResponseEntity<?> downloadImageFile(@PathVariable String fileName) {
+        Resource resource=filesStorageService.load(fileName);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(resource);
+    }
+
+    @GetMapping("/video/{fileName}")
+    public ResponseEntity<?> downloadVideoFile(@PathVariable String fileName) {
         Resource resource=filesStorageService.load(fileName);
 
         return ResponseEntity.ok()

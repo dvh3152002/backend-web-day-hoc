@@ -1,6 +1,7 @@
 package com.example.backendkhoaluan.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class Lessons {
     private String video;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_course")
     private Courses course;
 }

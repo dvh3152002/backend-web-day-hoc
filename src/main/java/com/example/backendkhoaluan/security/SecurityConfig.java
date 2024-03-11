@@ -59,10 +59,12 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/signin","/api/signup","/api/refreshToken","/api/user/**",
-                        "/api/post/**","/api/file/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**").permitAll()
-                .requestMatchers("/api/course/**","/api/categories/**").hasRole("ADMIN")
+                .requestMatchers("/api/signin","/api/signup","/api/refreshToken",
+                        "/api/file/image/").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**","/api/post/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/api/lesson/**").hasAnyRole("USER","TEACHER","ADMIN")
+                .requestMatchers("/api/lesson/**").hasAnyRole("TEACHER","ADMIN")
+                .requestMatchers("/api/course/**","/api/user/**","/api/categories/**","/api/post/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
         httpSecurity.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 

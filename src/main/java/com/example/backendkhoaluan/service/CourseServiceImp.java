@@ -2,17 +2,19 @@ package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.CoursesDTO;
+import com.example.backendkhoaluan.entities.Categories;
 import com.example.backendkhoaluan.entities.Courses;
 import com.example.backendkhoaluan.entities.RatingCourse;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.InsertException;
+import com.example.backendkhoaluan.exception.UpdateException;
 import com.example.backendkhoaluan.payload.request.CreateCourseRequest;
-import com.example.backendkhoaluan.repository.CoursesRepository;
-import com.example.backendkhoaluan.repository.CustomCourseQuery;
+import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.CourseService;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
+import com.example.backendkhoaluan.service.imp.LessonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,15 @@ public class CourseServiceImp implements CourseService {
     @Autowired
     private FilesStorageService filesStorageService;
 
+    @Autowired
+    private LessonService lessonService;
+
+    @Autowired
+    private RatingCourseRepository ratingCourseRepository;
+
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
     @Override
     public Page<Courses> getAllCourse(CustomCourseQuery.CourseFilterParam param, PageRequest pageRequest) {
         Specification<Courses> specification = CustomCourseQuery.getFilterCourse(param);
@@ -50,6 +61,8 @@ public class CourseServiceImp implements CourseService {
             }
             Courses data = coursesOptional.get();
             filesStorageService.deleteAll(data.getImage());
+            ratingCourseRepository.deleteAll(data.getListRatingCourses());
+            lessonService.deleteAll(data.getListLessons());
             coursesRepository.delete(data);
         } catch (Exception e) {
             throw new DeleteException("Xóa khóa học thất bại", e.getLocalizedMessage());
@@ -69,9 +82,10 @@ public class CourseServiceImp implements CourseService {
         courseDTO.setName(data.getName());
         courseDTO.setPrice(data.getPrice());
         courseDTO.setDiscount(data.getDiscount());
-        courseDTO.setImage("http://localhost:8081/api/file/" + data.getImage());
+        courseDTO.setImage("http://localhost:8081/api/file/image/" + data.getImage());
         courseDTO.setIdUser(data.getUser().getId());
         courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
+        courseDTO.setCategoryName(data.getCategory().getName());
 
         return courseDTO;
     }
@@ -89,6 +103,10 @@ public class CourseServiceImp implements CourseService {
             courseEntity.setImage(fileName);
             courseEntity.setPrice(createCourseRequest.getPrice());
 
+            Categories categories=new Categories();
+            categories.setId(createCourseRequest.getCategoryId());
+            courseEntity.setCategory(categories);
+
             User userEntity = new User();
             userEntity.setId(createCourseRequest.getUserId());
 
@@ -100,7 +118,7 @@ public class CourseServiceImp implements CourseService {
         }
     }
 
-    @Transactional(rollbackFor = {InsertException.class, Exception.class})
+    @Transactional(rollbackFor = {UpdateException.class, Exception.class})
     @Override
     public void updateCourse(int id,CreateCourseRequest createCourseRequest, MultipartFile file) {
         try {
@@ -115,6 +133,10 @@ public class CourseServiceImp implements CourseService {
             courseEntity.setDiscount(createCourseRequest.getDiscount());
             courseEntity.setImage(fileName);
             courseEntity.setPrice(createCourseRequest.getPrice());
+
+            Categories categories=new Categories();
+            categories.setId(createCourseRequest.getCategoryId());
+            courseEntity.setCategory(categories);
 
             User userEntity = new User();
             userEntity.setId(createCourseRequest.getUserId());

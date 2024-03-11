@@ -6,7 +6,7 @@ import lombok.Data;
 public class CoursesDTO {
     private Integer id;
     private String name;
-    private Double price;
+    private Integer price;
     private Integer discount;
     private String description;
     private String image;

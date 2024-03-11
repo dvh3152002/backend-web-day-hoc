@@ -21,6 +21,7 @@ public interface Constants {
         String DESCRIPTION_NOT_BLANK="Mô tả không được để trống";
         //        String IMAGE_NOT_BLANK="Ảnh khóa học không được để trống";
         String USER_ID_NOT_BLANK="Thiếu người dạy khóa học";
+        String CATEGORY_ID_NOT_BLANK="Thiếu danh mục khóa học";
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng khóa học trong một trang là từ 5 đến 30 khóa học";
         String NOT_FIND_COURSE_BY_ID = "Không tìm thấy khóa học có ID là: ";
@@ -40,6 +41,14 @@ public interface Constants {
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng bài viết trong một trang là từ 5 đến 50 bài viết";
         String NOT_FIND_CATEGORY_BY_ID = "Không tìm thấy danh mục có ID là: ";
+    }
+
+    interface ErrorMessageLessonValidation {
+        String TITLE_NOT_BLANK="Tiêu đề bài học không được để trống";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String COURSE_ID_NOT_BLANK="Thiếu khóa học";
+        String LIMIT_SIZE = "Số lượng bài học trong một trang là từ 5 đến 50 bài học";
+        String NOT_FIND_LESSON_BY_ID = "Không tìm thấy bài học có ID là: ";
     }
 
     interface SortType {

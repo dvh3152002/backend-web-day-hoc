@@ -1,6 +1,7 @@
 package com.example.backendkhoaluan.payload.request;
 
 import com.example.backendkhoaluan.constant.Constants;
+import com.example.backendkhoaluan.domain.validator.specialCharacters.SpecialCharaters;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -22,7 +23,7 @@ public class UserRequest {
     private String password;
 
     @NotBlank(message = Constants.ErrorMessageUserValidation.FULLNAME_NOT_BLANK)
-//    @SpecialCharaters
+    @SpecialCharaters
     private String fullname;
 
     @NotBlank(message = Constants.ErrorMessageUserValidation.ADDRESS_NOT_BLANK)
