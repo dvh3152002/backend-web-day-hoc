@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,5 +31,5 @@ public class UserRequest {
     @NotBlank(message = Constants.ErrorMessageUserValidation.ADDRESS_NOT_BLANK)
     private String address;
 
-    private int roleId=2;
+    private Set<Integer> roles;
 }

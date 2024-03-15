@@ -2,6 +2,9 @@ package com.example.backendkhoaluan.dto;
 
 import lombok.Data;
 
+import java.util.List;
+import java.util.Set;
+
 @Data
 public class UsersDTO {
     private Integer id;
@@ -9,5 +12,5 @@ public class UsersDTO {
     private String fullname;
     private String address;
     private String avatar;
-    private Integer idRole;
+    private Set<RolesDTO> rolesDTOS;
 }

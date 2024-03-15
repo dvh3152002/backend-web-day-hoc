@@ -30,15 +30,16 @@ public class User {
     @Column(name = "avatar")
     private String avatar;
 
-    @ManyToOne
-    @JoinColumn(name = "id_role")
-    private Role role;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"))
+    private List<Role> roles;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<RatingCourse> listRatingCourses;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Orders> listOrders;
 }

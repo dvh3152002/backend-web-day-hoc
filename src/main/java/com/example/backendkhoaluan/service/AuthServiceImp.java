@@ -1,17 +1,20 @@
 package com.example.backendkhoaluan.service;
 
+import com.example.backendkhoaluan.dto.RolesDTO;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.repository.UsersRepository;
 import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -24,6 +27,8 @@ public class AuthServiceImp implements AuthService {
     @Autowired
     private UsersRepository usersRepository;
 
+    private ModelMapper modelMapper=new ModelMapper();
+
     @Override
     public AuthResponse signIn(SignInRequest request) {
         try {
@@ -33,7 +38,7 @@ public class AuthServiceImp implements AuthService {
             String refreshToken=jwtUtilsHelper.generateRefreshToken(new HashMap<>(),user.getEmail());
 
             AuthResponse authResponse=new AuthResponse();
-            authResponse.setRole(user.getRole().getName());
+            authResponse.setRoles(modelMapper.map(user.getRoles(), List.class));
             authResponse.setAccessToken(jwt);
             authResponse.setRefreshToken(refreshToken);
 
@@ -50,7 +55,7 @@ public class AuthServiceImp implements AuthService {
         User user=usersRepository.findByEmail(email).orElseThrow();
         if (jwtUtilsHelper.isTokenValid(authResponse.getRefreshToken(),user.getEmail())){
             String jwt=jwtUtilsHelper.generateToken(user.getEmail());
-            authResponse.setRole(user.getRole().getName());
+            authResponse.setRoles(modelMapper.map(user.getRoles(), List.class));
             response.setAccessToken(jwt);
             response.setRefreshToken(authResponse.getAccessToken());
         }

@@ -7,20 +7,16 @@ import com.example.backendkhoaluan.entities.Orders;
 import com.example.backendkhoaluan.entities.RatingCourse;
 import com.example.backendkhoaluan.entities.Role;
 import com.example.backendkhoaluan.entities.User;
-import com.example.backendkhoaluan.exception.DataNotFoundException;
-import com.example.backendkhoaluan.exception.DeleteException;
-import com.example.backendkhoaluan.exception.InsertException;
-import com.example.backendkhoaluan.exception.UpdateException;
+import com.example.backendkhoaluan.exception.*;
 import com.example.backendkhoaluan.payload.request.GetUserRequest;
 import com.example.backendkhoaluan.payload.request.UserRequest;
-import com.example.backendkhoaluan.repository.CustomCourseQuery;
-import com.example.backendkhoaluan.repository.CustomeUserQuery;
-import com.example.backendkhoaluan.repository.RatingCourseRepository;
-import com.example.backendkhoaluan.repository.UsersRepository;
+import com.example.backendkhoaluan.payload.response.ErrorDetail;
+import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.OrderService;
 import com.example.backendkhoaluan.service.imp.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,11 +24,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -41,16 +39,15 @@ public class UserServiceImp implements UserService {
     private UsersRepository usersRepository;
 
     @Autowired
+    private RolesRepository rolesRepository;
+
+    @Autowired
     private FilesStorageService filesStorageService;
 
     @Autowired
-    private RatingCourseRepository ratingCourseRepository;
-
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Override
     public Page<User> getAllUser(CustomeUserQuery.UserFilterParam param, PageRequest pageRequest) {
@@ -65,23 +62,24 @@ public class UserServiceImp implements UserService {
             throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
         }
         User user = userOptional.get();
-        UsersDTO userDTO = new UsersDTO();
-        userDTO.setEmail(user.getEmail());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setFullname(user.getFullname());
-        userDTO.setId(user.getId());
+//        UsersDTO userDTO = new UsersDTO();
+//        userDTO.setEmail(user.getEmail());
+//        userDTO.setAddress(user.getAddress());
+//        userDTO.setFullname(user.getFullname());
+//        userDTO.setId(user.getId());
+//
+//        RolesDTO roleDTO = new RolesDTO();
+//        roleDTO.setId(user.getRole().getId());
+//        roleDTO.setName(user.getRole().getName());
 
-        RolesDTO roleDTO = new RolesDTO();
-        roleDTO.setId(user.getRole().getId());
-        roleDTO.setName(user.getRole().getName());
+        UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
+        userDTO.setRolesDTOS(modelMapper.map(user.getRoles(),Set.class));
 
         if (user.getAvatar() != null) {
             if (!user.getAvatar().trim().equals("")) {
                 userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
             }
         }
-
-        userDTO.setIdRole(user.getRole().getId());
         return userDTO;
     }
 
@@ -92,15 +90,18 @@ public class UserServiceImp implements UserService {
             throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_EMAIL + email);
         }
         User user = userOptional.get();
-        UsersDTO userDTO = new UsersDTO();
-        userDTO.setEmail(user.getEmail());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setFullname(user.getFullname());
-        userDTO.setId(user.getId());
+//        UsersDTO userDTO = new UsersDTO();
+//        userDTO.setEmail(user.getEmail());
+//        userDTO.setAddress(user.getAddress());
+//        userDTO.setFullname(user.getFullname());
+//        userDTO.setId(user.getId());
+//
+//        RolesDTO roleDTO = new RolesDTO();
+//        roleDTO.setId(user.getRole().getId());
+//        roleDTO.setName(user.getRole().getName());
 
-        RolesDTO roleDTO = new RolesDTO();
-        roleDTO.setId(user.getRole().getId());
-        roleDTO.setName(user.getRole().getName());
+        UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
+        userDTO.setRolesDTOS(modelMapper.map(user.getRoles(),Set.class));
 
         if (user.getAvatar() != null) {
             if (!user.getAvatar().trim().equals("")) {
@@ -108,7 +109,12 @@ public class UserServiceImp implements UserService {
             }
         }
 
-        userDTO.setIdRole(user.getRole().getId());
+        if (user.getAvatar() != null) {
+            if (!user.getAvatar().trim().equals("")) {
+                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
+            }
+        }
+
         return userDTO;
     }
 
@@ -120,15 +126,6 @@ public class UserServiceImp implements UserService {
             if (!users.isPresent()) {
                 throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
             }
-            User data = users.get();
-            List<RatingCourse> listRatingCourses = ratingCourseRepository.findByUser(data);
-            listRatingCourses.forEach(ratingCourse -> {
-                ratingCourseRepository.delete(ratingCourse);
-            });
-            List<Orders> listOrders = orderService.findByUser(data);
-            listOrders.forEach(orders -> {
-                orderService.deleteOrder(orders);
-            });
             usersRepository.deleteById(id);
         } catch (Exception e) {
             throw new DeleteException("Xóa người dùng thất bại", e.getLocalizedMessage());
@@ -145,14 +142,20 @@ public class UserServiceImp implements UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new DataNotFoundException("Email hoặc mật khẩu không đúng");
         }
-        UsersDTO userDTO = new UsersDTO();
+//        UsersDTO userDTO = new UsersDTO();
+//
+//        userDTO.setEmail(user.getEmail());
+//        userDTO.setAddress(user.getAddress());
+//        userDTO.setFullname(user.getFullname());
+//        userDTO.setId(user.getId());
 
-        userDTO.setEmail(user.getEmail());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setFullname(user.getFullname());
-        userDTO.setId(user.getId());
+        UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
 
-        userDTO.setIdRole(user.getRole().getId());
+        if (user.getAvatar() != null) {
+            if (!user.getAvatar().trim().equals("")) {
+                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
+            }
+        }
 
         return userDTO;
     }
@@ -167,19 +170,18 @@ public class UserServiceImp implements UserService {
                 throw new DataNotFoundException(Constants.ErrorMessageUserValidation.EMAIL_IS_EXIST);
             }
 
-            Role roleEntity = new Role();
-            roleEntity.setId(userRequest.getRoleId());
+//            User userEntity = new User();
+//            userEntity.setFullname(userRequest.getFullname());
+//            userEntity.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+//            userEntity.setAddress(userRequest.getAddress());
+//            userEntity.setEmail(userRequest.getEmail());
 
-            User userEntity = new User();
-            userEntity.setFullname(userRequest.getFullname());
-            userEntity.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-            userEntity.setAddress(userRequest.getAddress());
-            userEntity.setEmail(userRequest.getEmail());
+            User userEntity = modelMapper.map(userRequest, User.class);
             if (avatar != null) {
                 String fileName = filesStorageService.save(avatar);
                 userEntity.setAvatar(fileName);
             }
-            userEntity.setRole(roleEntity);
+            checkRoleUserExists(userEntity, userRequest.getRoles());
             usersRepository.save(userEntity);
             return "Thêm người dùng thành công";
         } catch (Exception e) {
@@ -196,10 +198,9 @@ public class UserServiceImp implements UserService {
                 throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
             }
             User userEntity = users.get();
-            Role roleEntity = new Role();
-            roleEntity.setId(userRequest.getRoleId());
-            userEntity.setFullname(userRequest.getFullname());
-            userEntity.setAddress(userRequest.getAddress());
+//            userEntity.setFullname(userRequest.getFullname());
+//            userEntity.setAddress(userRequest.getAddress());
+            modelMapper.map(userRequest, userEntity);
             if (avatar != null) {
                 if (userEntity.getAvatar() != null) {
                     if (!userEntity.getAvatar().trim().equals("")) {
@@ -209,10 +210,29 @@ public class UserServiceImp implements UserService {
                     }
                 }
             }
-            userEntity.setRole(roleEntity);
             usersRepository.save(userEntity);
         } catch (Exception e) {
             throw new UpdateException("Cập nhật người dùng thất bại", e.getLocalizedMessage());
+        }
+    }
+
+    private void checkRoleUserExists(User user, Set<Integer> idRole) {
+        if (!CollectionUtils.isEmpty(idRole)) {
+            List<ErrorDetail> errorDetails = new ArrayList<>();
+            List<Role> roles = rolesRepository.findAllById(idRole);
+            for (Integer requestId : idRole) {
+                boolean isExist = roles.stream().anyMatch(category -> category.getId().equals(requestId));
+                if (!isExist) {
+                    ErrorDetail errorDetail = new ErrorDetail();
+                    errorDetail.setId(requestId.toString());
+                    errorDetail.setMessage(Constants.ErrorMessageCategoryValidation.NOT_FIND_CATEGORY_BY_ID + requestId);
+                    errorDetails.add(errorDetail);
+                }
+            }
+            if (!CollectionUtils.isEmpty(errorDetails)) {
+                throw new ErrorDetailException(errorDetails);
+            }
+            user.setRoles(roles);
         }
     }
 }
