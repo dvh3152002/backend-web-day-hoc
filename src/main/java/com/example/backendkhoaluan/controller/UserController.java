@@ -27,7 +27,7 @@ public class UserController {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-    @GetMapping("/getList")
+    @GetMapping("")
     public BaseListResponse<UsersDTO> getAllUser(@Valid GetUserRequest request) {
         Page<User> page = userService.getAllUser(request, PageRequest.of(request.getStart(), request.getLimit()));
 

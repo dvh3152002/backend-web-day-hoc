@@ -1,6 +1,7 @@
 package com.example.backendkhoaluan.controller;
 
 import com.example.backendkhoaluan.dto.CoursesDTO;
+import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.Courses;
 import com.example.backendkhoaluan.payload.request.CreateCourseRequest;
 import com.example.backendkhoaluan.payload.request.GetCourseRequest;
@@ -28,7 +29,7 @@ public class CourseController {
 
     private final ModelMapper modelMapper=new ModelMapper();
 
-    @PostMapping("/insert")
+    @PostMapping("")
     public BaseResponse insertCourse(@ModelAttribute @Valid CreateCourseRequest createCourseRequest,
                                      @RequestPart MultipartFile file) {
         log.info("request: {}",createCourseRequest);
@@ -45,8 +46,8 @@ public class CourseController {
 
     }
 
-    @GetMapping("/getList")
-    public BaseListResponse<CoursesDTO> getAllCourse(@Valid GetCourseRequest request) {
+    @GetMapping("")
+    public BaseListResponse<CoursesDTO> getAllCourse(@Valid @ModelAttribute GetCourseRequest request) {
         log.info("request: {}",request);
         Page<Courses> page=courseService.getAllCourse(request, PageRequest.of(request.getStart(),request.getLimit()));
         List<CoursesDTO> coursesDTOS=page.getContent().stream()
@@ -55,12 +56,14 @@ public class CourseController {
                     courseDTO.setId(data.getId());
                     courseDTO.setDescription(data.getDescription());
                     courseDTO.setName(data.getName());
+                    courseDTO.setSlug(data.getSlug());
                     courseDTO.setPrice(data.getPrice());
                     courseDTO.setDiscount(data.getDiscount());
-                    courseDTO.setIdUser(data.getUser().getId());
+//                    courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
                     courseDTO.setImage("http://localhost:8081/api/file/image/"+data.getImage());
                     courseDTO.setCategoryName(data.getCategory().getName());
                     courseDTO.setRating(courseService.calculatorRating(data.getListRatingCourses()));
+                    courseDTO.setCreateDate(data.getCreateDate());
                     return courseDTO;
                 }).collect(Collectors.toList());
         return BaseResponse.successListData(coursesDTOS,(int) page.getTotalElements());

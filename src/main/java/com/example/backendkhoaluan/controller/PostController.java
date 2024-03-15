@@ -28,7 +28,7 @@ public class PostController {
         return BaseResponse.success(postService.getById(id));
     }
 
-    @PostMapping("/insert")
+    @PostMapping("")
     public BaseResponse createPost( @Valid @RequestBody PostRequest request) {
         postService.createPost(request);
         return BaseResponse.success("Cập nhật bài viết thành công");
@@ -46,7 +46,7 @@ public class PostController {
         return BaseResponse.success("Cập nhật bài viết thành công");
     }
 
-    @GetMapping("/getList")
+    @GetMapping("")
     public BaseResponse getListPost(GetPostRequest request) {
         Page<Post> page = postService.getListPost(request, PageRequest.of(request.getStart(), request.getLimit()));
         return BaseResponse.successListData(

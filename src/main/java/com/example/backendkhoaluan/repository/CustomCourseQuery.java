@@ -39,24 +39,24 @@ public class CustomCourseQuery {
                 predicates.add(CriteriaBuilderUtils.createPredicateForSearchInsensitive(root, criteriaBuilder, param.keywords,
                         "name"));
             }
-            if (param.idUser!=null) {
+            if (param.idUser != null) {
                 Join<Courses, User> courseJoin = root.join("user");
-                predicates.add(criteriaBuilder.equal(courseJoin.get("id"),(param.idCategory)));
+                predicates.add(criteriaBuilder.equal(courseJoin.get("id"), (param.idCategory)));
             }
-            if (param.idCategory!=null) {
+            if (param.idCategory != null) {
                 Join<Courses, Categories> categoriesJoin = root.join("category");
-                predicates.add(criteriaBuilder.equal(categoriesJoin.get("id"),(param.idCategory)));
+                predicates.add(criteriaBuilder.equal(categoriesJoin.get("id"), (param.idCategory)));
             }
-            if (param.maxPrice!=null && param.minPrice!=null){
-                predicates.add(criteriaBuilder.between(criteriaBuilder.prod(root.get("price"),criteriaBuilder.diff(1,root.get("discount"))),param.minPrice,param.maxPrice));
-            }else if(param.minPrice!=null){
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(criteriaBuilder.prod(root.get("price"),criteriaBuilder.diff(1,root.get("discount"))),param.minPrice));
-            }else if(param.maxPrice!=null){
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(criteriaBuilder.prod(root.get("price"),criteriaBuilder.diff(1,root.get("discount"))),param.maxPrice));
+            if (param.maxPrice != null && param.minPrice != null) {
+                predicates.add(criteriaBuilder.between(root.get("price"), param.minPrice, param.maxPrice));
+            } else if (param.minPrice != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), param.minPrice));
+            } else if (param.maxPrice != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), param.maxPrice));
             }
-            if(param.rating!=null) {
+            if (param.rating != null) {
                 query.groupBy(root.get("id"));
-                query.having(criteriaBuilder.equal(criteriaBuilder.avg(root.get("listRatingCourses").get("ratePoint")), param.rating));
+                query.having(criteriaBuilder.between(criteriaBuilder.avg(root.get("listRatingCourses").get("ratePoint")), 0d,param.rating));
             }
             if (param.sortField != null && !param.sortField.equals("")) {
                 if (param.sortType.equals(Constants.SortType.DESC) || param.sortType.equals("")) {

@@ -17,8 +17,6 @@ public class CustomeUserQuery {
     private CustomeUserQuery() {
     }
 
-    ;
-
     @Data
     @NoArgsConstructor
     public static class UserFilterParam {

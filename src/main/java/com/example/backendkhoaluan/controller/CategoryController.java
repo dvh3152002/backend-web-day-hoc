@@ -14,7 +14,7 @@ public class CategoryController {
     @Autowired
     private CategoriesService categoriesService;
 
-    @GetMapping("/getList")
+    @GetMapping("")
     public BaseResponse getList(){
         List<CategoriesDTO> list=categoriesService.getAll();
         return BaseResponse.successListData(list,list.size());

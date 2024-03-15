@@ -77,7 +77,34 @@ public class UserServiceImp implements UserService {
 
         if (user.getAvatar() != null) {
             if (!user.getAvatar().trim().equals("")) {
-                userDTO.setAvatar("http://localhost:8081/api/file/" + user.getAvatar());
+                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
+            }
+        }
+
+        userDTO.setIdRole(user.getRole().getId());
+        return userDTO;
+    }
+
+    @Override
+    public UsersDTO findByEmail(String email) {
+        Optional<User> userOptional = usersRepository.findByEmail(email);
+        if (!userOptional.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_EMAIL + email);
+        }
+        User user = userOptional.get();
+        UsersDTO userDTO = new UsersDTO();
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setFullname(user.getFullname());
+        userDTO.setId(user.getId());
+
+        RolesDTO roleDTO = new RolesDTO();
+        roleDTO.setId(user.getRole().getId());
+        roleDTO.setName(user.getRole().getName());
+
+        if (user.getAvatar() != null) {
+            if (!user.getAvatar().trim().equals("")) {
+                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
             }
         }
 
@@ -135,6 +162,11 @@ public class UserServiceImp implements UserService {
     public String createUser(UserRequest userRequest, MultipartFile avatar) {
         try {
             log.info("createUser - request: {}", userRequest);
+            Optional<User> user = usersRepository.findByEmail(userRequest.getEmail());
+            if (user.isPresent()) {
+                throw new DataNotFoundException(Constants.ErrorMessageUserValidation.EMAIL_IS_EXIST);
+            }
+
             Role roleEntity = new Role();
             roleEntity.setId(userRequest.getRoleId());
 

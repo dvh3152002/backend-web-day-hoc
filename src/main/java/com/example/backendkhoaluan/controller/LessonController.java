@@ -25,7 +25,7 @@ public class LessonController {
 
     private ModelMapper modelMapper=new ModelMapper();
 
-    @GetMapping("/getList")
+    @GetMapping("")
     public BaseResponse getListByPost(@Valid GetLessonRequest request){
         Page<Lessons> page=lessonService.getListLesson(request, PageRequest.of(request.getStart(),request.getLimit()));
         return BaseResponse.successListData(page.getContent().stream()
@@ -42,7 +42,7 @@ public class LessonController {
         return BaseResponse.success(lessonService.getLessonsById(id));
     }
 
-    @PostMapping("/insert")
+    @PostMapping("")
     public BaseResponse insertLesson(@Valid @ModelAttribute LessonRequest request, @RequestParam MultipartFile file) {
         lessonService.save(request,file);
         return BaseResponse.success("Thêm bài học thành công");

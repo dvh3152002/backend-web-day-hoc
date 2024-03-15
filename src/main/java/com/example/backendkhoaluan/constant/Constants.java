@@ -5,13 +5,14 @@ public interface Constants {
         String INVALID_EMAIL="Email không hợp lệ";
         String EMAIL_NOT_BLANK="Email không được để trống";
         String PASSWORD_SIZE="Mật khẩu phải từ 6 đến 15 ký tự";
-        String PASSWORD_NOT_BLANK="Mật khẩu không được để trống";
         String FULLNAME_NOT_SPECIAL_CHARATERS = "Họ tên không được có ký tự đặc biệt";
         String FULLNAME_NOT_BLANK="Họ tên không được để trống";
         String ADDRESS_NOT_BLANK="Địa chỉ không được để trống";
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng người dùng trong một trang là từ 5 đến 30 người";
         String NOT_FIND_USER_BY_ID = "Không tìm thấy người dùng có ID là: ";
+        String EMAIL_IS_EXIST = "Email đã tồn tại";
+        String NOT_FIND_USER_BY_EMAIL= "Không tìm thấy người dùng có email là: ";
     }
 
     interface ErrorMessageCourseValidation {
@@ -33,6 +34,16 @@ public interface Constants {
         String START_SIZE="Số trang phải bắt đầu từ 0";
         String LIMIT_SIZE = "Số lượng bài viết trong một trang là từ 5 đến 50 bài viết";
         String NOT_FIND_POST_BY_ID = "Không tìm thấy bài viết có ID là: ";
+    }
+
+    interface ErrorMessageRatingValidation {
+        String CONTENT_NOT_BLANK="Nhận xét khóa học không được để trống";
+        String COURSE_NOT_BLANK="Không có ID khóa học";
+        String USER_NOT_BLANK="Không có ID người dùng";
+        String POINT_NOT_BLANK="Không có điểm đánh giá";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String LIMIT_SIZE = "Số lượng bình luận trong một trang là từ 5 đến 50 bình luận";
+        String NOT_FIND_RATING_BY_ID = "Không tìm thấy bình luận có ID là: ";
     }
 
     interface ErrorMessageCategoryValidation {

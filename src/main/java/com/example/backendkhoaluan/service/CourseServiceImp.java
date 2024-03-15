@@ -2,6 +2,7 @@ package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.CoursesDTO;
+import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.Categories;
 import com.example.backendkhoaluan.entities.Courses;
 import com.example.backendkhoaluan.entities.RatingCourse;
@@ -15,15 +16,19 @@ import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.CourseService;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.LessonService;
+import com.example.backendkhoaluan.utils.SlugUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,9 +47,7 @@ public class CourseServiceImp implements CourseService {
     @Autowired
     private RatingCourseRepository ratingCourseRepository;
 
-    @Autowired
-    private OrderDetailRepository orderDetailRepository;
-
+    private ModelMapper modelMapper = new ModelMapper();
     @Override
     public Page<Courses> getAllCourse(CustomCourseQuery.CourseFilterParam param, PageRequest pageRequest) {
         Specification<Courses> specification = CustomCourseQuery.getFilterCourse(param);
@@ -80,11 +83,13 @@ public class CourseServiceImp implements CourseService {
         courseDTO.setId(data.getId());
         courseDTO.setDescription(data.getDescription());
         courseDTO.setName(data.getName());
+        courseDTO.setSlug(data.getSlug());
         courseDTO.setPrice(data.getPrice());
         courseDTO.setDiscount(data.getDiscount());
         courseDTO.setImage("http://localhost:8081/api/file/image/" + data.getImage());
-        courseDTO.setIdUser(data.getUser().getId());
+        courseDTO.setUser(modelMapper.map(data.getUser(),UsersDTO.class));
         courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
+        courseDTO.setCreateDate(data.getCreateDate());
         courseDTO.setCategoryName(data.getCategory().getName());
 
         return courseDTO;
@@ -102,6 +107,7 @@ public class CourseServiceImp implements CourseService {
             courseEntity.setDiscount(createCourseRequest.getDiscount());
             courseEntity.setImage(fileName);
             courseEntity.setPrice(createCourseRequest.getPrice());
+            courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));
 
             Categories categories=new Categories();
             categories.setId(createCourseRequest.getCategoryId());
@@ -133,6 +139,8 @@ public class CourseServiceImp implements CourseService {
             courseEntity.setDiscount(createCourseRequest.getDiscount());
             courseEntity.setImage(fileName);
             courseEntity.setPrice(createCourseRequest.getPrice());
+            courseEntity.setCreateDate(new Date());
+            courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));
 
             Categories categories=new Categories();
             categories.setId(createCourseRequest.getCategoryId());
@@ -145,7 +153,7 @@ public class CourseServiceImp implements CourseService {
 
             coursesRepository.save(courseEntity);
         } catch (Exception e) {
-            throw new InsertException("Lỗi insert course", e.getLocalizedMessage());
+            throw new UpdateException("Lỗi cập nhật khóa học", e.getLocalizedMessage());
         }
     }
 

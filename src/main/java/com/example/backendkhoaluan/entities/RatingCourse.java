@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+import java.util.Date;
+
 @Data
 @Entity
 @Table(name = "rating_course")
@@ -19,6 +21,9 @@ public class RatingCourse {
 
     @Column(name = "rate_point")
     private Float ratePoint;
+
+    @Column(name = "create_date")
+    private Date createDate;
 
     @ManyToOne
     @JoinColumn(name = "id_course")

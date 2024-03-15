@@ -3,6 +3,7 @@ package com.example.backendkhoaluan.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -18,6 +19,9 @@ public class Courses {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "slug")
+    private String slug;
+
     @Column(name = "price")
     private Integer price;
 
@@ -29,6 +33,9 @@ public class Courses {
 
     @Column(name = "image")
     private String image;
+
+    @Column(name = "create_date")
+    private Date createDate;
 
     @ManyToOne
     @JoinColumn(name = "id_user")

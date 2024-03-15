@@ -19,8 +19,6 @@ public class CustomeLessonQuery {
     private CustomeLessonQuery() {
     }
 
-    ;
-
     @Data
     @NoArgsConstructor
     public static class LessonFilterParam {
