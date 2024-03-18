@@ -2,7 +2,8 @@ package com.example.backendkhoaluan.service.imp;
 
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.User;
-import com.example.backendkhoaluan.payload.request.UserRequest;
+import com.example.backendkhoaluan.payload.request.CreateUserRequest;
+import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.repository.CustomeUserQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,6 @@ public interface UserService {
     UsersDTO findById(int id);
     UsersDTO findByEmail(String email);
     void deleteUser(int id);
-    String createUser(UserRequest userRequest, MultipartFile avatar);
-    void updateUser(int id, UserRequest userRequest, MultipartFile avatar);
+    String createUser(CreateUserRequest createUserRequest, MultipartFile avatar);
+    void updateUser(int id, UpdateUserRequest request, MultipartFile avatar);
 }

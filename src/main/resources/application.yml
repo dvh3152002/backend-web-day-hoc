@@ -26,3 +26,6 @@ logging:
   logback:
     rollingpolicy:
       max-file-size: 200MB
+redis:
+  host: localhost
+  port: 6380

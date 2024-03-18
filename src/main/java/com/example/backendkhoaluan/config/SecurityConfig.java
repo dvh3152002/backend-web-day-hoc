@@ -1,5 +1,7 @@
-package com.example.backendkhoaluan.security;
+package com.example.backendkhoaluan.config;
 
+import com.example.backendkhoaluan.security.CustomJwtFilter;
+import com.example.backendkhoaluan.security.CustomUserDetailService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

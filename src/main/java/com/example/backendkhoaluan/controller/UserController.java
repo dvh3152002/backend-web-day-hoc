@@ -3,7 +3,8 @@ package com.example.backendkhoaluan.controller;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.payload.request.GetUserRequest;
-import com.example.backendkhoaluan.payload.request.UserRequest;
+import com.example.backendkhoaluan.payload.request.CreateUserRequest;
+import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.BaseListResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
 import com.example.backendkhoaluan.service.imp.UserService;
@@ -48,11 +49,11 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public BaseResponse updateUser(@PathVariable("id") int id, @Valid @RequestBody UserRequest userRequest,
+    public BaseResponse updateUser(@PathVariable("id") int id, @Valid @RequestBody UpdateUserRequest request,
                                         @RequestParam(name = "file", required = false) MultipartFile file) {
-        log.info("user :{}", userRequest);
+        log.info("user :{}", request);
         log.info("file :{}", file);
-        userService.updateUser(id, userRequest, file);
+        userService.updateUser(id, request, file);
         return BaseResponse.success("Cập nhật người dùng thành công");
     }
 

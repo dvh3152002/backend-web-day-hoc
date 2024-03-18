@@ -1,19 +1,15 @@
 package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
-import com.example.backendkhoaluan.dto.RolesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
-import com.example.backendkhoaluan.entities.Orders;
-import com.example.backendkhoaluan.entities.RatingCourse;
 import com.example.backendkhoaluan.entities.Role;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.exception.*;
-import com.example.backendkhoaluan.payload.request.GetUserRequest;
-import com.example.backendkhoaluan.payload.request.UserRequest;
+import com.example.backendkhoaluan.payload.request.CreateUserRequest;
+import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.ErrorDetail;
 import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
-import com.example.backendkhoaluan.service.imp.OrderService;
 import com.example.backendkhoaluan.service.imp.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -162,10 +158,10 @@ public class UserServiceImp implements UserService {
 
     @Transactional
     @Override
-    public String createUser(UserRequest userRequest, MultipartFile avatar) {
+    public String createUser(CreateUserRequest createUserRequest, MultipartFile avatar) {
         try {
-            log.info("createUser - request: {}", userRequest);
-            Optional<User> user = usersRepository.findByEmail(userRequest.getEmail());
+            log.info("createUser - request: {}", createUserRequest);
+            Optional<User> user = usersRepository.findByEmail(createUserRequest.getEmail());
             if (user.isPresent()) {
                 throw new DataNotFoundException(Constants.ErrorMessageUserValidation.EMAIL_IS_EXIST);
             }
@@ -176,12 +172,13 @@ public class UserServiceImp implements UserService {
 //            userEntity.setAddress(userRequest.getAddress());
 //            userEntity.setEmail(userRequest.getEmail());
 
-            User userEntity = modelMapper.map(userRequest, User.class);
+            User userEntity = modelMapper.map(createUserRequest, User.class);
+            userEntity.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
             if (avatar != null) {
                 String fileName = filesStorageService.save(avatar);
                 userEntity.setAvatar(fileName);
             }
-            checkRoleUserExists(userEntity, userRequest.getRoles());
+            checkRoleUserExists(userEntity, createUserRequest.getRoles());
             usersRepository.save(userEntity);
             return "Thêm người dùng thành công";
         } catch (Exception e) {
@@ -191,7 +188,7 @@ public class UserServiceImp implements UserService {
 
     @Transactional
     @Override
-    public void updateUser(int id, UserRequest userRequest, MultipartFile avatar) {
+    public void updateUser(int id, UpdateUserRequest request, MultipartFile avatar) {
         try {
             Optional<User> users = usersRepository.findById(id);
             if (!users.isPresent()) {
@@ -200,7 +197,9 @@ public class UserServiceImp implements UserService {
             User userEntity = users.get();
 //            userEntity.setFullname(userRequest.getFullname());
 //            userEntity.setAddress(userRequest.getAddress());
-            modelMapper.map(userRequest, userEntity);
+            String password=userEntity.getPassword();
+            modelMapper.map(request, userEntity);
+            userEntity.setPassword(password);
             if (avatar != null) {
                 if (userEntity.getAvatar() != null) {
                     if (!userEntity.getAvatar().trim().equals("")) {

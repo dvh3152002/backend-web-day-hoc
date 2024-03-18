@@ -1,11 +1,9 @@
 package com.example.backendkhoaluan.controller;
 
-import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.constant.ErrorCodeDefs;
 import com.example.backendkhoaluan.dto.UsersDTO;
-import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
-import com.example.backendkhoaluan.payload.request.UserRequest;
+import com.example.backendkhoaluan.payload.request.CreateUserRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
 import com.example.backendkhoaluan.service.imp.AuthService;
@@ -53,9 +51,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public BaseResponse signup(@Valid @RequestBody UserRequest userRequest,
+    public BaseResponse signup(@Valid @RequestBody CreateUserRequest createUserRequest,
                                @RequestPart(name = "file",required = false) MultipartFile file) {
-        return BaseResponse.success(userService.createUser(userRequest,file));
+        return BaseResponse.success(userService.createUser(createUserRequest,file));
     }
 
     @GetMapping("/profile")
