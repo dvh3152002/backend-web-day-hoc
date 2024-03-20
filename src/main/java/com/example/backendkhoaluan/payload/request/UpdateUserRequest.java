@@ -5,9 +5,17 @@ import com.example.backendkhoaluan.domain.validator.specialCharacters.SpecialCha
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UpdateUserRequest {
     @Email(regexp = ".+[@].+[\\.].+",message = Constants.ErrorMessageUserValidation.INVALID_EMAIL)
     @NotBlank(message = Constants.ErrorMessageUserValidation.EMAIL_NOT_BLANK)

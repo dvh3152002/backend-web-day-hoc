@@ -69,7 +69,7 @@ public class UserServiceImp implements UserService {
 //        roleDTO.setName(user.getRole().getName());
 
         UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
-        userDTO.setRolesDTOS(modelMapper.map(user.getRoles(),Set.class));
+        userDTO.setRoles(modelMapper.map(user.getRoles(),Set.class));
 
         if (user.getAvatar() != null) {
             if (!user.getAvatar().trim().equals("")) {
@@ -97,7 +97,7 @@ public class UserServiceImp implements UserService {
 //        roleDTO.setName(user.getRole().getName());
 
         UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
-        userDTO.setRolesDTOS(modelMapper.map(user.getRoles(),Set.class));
+        userDTO.setRoles(modelMapper.map(user.getRoles(),Set.class));
 
         if (user.getAvatar() != null) {
             if (!user.getAvatar().trim().equals("")) {
@@ -199,6 +199,7 @@ public class UserServiceImp implements UserService {
 //            userEntity.setAddress(userRequest.getAddress());
             String password=userEntity.getPassword();
             modelMapper.map(request, userEntity);
+
             userEntity.setPassword(password);
             if (avatar != null) {
                 if (userEntity.getAvatar() != null) {
@@ -209,6 +210,7 @@ public class UserServiceImp implements UserService {
                     }
                 }
             }
+            checkRoleUserExists(userEntity, request.getRoles());
             usersRepository.save(userEntity);
         } catch (Exception e) {
             throw new UpdateException("Cập nhật người dùng thất bại", e.getLocalizedMessage());

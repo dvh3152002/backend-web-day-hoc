@@ -30,8 +30,8 @@ public class CourseController {
     private final ModelMapper modelMapper=new ModelMapper();
 
     @PostMapping("")
-    public BaseResponse insertCourse(@ModelAttribute @Valid CreateCourseRequest createCourseRequest,
-                                     @RequestPart MultipartFile file) {
+    public BaseResponse insertCourse(@Valid @ModelAttribute CreateCourseRequest createCourseRequest,
+                                     @RequestParam MultipartFile file) {
         log.info("request: {}",createCourseRequest);
         courseService.save(createCourseRequest, file);
         return BaseResponse.success("Thêm khóa học thành công");

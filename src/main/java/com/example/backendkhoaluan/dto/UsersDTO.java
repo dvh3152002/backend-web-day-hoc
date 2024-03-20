@@ -12,5 +12,5 @@ public class UsersDTO {
     private String fullname;
     private String address;
     private String avatar;
-    private Set<RolesDTO> rolesDTOS;
+    private Set<RolesDTO> roles;
 }

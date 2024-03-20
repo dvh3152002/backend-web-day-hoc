@@ -9,9 +9,11 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CustomeUserQuery {
     private CustomeUserQuery() {
@@ -21,7 +23,7 @@ public class CustomeUserQuery {
     @NoArgsConstructor
     public static class UserFilterParam {
         private String keywords;
-        private Integer idRole;
+        private Set<Integer> roles;
         private String sortField;
         private String sortType;
     }
@@ -33,9 +35,9 @@ public class CustomeUserQuery {
                 predicates.add(CriteriaBuilderUtils.createPredicateForSearchInsensitive(root, criteriaBuilder,
                         param.keywords, "name"));
             }
-            if (param.idRole != null) {
-                Join<User, Role> roleJoin = root.join("role");
-                predicates.add(criteriaBuilder.equal(roleJoin.get("id"), param.idRole));
+            if (!CollectionUtils.isEmpty(param.roles)) {
+                Join<User, Role> roleJoin = root.joinList("roles");
+                predicates.add(roleJoin.get("id").in(param.roles));
             }
             if (param.sortField != null && !param.sortField.equals("")) {
                 if (param.sortType.equals(Constants.SortType.DESC) || param.sortType.equals("")) {

@@ -17,11 +17,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin
 public class UserController {
     @Autowired
     private UserService userService;
@@ -29,7 +32,7 @@ public class UserController {
     private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("")
-    public BaseListResponse<UsersDTO> getAllUser(@Valid GetUserRequest request) {
+    public BaseListResponse<UsersDTO> getAllUser(@Valid @ModelAttribute GetUserRequest request) {
         Page<User> page = userService.getAllUser(request, PageRequest.of(request.getStart(), request.getLimit()));
 
         return BaseResponse.successListData(page.getContent().stream()
@@ -38,6 +41,7 @@ public class UserController {
                     if(usersDTO.getAvatar()!=null){
                         usersDTO.setAvatar("http://localhost:8081/api/file/"+usersDTO.getAvatar());
                     }
+                    usersDTO.setRoles(modelMapper.map(e.getRoles(), Set.class));
                     return usersDTO;
                 })
                 .collect(Collectors.toList()), (int) page.getTotalElements());
@@ -49,12 +53,21 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public BaseResponse updateUser(@PathVariable("id") int id, @Valid @RequestBody UpdateUserRequest request,
+    public BaseResponse updateUser(@PathVariable("id") int id, @Valid @ModelAttribute UpdateUserRequest request,
                                         @RequestParam(name = "file", required = false) MultipartFile file) {
         log.info("user :{}", request);
         log.info("file :{}", file);
         userService.updateUser(id, request, file);
         return BaseResponse.success("Cập nhật người dùng thành công");
+    }
+
+    @PostMapping(value = "")
+    public BaseResponse createUser(@Valid @ModelAttribute CreateUserRequest request,
+                                   @RequestParam(name = "file", required = false) MultipartFile file) {
+        log.info("user :{}", request);
+        log.info("file :{}", file);
+        userService.createUser(request, file);
+        return BaseResponse.success("Thêm người dùng thành công");
     }
 
     @DeleteMapping("/{id}")
