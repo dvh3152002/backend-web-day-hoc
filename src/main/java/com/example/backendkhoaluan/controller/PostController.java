@@ -52,6 +52,7 @@ public class PostController {
         return BaseResponse.successListData(
                 page.getContent().stream().map(data -> {
                     PostsDTO postsDTO = modelMapper.map(data, PostsDTO.class);
+                    postsDTO.setCountCode(postsDTO.getListCodes().size());
                     return postsDTO;
                 }).collect(Collectors.toList()), (int) page.getTotalElements());
     }

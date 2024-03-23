@@ -32,7 +32,6 @@ public class LessonController {
         .map(data->{
             LessonsDTO lessonsDTO=modelMapper.map(data,LessonsDTO.class);
             lessonsDTO.setVideo("http://localhost:8081/api/file/video/" +data.getVideo());
-            lessonsDTO.setIdCourse(data.getCourse().getId());
             return lessonsDTO;
         }).collect(Collectors.toList()), (int) page.getTotalElements());
     }

@@ -7,4 +7,6 @@ import org.springframework.data.domain.PageRequest;
 
 public interface RatingService {
     Page<RatingCourse> getAllRating(CustomeRatingCourseQuery.RatingCourseFilterParam param, PageRequest pageRequest);
+
+    String deleteRating(int id);
 }

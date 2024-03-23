@@ -1,6 +1,7 @@
 package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
+import com.example.backendkhoaluan.dto.CategoriesDTO;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.Categories;
@@ -90,7 +91,7 @@ public class CourseServiceImp implements CourseService {
         courseDTO.setUser(modelMapper.map(data.getUser(),UsersDTO.class));
         courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
         courseDTO.setCreateDate(data.getCreateDate());
-        courseDTO.setCategoryName(data.getCategory().getName());
+        courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
 
         return courseDTO;
     }
@@ -108,6 +109,7 @@ public class CourseServiceImp implements CourseService {
             courseEntity.setImage(fileName);
             courseEntity.setPrice(createCourseRequest.getPrice());
             courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));
+            courseEntity.setCreateDate(new Date());
 
             Categories categories=new Categories();
             categories.setId(createCourseRequest.getCategoryId());
@@ -133,11 +135,13 @@ public class CourseServiceImp implements CourseService {
                 throw new DataNotFoundException(Constants.ErrorMessageCourseValidation.NOT_FIND_COURSE_BY_ID + id);
             }
             Courses courseEntity=coursesOptional.get();
-            String fileName = filesStorageService.save(file);
             courseEntity.setName(createCourseRequest.getName());
             courseEntity.setDescription(createCourseRequest.getDescription());
             courseEntity.setDiscount(createCourseRequest.getDiscount());
-            courseEntity.setImage(fileName);
+            if(file!=null){
+                String fileName = filesStorageService.save(file);
+                courseEntity.setImage(fileName);
+            }
             courseEntity.setPrice(createCourseRequest.getPrice());
             courseEntity.setCreateDate(new Date());
             courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));

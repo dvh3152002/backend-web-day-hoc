@@ -13,8 +13,10 @@ spring:
     allow-circular-references: true
   servlet:
     multipart:
-      max-file-size: 3GB
-      max-request-size: 3GB
+      max-file-size: 30MB
+      max-request-size: 30MB
+      file-size-threshold: 30MB
+      resolve-lazily: true
 jwt:
   privateKey: UvmX3g7ww8TZ/PNE+GdL/HaQPlOGs0V3pCoGpB8hxkE=
 root:

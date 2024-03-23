@@ -9,7 +9,6 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "rating_course")
-@ToString
 public class RatingCourse {
     @Id
     @Column(name = "id", nullable = false)

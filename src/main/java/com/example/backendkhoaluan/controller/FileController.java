@@ -26,9 +26,8 @@ public class FileController {
     }
 
     @GetMapping("/video/{fileName}")
-    public ResponseEntity<?> downloadVideoFile(@PathVariable String fileName) {
-        Resource resource=filesStorageService.load(fileName);
-
+    public ResponseEntity<Resource> downloadVideoFile(@PathVariable String fileName) {
+        Resource resource = filesStorageService.load(fileName);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                 .body(resource);

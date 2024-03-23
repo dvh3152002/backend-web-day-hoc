@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @Entity
 @Table(name = "lessons")
@@ -19,6 +21,9 @@ public class Lessons {
 
     @Column(name = "video")
     private String video;
+
+    @Column(name = "create_date")
+    private Date createDate;
 
     @ManyToOne
     @JsonIgnore

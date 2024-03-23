@@ -11,9 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -33,5 +31,11 @@ public class RatingController {
             rating.setUser(modelMapper.map(e.getUser(), UsersDTO.class));
             return rating;
         }).toList(),(int) page.getTotalElements());
+    }
+
+    @DeleteMapping("/{id}")
+    public BaseResponse deleteRating(@PathVariable int id){
+        log.info("id: {}",id);
+        return BaseResponse.success(ratingService.deleteRating(id));
     }
 }

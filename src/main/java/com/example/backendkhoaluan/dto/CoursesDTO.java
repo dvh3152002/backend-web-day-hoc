@@ -17,5 +17,5 @@ public class CoursesDTO {
     private UsersDTO user;
     private Date createDate;
 
-    private String categoryName;
+    private CategoriesDTO category;
 }

@@ -94,7 +94,7 @@ public class LessonServiceImp implements LessonService {
             lessons.setCourse(courses);
 
             lessonsRepository.save(lessons);
-            filesStorageService.deleteAll(lessons.getVideo());
+//            filesStorageService.deleteAll(lessons.getVideo());
         } catch (Exception e) {
             throw new InsertException("Cập nhật khóa học thất bại: ", e.getLocalizedMessage());
         }

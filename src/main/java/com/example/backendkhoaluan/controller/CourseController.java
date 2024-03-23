@@ -1,5 +1,6 @@
 package com.example.backendkhoaluan.controller;
 
+import com.example.backendkhoaluan.dto.CategoriesDTO;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.Courses;
@@ -40,7 +41,7 @@ public class CourseController {
 
     @PutMapping("/{id}")
     public BaseResponse updateCourse(@PathVariable int id,@ModelAttribute @Valid CreateCourseRequest createCourseRequest,
-                                     @RequestPart MultipartFile file) {
+                                     @RequestPart(required = false) MultipartFile file) {
         courseService.updateCourse(id,createCourseRequest, file);
         return BaseResponse.success("Cập nhật khóa học thành công");
 
@@ -61,9 +62,10 @@ public class CourseController {
                     courseDTO.setDiscount(data.getDiscount());
 //                    courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
                     courseDTO.setImage("http://localhost:8081/api/file/image/"+data.getImage());
-                    courseDTO.setCategoryName(data.getCategory().getName());
+                    courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
                     courseDTO.setRating(courseService.calculatorRating(data.getListRatingCourses()));
                     courseDTO.setCreateDate(data.getCreateDate());
+
                     return courseDTO;
                 }).collect(Collectors.toList());
         return BaseResponse.successListData(coursesDTOS,(int) page.getTotalElements());

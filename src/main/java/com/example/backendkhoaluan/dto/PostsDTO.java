@@ -12,5 +12,6 @@ public class PostsDTO {
     private String title;
     private String description;
     private Date createDate;
+    private int countCode;
     private List<Codes> listCodes;
 }

@@ -26,7 +26,6 @@ public class OrderDetail{
     private Orders order;
 
     @ManyToOne
-    @JoinColumn(name = "id_course",foreignKey = @ForeignKey(name = "FK_course_id_Order_detail"))
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
+    @JoinColumn(name = "id_course")
     private Courses course;
 }
