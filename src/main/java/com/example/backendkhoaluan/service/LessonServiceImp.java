@@ -10,6 +10,7 @@ import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.payload.request.LessonRequest;
 import com.example.backendkhoaluan.repository.CustomeLessonQuery;
 import com.example.backendkhoaluan.repository.LessonsRepository;
+import com.example.backendkhoaluan.service.imp.FileUploadCloudinaryService;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.LessonService;
 import org.modelmapper.ModelMapper;
@@ -27,7 +28,7 @@ import java.util.Optional;
 @Service
 public class LessonServiceImp implements LessonService {
     @Autowired
-    private FilesStorageService filesStorageService;
+    private FileUploadCloudinaryService cloudinaryService;
 
     @Autowired
     private LessonsRepository lessonsRepository;
@@ -62,7 +63,7 @@ public class LessonServiceImp implements LessonService {
             Lessons lessons=new Lessons();
             lessons.setTitle(request.getTitle());
 
-            String videoName=filesStorageService.save(video);
+            String videoName=cloudinaryService.uploadFile(video);
             lessons.setVideo(videoName);
 
             Courses courses=new Courses();
@@ -86,7 +87,8 @@ public class LessonServiceImp implements LessonService {
             Lessons lessons=lessonsOptional.get();
             lessons.setTitle(request.getTitle());
 
-            String videoName=filesStorageService.save(video);
+            cloudinaryService.deleteVideo(lessons.getVideo());
+            String videoName=cloudinaryService.uploadFile(video);
             lessons.setVideo(videoName);
 
             Courses courses=new Courses();
@@ -94,7 +96,6 @@ public class LessonServiceImp implements LessonService {
             lessons.setCourse(courses);
 
             lessonsRepository.save(lessons);
-//            filesStorageService.deleteAll(lessons.getVideo());
         } catch (Exception e) {
             throw new InsertException("Cập nhật khóa học thất bại: ", e.getLocalizedMessage());
         }
@@ -109,7 +110,7 @@ public class LessonServiceImp implements LessonService {
             }
             Lessons lessons=lessonsOptional.get();
             lessonsRepository.delete(lessons);
-            filesStorageService.deleteAll(lessons.getVideo());
+            cloudinaryService.deleteVideo(lessons.getVideo());
         }catch (Exception e){
             throw new DeleteException("Xóa bài học thất bại",e.getLocalizedMessage());
         }
@@ -120,7 +121,7 @@ public class LessonServiceImp implements LessonService {
     public void deleteAll(List<Lessons> list) {
         try {
             for(Lessons lessons:list){
-                filesStorageService.deleteAll(lessons.getVideo());
+                cloudinaryService.deleteVideo(lessons.getVideo());
             }
             lessonsRepository.deleteAll(list);
         }catch (Exception e){

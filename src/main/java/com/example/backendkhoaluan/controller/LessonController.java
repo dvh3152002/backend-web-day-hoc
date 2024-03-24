@@ -31,7 +31,6 @@ public class LessonController {
         return BaseResponse.successListData(page.getContent().stream()
         .map(data->{
             LessonsDTO lessonsDTO=modelMapper.map(data,LessonsDTO.class);
-            lessonsDTO.setVideo("http://localhost:8081/api/file/video/" +data.getVideo());
             return lessonsDTO;
         }).collect(Collectors.toList()), (int) page.getTotalElements());
     }
