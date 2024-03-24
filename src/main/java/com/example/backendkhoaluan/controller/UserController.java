@@ -38,9 +38,6 @@ public class UserController {
         return BaseResponse.successListData(page.getContent().stream()
                 .map(e -> {
                     UsersDTO usersDTO=modelMapper.map(e, UsersDTO.class);
-                    if(usersDTO.getAvatar()!=null){
-                        usersDTO.setAvatar("http://localhost:8081/api/file/"+usersDTO.getAvatar());
-                    }
                     usersDTO.setRoles(modelMapper.map(e.getRoles(), Set.class));
                     return usersDTO;
                 })

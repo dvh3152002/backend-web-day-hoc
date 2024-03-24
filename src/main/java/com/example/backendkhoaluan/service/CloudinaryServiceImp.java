@@ -2,43 +2,45 @@ package com.example.backendkhoaluan.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.example.backendkhoaluan.exception.DeleteException;
-import com.example.backendkhoaluan.service.imp.FileUploadCloudinaryService;
+import com.example.backendkhoaluan.exception.FileException;
+import com.example.backendkhoaluan.service.imp.CloudinaryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadCloudinaryServiceImp implements FileUploadCloudinaryService {
+public class CloudinaryServiceImp implements CloudinaryService {
     private final Cloudinary cloudinary;
 
+    @Value("${root.path.image}")
+    private String path;
     @Override
     public String uploadFile(MultipartFile file) {
         try {
             String id=UUID.randomUUID().toString();
             cloudinary.uploader().upload(file.getBytes(),
-                            Map.of("resource_type","video",
-                                    "folder","videos",
+                            Map.of("resource_type","image",
+                                    "folder",path,
                                     "public_id", id))
                     .get("secure_url");
-            return "videos/"+id;
+            return path+"/"+id;
         }catch (Exception e){
-            throw new RuntimeException(e.getLocalizedMessage());
+            throw new FileException(e.getLocalizedMessage());
         }
     }
 
-    public void deleteVideo(String publicId) {
+    public void deleteFile(String publicId) {
         try {
             cloudinary.api().deleteResources(Arrays.asList(publicId),
-                    ObjectUtils.asMap("type", "upload", "resource_type", "video"));
+                    ObjectUtils.asMap("type", "upload", "resource_type", "image"));
         } catch (Exception e) {
-            throw new DeleteException("Lỗi xóa video ",e.getLocalizedMessage());
+            throw new FileException(e.getLocalizedMessage());
         }
     }
 }

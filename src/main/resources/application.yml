@@ -15,13 +15,14 @@ spring:
     multipart:
       max-file-size: 30MB
       max-request-size: 30MB
-      file-size-threshold: 30MB
+      file-size-threshold: 2KB
       resolve-lazily: true
 jwt:
   privateKey: UvmX3g7ww8TZ/PNE+GdL/HaQPlOGs0V3pCoGpB8hxkE=
 root:
   path:
-    upload: D:\upload\image
+    image: images
+    video: videos/
 logging:
   file:
     name: D:\front-end\khoaluan\backend-web-day-hoc\log\logger.log

@@ -10,11 +10,11 @@ import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.payload.request.LessonRequest;
 import com.example.backendkhoaluan.repository.CustomeLessonQuery;
 import com.example.backendkhoaluan.repository.LessonsRepository;
-import com.example.backendkhoaluan.service.imp.FileUploadCloudinaryService;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.LessonService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,11 +28,13 @@ import java.util.Optional;
 @Service
 public class LessonServiceImp implements LessonService {
     @Autowired
-    private FileUploadCloudinaryService cloudinaryService;
+    private FilesStorageService fileService;
 
     @Autowired
     private LessonsRepository lessonsRepository;
 
+    @Value("${root.path.video}")
+    private String path;
     private ModelMapper modelMapper=new ModelMapper();
 
     @Override
@@ -63,7 +65,8 @@ public class LessonServiceImp implements LessonService {
             Lessons lessons=new Lessons();
             lessons.setTitle(request.getTitle());
 
-            String videoName=cloudinaryService.uploadFile(video);
+//            String videoName=cloudinaryService.uploadFile(video);
+            String videoName=fileService.save(path,video);
             lessons.setVideo(videoName);
 
             Courses courses=new Courses();
@@ -87,8 +90,9 @@ public class LessonServiceImp implements LessonService {
             Lessons lessons=lessonsOptional.get();
             lessons.setTitle(request.getTitle());
 
-            cloudinaryService.deleteVideo(lessons.getVideo());
-            String videoName=cloudinaryService.uploadFile(video);
+//            cloudinaryService.deleteVideo(lessons.getVideo());
+//            String videoName=cloudinaryService.uploadFile(video);
+            String videoName=fileService.save(path,video);
             lessons.setVideo(videoName);
 
             Courses courses=new Courses();
@@ -110,7 +114,7 @@ public class LessonServiceImp implements LessonService {
             }
             Lessons lessons=lessonsOptional.get();
             lessonsRepository.delete(lessons);
-            cloudinaryService.deleteVideo(lessons.getVideo());
+            fileService.deleteAll(path,lessons.getTitle());
         }catch (Exception e){
             throw new DeleteException("Xóa bài học thất bại",e.getLocalizedMessage());
         }
@@ -121,7 +125,7 @@ public class LessonServiceImp implements LessonService {
     public void deleteAll(List<Lessons> list) {
         try {
             for(Lessons lessons:list){
-                cloudinaryService.deleteVideo(lessons.getVideo());
+                fileService.deleteAll(path,lessons.getTitle());
             }
             lessonsRepository.deleteAll(list);
         }catch (Exception e){

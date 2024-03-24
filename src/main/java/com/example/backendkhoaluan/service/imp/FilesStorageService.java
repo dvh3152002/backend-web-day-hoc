@@ -3,15 +3,17 @@ package com.example.backendkhoaluan.service.imp;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public interface FilesStorageService {
-    public String save(MultipartFile file);
+    public String save(String path, MultipartFile file);
 
-    public Resource load(String filename);
+    Resource loadImg(String path, String fileName);
 
-    public void deleteAll(String fileName);
+    InputStream loadVideo(String path, String filename);
+    public void deleteAll(String path,String fileName);
 
-    public Stream<Path> loadAll();
+    public Stream<Path> loadAll(String url);
 }

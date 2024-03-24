@@ -14,13 +14,14 @@ import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.exception.UpdateException;
 import com.example.backendkhoaluan.payload.request.CreateCourseRequest;
 import com.example.backendkhoaluan.repository.*;
+import com.example.backendkhoaluan.service.imp.CloudinaryService;
 import com.example.backendkhoaluan.service.imp.CourseService;
-import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.LessonService;
 import com.example.backendkhoaluan.utils.SlugUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,13 +41,16 @@ public class CourseServiceImp implements CourseService {
     private CoursesRepository coursesRepository;
 
     @Autowired
-    private FilesStorageService filesStorageService;
+    private CloudinaryService cloudinaryService;
 
     @Autowired
     private LessonService lessonService;
 
     @Autowired
     private RatingCourseRepository ratingCourseRepository;
+
+    @Value("${root.path.image}")
+    private String path;
 
     private ModelMapper modelMapper = new ModelMapper();
     @Override
@@ -64,7 +68,7 @@ public class CourseServiceImp implements CourseService {
                 throw new DataNotFoundException(Constants.ErrorMessageCourseValidation.NOT_FIND_COURSE_BY_ID + id);
             }
             Courses data = coursesOptional.get();
-            filesStorageService.deleteAll(data.getImage());
+            cloudinaryService.deleteFile(data.getImage());
             ratingCourseRepository.deleteAll(data.getListRatingCourses());
             lessonService.deleteAll(data.getListLessons());
             coursesRepository.delete(data);
@@ -87,7 +91,7 @@ public class CourseServiceImp implements CourseService {
         courseDTO.setSlug(data.getSlug());
         courseDTO.setPrice(data.getPrice());
         courseDTO.setDiscount(data.getDiscount());
-        courseDTO.setImage("http://localhost:8081/api/file/image/" + data.getImage());
+        courseDTO.setImage(data.getImage());
         courseDTO.setUser(modelMapper.map(data.getUser(),UsersDTO.class));
         courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
         courseDTO.setCreateDate(data.getCreateDate());
@@ -100,7 +104,7 @@ public class CourseServiceImp implements CourseService {
     @Override
     public void save(CreateCourseRequest createCourseRequest, MultipartFile file) {
         try {
-            String fileName = filesStorageService.save(file);
+            String fileName = cloudinaryService.uploadFile(file);
 
             Courses courseEntity = new Courses();
             courseEntity.setName(createCourseRequest.getName());
@@ -139,7 +143,7 @@ public class CourseServiceImp implements CourseService {
             courseEntity.setDescription(createCourseRequest.getDescription());
             courseEntity.setDiscount(createCourseRequest.getDiscount());
             if(file!=null){
-                String fileName = filesStorageService.save(file);
+                String fileName = cloudinaryService.uploadFile(file);
                 courseEntity.setImage(fileName);
             }
             courseEntity.setPrice(createCourseRequest.getPrice());

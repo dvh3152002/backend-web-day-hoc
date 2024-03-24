@@ -9,11 +9,13 @@ import com.example.backendkhoaluan.payload.request.CreateUserRequest;
 import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.ErrorDetail;
 import com.example.backendkhoaluan.repository.*;
+import com.example.backendkhoaluan.service.imp.CloudinaryService;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,10 +40,13 @@ public class UserServiceImp implements UserService {
     private RolesRepository rolesRepository;
 
     @Autowired
-    private FilesStorageService filesStorageService;
+    private CloudinaryService cloudinaryService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Value("${root.path.image}")
+    private String path;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -71,11 +76,6 @@ public class UserServiceImp implements UserService {
         UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
         userDTO.setRoles(modelMapper.map(user.getRoles(),Set.class));
 
-        if (user.getAvatar() != null) {
-            if (!user.getAvatar().trim().equals("")) {
-                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
-            }
-        }
         return userDTO;
     }
 
@@ -86,30 +86,9 @@ public class UserServiceImp implements UserService {
             throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_EMAIL + email);
         }
         User user = userOptional.get();
-//        UsersDTO userDTO = new UsersDTO();
-//        userDTO.setEmail(user.getEmail());
-//        userDTO.setAddress(user.getAddress());
-//        userDTO.setFullname(user.getFullname());
-//        userDTO.setId(user.getId());
-//
-//        RolesDTO roleDTO = new RolesDTO();
-//        roleDTO.setId(user.getRole().getId());
-//        roleDTO.setName(user.getRole().getName());
 
         UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
         userDTO.setRoles(modelMapper.map(user.getRoles(),Set.class));
-
-        if (user.getAvatar() != null) {
-            if (!user.getAvatar().trim().equals("")) {
-                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
-            }
-        }
-
-        if (user.getAvatar() != null) {
-            if (!user.getAvatar().trim().equals("")) {
-                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
-            }
-        }
 
         return userDTO;
     }
@@ -121,6 +100,10 @@ public class UserServiceImp implements UserService {
             Optional<User> users = usersRepository.findById(id);
             if (!users.isPresent()) {
                 throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
+            }
+            User user=users.get();
+            if(user.getAvatar()!=null){
+                cloudinaryService.deleteFile(user.getAvatar());
             }
             usersRepository.deleteById(id);
         } catch (Exception e) {
@@ -138,20 +121,8 @@ public class UserServiceImp implements UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new DataNotFoundException("Email hoặc mật khẩu không đúng");
         }
-//        UsersDTO userDTO = new UsersDTO();
-//
-//        userDTO.setEmail(user.getEmail());
-//        userDTO.setAddress(user.getAddress());
-//        userDTO.setFullname(user.getFullname());
-//        userDTO.setId(user.getId());
 
         UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
-
-        if (user.getAvatar() != null) {
-            if (!user.getAvatar().trim().equals("")) {
-                userDTO.setAvatar("http://localhost:8081/api/file/image/" + user.getAvatar());
-            }
-        }
 
         return userDTO;
     }
@@ -166,16 +137,10 @@ public class UserServiceImp implements UserService {
                 throw new DataNotFoundException(Constants.ErrorMessageUserValidation.EMAIL_IS_EXIST);
             }
 
-//            User userEntity = new User();
-//            userEntity.setFullname(userRequest.getFullname());
-//            userEntity.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-//            userEntity.setAddress(userRequest.getAddress());
-//            userEntity.setEmail(userRequest.getEmail());
-
             User userEntity = modelMapper.map(createUserRequest, User.class);
             userEntity.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
             if (avatar != null) {
-                String fileName = filesStorageService.save(avatar);
+                String fileName = cloudinaryService.uploadFile(avatar);
                 userEntity.setAvatar(fileName);
             }
             checkRoleUserExists(userEntity, createUserRequest.getRoles());
@@ -195,8 +160,6 @@ public class UserServiceImp implements UserService {
                 throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
             }
             User userEntity = users.get();
-//            userEntity.setFullname(userRequest.getFullname());
-//            userEntity.setAddress(userRequest.getAddress());
             String password=userEntity.getPassword();
             modelMapper.map(request, userEntity);
 
@@ -204,8 +167,8 @@ public class UserServiceImp implements UserService {
             if (avatar != null) {
                 if (userEntity.getAvatar() != null) {
                     if (!userEntity.getAvatar().trim().equals("")) {
-                        filesStorageService.deleteAll(userEntity.getAvatar());
-                        String fileName = filesStorageService.save(avatar);
+                        cloudinaryService.deleteFile(userEntity.getAvatar());
+                        String fileName = cloudinaryService.uploadFile(avatar);
                         userEntity.setAvatar(fileName);
                     }
                 }

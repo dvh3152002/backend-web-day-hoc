@@ -120,4 +120,13 @@ public class ExceptionController {
         log.error("DataNotFoundException: {}", ex);
         return BaseResponse.error(ErrorCodeDefs.ERR_OBJECT_NOT_FOUND, ex.getMessage());
     }
+
+    @ResponseStatus(OK)
+    @ResponseBody
+    @ExceptionHandler(value = {FileException.class})
+    @Order(1)
+    public BaseResponse handleFileException(FileException ex) {
+        log.error("FileException: {}", ex);
+        return BaseResponse.error(ErrorCodeDefs.ERR_FILE, ex.getMessage());
+    }
 }

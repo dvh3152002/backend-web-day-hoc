@@ -61,7 +61,7 @@ public class CourseController {
                     courseDTO.setPrice(data.getPrice());
                     courseDTO.setDiscount(data.getDiscount());
 //                    courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
-                    courseDTO.setImage("http://localhost:8081/api/file/image/"+data.getImage());
+                    courseDTO.setImage(data.getImage());
                     courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
                     courseDTO.setRating(courseService.calculatorRating(data.getListRatingCourses()));
                     courseDTO.setCreateDate(data.getCreateDate());

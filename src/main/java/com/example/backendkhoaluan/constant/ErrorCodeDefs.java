@@ -13,6 +13,7 @@ public class ErrorCodeDefs {
     public static final int ERR_PARTNERID_INVALID = ERR_OK + 9;
     public static final int ERR_PARTNER_APIKEY_INVALID = ERR_OK + 10;
 
+    public static final int ERR_FILE = ERR_OK + 11;
     public static final int ERR_BAD_REQUEST = 400;
     public static final int ERR_PERMISSION_INVALID = 401;
     public static final int ERR_ACCESS_FORBIDDEN = 403;
@@ -72,6 +73,8 @@ public class ErrorCodeDefs {
                 return "Hệ thống không khả dụng";
             case ERR_GATEWAY_TIMEOUT:
                 return "The gateway timed out";
+            case ERR_FILE:
+                return "Lỗi file";
             case ERR_OTHER:
                 return "Các lỗi khác";
             case ERR_BAD_REQUEST:
