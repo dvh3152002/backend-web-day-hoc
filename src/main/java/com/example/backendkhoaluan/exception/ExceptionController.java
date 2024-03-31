@@ -129,4 +129,13 @@ public class ExceptionController {
         log.error("FileException: {}", ex);
         return BaseResponse.error(ErrorCodeDefs.ERR_FILE, ex.getMessage());
     }
+
+    @ResponseStatus(OK)
+    @ResponseBody
+    @ExceptionHandler(value = {RunCodeException.class})
+    @Order(1)
+    public BaseResponse handleRunCodeException(RunCodeException ex) {
+        log.error("FileException: {}", ex);
+        return BaseResponse.error(ErrorCodeDefs.ERR_FILE, ex.getMessage());
+    }
 }

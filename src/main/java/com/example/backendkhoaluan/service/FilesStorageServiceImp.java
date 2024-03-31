@@ -30,15 +30,17 @@ public class FilesStorageServiceImp implements FilesStorageService {
     @Transactional(rollbackFor = {Exception.class, InsertException.class, UpdateException.class})
     public String save(String path,MultipartFile file) {
         try {
-            String fileName=file.getOriginalFilename();
+            String fileName = file.getOriginalFilename();
+            //try to generate random file name .
+            String randomId = UUID.randomUUID().toString();
+            String finalName = randomId.concat(fileName.substring(fileName.indexOf(".")));
 
-            String randomId= UUID.randomUUID().toString();
-            String finalName=randomId.concat(fileName).substring(fileName.indexOf("."));
+            //File full path .
+            String filePath = path + File.separator + finalName ;
 
-            String filePath=path+File.separator+finalName;
-
-            File f=new File(path);
-            if(!f.exists()){
+            //Create folder to store file .you can create any where you want .
+            File f = new File(path);
+            if(!f.exists()) {
                 f.mkdir();
             }
 
@@ -49,34 +51,34 @@ public class FilesStorageServiceImp implements FilesStorageService {
         }
     }
 
-@Override
-public Resource loadImg(String path,String filename) {
-    try {
-        Path root = Paths.get(path);
-        Path file = root.resolve(filename);
-        Resource resource = new UrlResource(file.toUri());
+    @Override
+    public Resource loadImg(String path,String filename) {
+        try {
+            Path root = Paths.get(path);
+            Path file = root.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
 
-        if (resource.exists() || resource.isReadable()) {
-            return resource;
-        } else {
-            throw new RuntimeException("Could not read the file!");
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("Could not read the file!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Error: " + e.getMessage());
         }
-    } catch (MalformedURLException e) {
-        throw new RuntimeException("Error: " + e.getMessage());
     }
-}
 
-@Override
-public InputStream loadVideo(String path, String filename) {
-    try {
-        String fullPath=path+File.separator+filename;
-        InputStream inputStream=new FileInputStream(fullPath);
+    @Override
+    public InputStream loadVideo(String path, String filename) {
+        try {
+            String fullPath=path+File.separator+filename;
+            InputStream inputStream=new FileInputStream(fullPath);
 
-        return inputStream;
-    }catch (Exception e){
-        throw new FileException(e.getLocalizedMessage());
+            return inputStream;
+        }catch (Exception e){
+            throw new FileException(e.getLocalizedMessage());
+        }
     }
-}
 
     @Override
     @Transactional

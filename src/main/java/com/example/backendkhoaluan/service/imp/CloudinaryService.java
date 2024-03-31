@@ -8,4 +8,6 @@ public interface CloudinaryService {
     String uploadFile(MultipartFile file) throws IOException;
 
     void deleteFile(String publicId);
+
+    String getImageUrl(String publicId);
 }

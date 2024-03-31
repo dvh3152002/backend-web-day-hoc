@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,41 +36,42 @@ public class LessonServiceImp implements LessonService {
 
     @Value("${root.path.video}")
     private String path;
-    private ModelMapper modelMapper=new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Override
     public Page<Lessons> getListLesson(CustomeLessonQuery.LessonFilterParam param, PageRequest pageRequest) {
-        Specification<Lessons> specification=CustomeLessonQuery.getFilterLesson(param);
-        return lessonsRepository.findAll(specification,pageRequest);
+        Specification<Lessons> specification = CustomeLessonQuery.getFilterLesson(param);
+        return lessonsRepository.findAll(specification, pageRequest);
     }
 
     @Override
     public LessonsDTO getLessonsById(int id) {
-        Optional<Lessons> lessonsOptional=lessonsRepository.findById(id);
-        if(!lessonsOptional.isPresent()){
-            throw new DataNotFoundException(Constants.ErrorMessageLessonValidation.NOT_FIND_LESSON_BY_ID+id);
+        Optional<Lessons> lessonsOptional = lessonsRepository.findById(id);
+        if (!lessonsOptional.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessageLessonValidation.NOT_FIND_LESSON_BY_ID + id);
         }
-        Lessons lessons=lessonsOptional.get();
-        LessonsDTO lessonsDTO=new LessonsDTO();
+        Lessons lessons = lessonsOptional.get();
+        LessonsDTO lessonsDTO = new LessonsDTO();
         lessonsDTO.setId(lessons.getId());
         lessonsDTO.setTitle(lessons.getTitle());
-        lessonsDTO.setVideo("http://localhost:8081/api/file/video/" +lessons.getVideo());
+        lessonsDTO.setVideo("http://localhost:8081/api/file/video/" + lessons.getVideo());
 
         return lessonsDTO;
     }
 
     @Override
-    @Transactional(rollbackFor = {Exception.class,InsertException.class})
+    @Transactional(rollbackFor = {Exception.class, InsertException.class})
     public void save(LessonRequest request, MultipartFile video) {
         try {
-            Lessons lessons=new Lessons();
+            Lessons lessons = new Lessons();
             lessons.setTitle(request.getTitle());
 
 //            String videoName=cloudinaryService.uploadFile(video);
-            String videoName=fileService.save(path,video);
+            String videoName = fileService.save(path, video);
             lessons.setVideo(videoName);
+            lessons.setCreateDate(new Date());
 
-            Courses courses=new Courses();
+            Courses courses = new Courses();
             courses.setId(request.getIdCourse());
             lessons.setCourse(courses);
 
@@ -83,19 +85,23 @@ public class LessonServiceImp implements LessonService {
     @Transactional
     public void updateLesson(int id, LessonRequest request, MultipartFile video) {
         try {
-            Optional<Lessons> lessonsOptional=lessonsRepository.findById(id);
-            if(!lessonsOptional.isPresent()){
-                throw new DataNotFoundException(Constants.ErrorMessageLessonValidation.NOT_FIND_LESSON_BY_ID+id);
+            Optional<Lessons> lessonsOptional = lessonsRepository.findById(id);
+            if (!lessonsOptional.isPresent()) {
+                throw new DataNotFoundException(Constants.ErrorMessageLessonValidation.NOT_FIND_LESSON_BY_ID + id);
             }
-            Lessons lessons=lessonsOptional.get();
+            Lessons lessons = lessonsOptional.get();
             lessons.setTitle(request.getTitle());
 
-//            cloudinaryService.deleteVideo(lessons.getVideo());
 //            String videoName=cloudinaryService.uploadFile(video);
-            String videoName=fileService.save(path,video);
-            lessons.setVideo(videoName);
+            if (video != null) {
+                fileService.deleteAll(path,lessons.getVideo());
+                String videoName = fileService.save(path, video);
+                lessons.setVideo(videoName);
+            }
 
-            Courses courses=new Courses();
+            lessons.setCreateDate(new Date());
+
+            Courses courses = new Courses();
             courses.setId(request.getIdCourse());
             lessons.setCourse(courses);
 
@@ -106,17 +112,18 @@ public class LessonServiceImp implements LessonService {
     }
 
     @Override
+    @Transactional
     public void deleteLesson(int id) {
         try {
-            Optional<Lessons> lessonsOptional=lessonsRepository.findById(id);
-            if(!lessonsOptional.isPresent()){
-                throw new DataNotFoundException(Constants.ErrorMessageLessonValidation.NOT_FIND_LESSON_BY_ID+id);
+            Optional<Lessons> lessonsOptional = lessonsRepository.findById(id);
+            if (!lessonsOptional.isPresent()) {
+                throw new DataNotFoundException(Constants.ErrorMessageLessonValidation.NOT_FIND_LESSON_BY_ID + id);
             }
-            Lessons lessons=lessonsOptional.get();
+            Lessons lessons = lessonsOptional.get();
             lessonsRepository.delete(lessons);
-            fileService.deleteAll(path,lessons.getTitle());
-        }catch (Exception e){
-            throw new DeleteException("Xóa bài học thất bại",e.getLocalizedMessage());
+            fileService.deleteAll(path, lessons.getTitle());
+        } catch (Exception e) {
+            throw new DeleteException("Xóa bài học thất bại", e.getLocalizedMessage());
         }
     }
 
@@ -124,12 +131,12 @@ public class LessonServiceImp implements LessonService {
     @Transactional
     public void deleteAll(List<Lessons> list) {
         try {
-            for(Lessons lessons:list){
-                fileService.deleteAll(path,lessons.getTitle());
+            for (Lessons lessons : list) {
+                fileService.deleteAll(path, lessons.getTitle());
             }
             lessonsRepository.deleteAll(list);
-        }catch (Exception e){
-            throw new DeleteException("Xóa danh sách bài học thất bại",e.getLocalizedMessage());
+        } catch (Exception e) {
+            throw new DeleteException("Xóa danh sách bài học thất bại", e.getLocalizedMessage());
         }
     }
 }

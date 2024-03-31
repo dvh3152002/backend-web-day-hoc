@@ -7,6 +7,7 @@ import com.example.backendkhoaluan.payload.request.CreateUserRequest;
 import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.BaseListResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
+import com.example.backendkhoaluan.service.imp.CloudinaryService;
 import com.example.backendkhoaluan.service.imp.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,6 +29,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("")
@@ -38,6 +41,9 @@ public class UserController {
         return BaseResponse.successListData(page.getContent().stream()
                 .map(e -> {
                     UsersDTO usersDTO=modelMapper.map(e, UsersDTO.class);
+                    if(e.getAvatar()!=null){
+//                        usersDTO.setAvatar(cloudinaryService.getImageUrl(e.getAvatar()));
+                    }
                     usersDTO.setRoles(modelMapper.map(e.getRoles(), Set.class));
                     return usersDTO;
                 })

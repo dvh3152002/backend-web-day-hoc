@@ -91,7 +91,7 @@ public class CourseServiceImp implements CourseService {
         courseDTO.setSlug(data.getSlug());
         courseDTO.setPrice(data.getPrice());
         courseDTO.setDiscount(data.getDiscount());
-        courseDTO.setImage(data.getImage());
+        courseDTO.setImage(cloudinaryService.getImageUrl(data.getImage()));
         courseDTO.setUser(modelMapper.map(data.getUser(),UsersDTO.class));
         courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
         courseDTO.setCreateDate(data.getCreateDate());

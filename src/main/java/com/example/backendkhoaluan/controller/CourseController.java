@@ -8,6 +8,7 @@ import com.example.backendkhoaluan.payload.request.CreateCourseRequest;
 import com.example.backendkhoaluan.payload.request.GetCourseRequest;
 import com.example.backendkhoaluan.payload.response.BaseListResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
+import com.example.backendkhoaluan.service.imp.CloudinaryService;
 import com.example.backendkhoaluan.service.imp.CourseService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,9 @@ import java.util.stream.Collectors;
 public class CourseController {
     @Autowired
     private CourseService courseService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     private final ModelMapper modelMapper=new ModelMapper();
 
@@ -60,8 +64,8 @@ public class CourseController {
                     courseDTO.setSlug(data.getSlug());
                     courseDTO.setPrice(data.getPrice());
                     courseDTO.setDiscount(data.getDiscount());
-//                    courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
-                    courseDTO.setImage(data.getImage());
+                    courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
+                    courseDTO.setImage(cloudinaryService.getImageUrl(data.getImage()));
                     courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
                     courseDTO.setRating(courseService.calculatorRating(data.getListRatingCourses()));
                     courseDTO.setCreateDate(data.getCreateDate());

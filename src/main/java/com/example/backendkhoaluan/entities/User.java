@@ -40,6 +40,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<RatingCourse> listRatingCourses;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Orders> listOrders;
+
+    @OneToMany(mappedBy = "user",orphanRemoval = true)
+    private List<Courses> listCourses;
 }

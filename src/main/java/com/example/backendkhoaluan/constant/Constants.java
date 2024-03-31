@@ -36,6 +36,14 @@ public interface Constants {
         String NOT_FIND_POST_BY_ID = "Không tìm thấy bài viết có ID là: ";
     }
 
+    interface ErrorMessageCodeValidation {
+        String CODE_NOT_BLANK="Code không được để trống";
+
+        String ID_POST_NOT_BLANK="ID bài viết không được để trống";
+
+        String NOT_FIND_CODE_BY_ID = "Không tìm thấy code có ID là: ";
+    }
+
     interface ErrorMessageRatingValidation {
         String CONTENT_NOT_BLANK="Nhận xét khóa học không được để trống";
         String COURSE_NOT_BLANK="Không có ID khóa học";

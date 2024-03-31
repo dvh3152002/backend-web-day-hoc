@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class CreateCourseRequest {
     @NotBlank(message = Constants.ErrorMessageCourseValidation.NAME_NOT_BLANK)
+    @NotNull(message = Constants.ErrorMessageCourseValidation.NAME_NOT_BLANK)
     private String name;
 
     @NumberNotNull(message = Constants.ErrorMessageCourseValidation.PRICE_NOT_BLANK)

@@ -37,7 +37,7 @@ public class Courses {
     @Column(name = "create_date")
     private Date createDate;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_user")
     private User user;
 
