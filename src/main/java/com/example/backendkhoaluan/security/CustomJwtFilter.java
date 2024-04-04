@@ -1,5 +1,6 @@
 package com.example.backendkhoaluan.security;
 
+import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
 import jakarta.servlet.FilterChain;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -31,10 +33,11 @@ public class CustomJwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getTokenFromHeader(request);
         if (token != null) {
-            String email=jwtUtilsHelper.verifyToken(token);
+            String jwt=jwtUtilsHelper.verifyToken(token);
 
-            if(email!=null){
-                UserDetails userDetails=customUserDetailService.loadUserByUsername(email);
+            if(jwt!=null){
+                UsersDTO usersDTO=gson.fromJson(jwt,UsersDTO.class);
+                UserDetails userDetails=customUserDetailService.loadUserByUsername(usersDTO.getEmail());
                 if(userDetails != null) {
                     // Nếu người dùng hợp lệ, set thông tin cho Seturity Context
                     UsernamePasswordAuthenticationToken

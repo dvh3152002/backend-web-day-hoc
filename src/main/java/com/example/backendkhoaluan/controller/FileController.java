@@ -1,10 +1,13 @@
 package com.example.backendkhoaluan.controller;
 
+import com.example.backendkhoaluan.dto.LessonsDTO;
+import com.example.backendkhoaluan.entities.Lessons;
 import com.example.backendkhoaluan.entities.OrderDetail;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.exception.FileException;
 import com.example.backendkhoaluan.service.imp.CloudinaryService;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
+import com.example.backendkhoaluan.service.imp.LessonService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +32,9 @@ public class FileController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private LessonService lessonService;
+
     @Value("${root.path.image}")
     private String pathImg;
 
@@ -44,13 +50,18 @@ public class FileController {
                 .body(resource);
     }
 
-    @GetMapping(value = "/video/{fileName}",produces = MediaType.ALL_VALUE)
-    public void downloadVideoFile(@PathVariable String fileName, HttpServletResponse response) {
+    @GetMapping(value = "/video/{id}/{idCourse}", produces = "video/mp4")
+    public void downloadVideoFile(@PathVariable int id, HttpServletResponse response) {
         try {
-            InputStream resource=filesStorageService.loadVideo(pathVideo,fileName);
-            response.setContentType(MediaType.ALL_VALUE);
-            StreamUtils.copy(resource,response.getOutputStream());
-        }catch (Exception e){
+            LessonsDTO lessonsDTO = lessonService.getLessonsById(id);
+            InputStream resource = filesStorageService.loadVideo(pathVideo, lessonsDTO.getVideo());
+
+            // Đặt kiểu MIME của video là video/mp4
+            response.setContentType("video/mp4");
+
+            // Sao chép dữ liệu từ InputStream vào OutputStream của phản hồi
+            StreamUtils.copy(resource, response.getOutputStream());
+        } catch (Exception e) {
             throw new FileException(e.getLocalizedMessage());
         }
     }

@@ -91,6 +91,9 @@ public class UserServiceImp implements UserService {
         User user = userOptional.get();
 
         UsersDTO userDTO = modelMapper.map(user, UsersDTO.class);
+        if(user.getAvatar()!=null){
+            userDTO.setAvatar(cloudinaryService.getImageUrl(user.getAvatar()));
+        }
         userDTO.setRoles(modelMapper.map(user.getRoles(),Set.class));
 
         return userDTO;

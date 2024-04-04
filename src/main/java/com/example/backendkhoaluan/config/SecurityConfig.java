@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/signin","/api/signup","/api/refreshToken",
-                        "/api/file/**","/api/code/run","/api/file/upload").permitAll()
+                        "/api/file/image/**","/api/code/run").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**",
                         "/api/post/**","/api/rating/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/lesson/**").hasAnyRole("USER","TEACHER","ADMIN")

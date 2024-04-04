@@ -4,6 +4,7 @@ import com.example.backendkhoaluan.constant.ErrorCodeDefs;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.request.CreateUserRequest;
+import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
 import com.example.backendkhoaluan.service.imp.AuthService;
@@ -29,46 +30,63 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private JwtUtilsHelper jwtUtilsHelper;
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @PostMapping("/signin")
     public BaseResponse signin(@Valid @RequestBody SignInRequest data) {
-        AuthResponse authResponse=authService.signIn(data);
+        AuthResponse authResponse = authService.signIn(data);
 
         return BaseResponse.success(authResponse);
     }
 
     @PostMapping("/refreshToken")
     public BaseResponse refreshToken(@RequestBody AuthResponse data) {
-        AuthResponse authResponse=authService.refreshToken(data);
+        AuthResponse authResponse = authService.refreshToken(data);
 
         return BaseResponse.success(authResponse);
     }
 
     @PostMapping("/signup")
     public BaseResponse signup(@Valid @RequestBody CreateUserRequest createUserRequest,
-                               @RequestPart(name = "file",required = false) MultipartFile file) {
-        return BaseResponse.success(userService.createUser(createUserRequest,file));
+                               @RequestPart(name = "file", required = false) MultipartFile file) {
+        return BaseResponse.success(userService.createUser(createUserRequest, file));
+    }
+
+    @PutMapping("/profile")
+    public BaseResponse updateProfile(@Valid @ModelAttribute UpdateUserRequest request,
+                                      @RequestPart(name = "file", required = false) MultipartFile file,
+                                      @RequestHeader("Authorization") String header) {
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+            if (token != null) {
+                String jwt = jwtUtilsHelper.verifyToken(token);
+
+                if (jwt != null) {
+                    UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+                    userService.updateUser(user.getId(), request, file);
+                    return BaseResponse.success("Cập nhật thành công");
+                }
+            }
+        }
+        return BaseResponse.error(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED, ErrorCodeDefs.getMessage(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED));
     }
 
     @GetMapping("/profile")
     public BaseResponse getProfile(@RequestHeader("Authorization") String header) {
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            if(token!=null){
-                String email=jwtUtilsHelper.verifyToken(token);
+            if (token != null) {
+                String jwt = jwtUtilsHelper.verifyToken(token);
 
-                if(email!=null){
-                    UsersDTO usersDTO=userService.findByEmail(email);
+                if (jwt != null) {
+                    UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+                    UsersDTO usersDTO = userService.findByEmail(user.getEmail());
                     return BaseResponse.success(usersDTO);
                 }
             }
         }
-        return BaseResponse.error(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED,ErrorCodeDefs.getMessage(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED));
+        return BaseResponse.error(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED, ErrorCodeDefs.getMessage(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED));
     }
 }

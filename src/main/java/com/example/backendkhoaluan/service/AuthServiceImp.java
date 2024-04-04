@@ -1,12 +1,14 @@
 package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.dto.RolesDTO;
+import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.repository.UsersRepository;
 import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
+import com.google.gson.Gson;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,12 +31,18 @@ public class AuthServiceImp implements AuthService {
 
     private ModelMapper modelMapper=new ModelMapper();
 
+    private Gson gson = new Gson();
+
     @Override
     public AuthResponse signIn(SignInRequest request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
             User user=usersRepository.findByEmail(request.getEmail()).orElseThrow();
-            String jwt=jwtUtilsHelper.generateToken(user.getEmail());
+            UsersDTO usersDTO=new UsersDTO();
+            usersDTO.setEmail(user.getEmail());
+            usersDTO.setId(user.getId());
+
+            String jwt=jwtUtilsHelper.generateToken(gson.toJson(usersDTO));
             String refreshToken=jwtUtilsHelper.generateRefreshToken(new HashMap<>(),user.getEmail());
 
             AuthResponse authResponse=new AuthResponse();

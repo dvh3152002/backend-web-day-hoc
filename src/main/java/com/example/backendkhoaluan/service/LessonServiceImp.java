@@ -54,7 +54,7 @@ public class LessonServiceImp implements LessonService {
         LessonsDTO lessonsDTO = new LessonsDTO();
         lessonsDTO.setId(lessons.getId());
         lessonsDTO.setTitle(lessons.getTitle());
-        lessonsDTO.setVideo("http://localhost:8081/api/file/video/" + lessons.getVideo());
+        lessonsDTO.setVideo(lessons.getVideo());
 
         return lessonsDTO;
     }
