@@ -19,6 +19,6 @@ public class Categories {
     private String name;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category",orphanRemoval = true)
     private List<Courses> listCourses;
 }

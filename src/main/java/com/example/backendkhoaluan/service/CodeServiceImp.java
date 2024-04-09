@@ -129,6 +129,7 @@ public class CodeServiceImp implements CodeService {
     public void save(CodeRequest request) {
         try {
             Codes codes = modelMapper.map(request, Codes.class);
+            codes.setId(null);
             codesRepository.save(codes);
         }catch (Exception e){
             throw new InsertException("Thêm code thất bại",e.getLocalizedMessage());
@@ -145,6 +146,7 @@ public class CodeServiceImp implements CodeService {
             }
             Codes code=codeOtn.get();
             code=modelMapper.map(request,Codes.class);
+            code.setId(id);
             codesRepository.save(code);
         }catch (Exception e){
             throw new UpdateException("Cập nhật code thất bại",e.getLocalizedMessage());

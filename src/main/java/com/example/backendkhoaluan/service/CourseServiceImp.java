@@ -30,9 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -163,6 +161,26 @@ public class CourseServiceImp implements CourseService {
         } catch (Exception e) {
             throw new UpdateException("Lỗi cập nhật khóa học", e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    public List<CoursesDTO> getCourseByIds(Set<Integer> ids) {
+        List<Courses> courses=coursesRepository.findAllById(ids);
+        List<CoursesDTO> dtoList=new ArrayList<>();
+        for (Courses data:courses){
+            CoursesDTO courseDTO=new CoursesDTO();
+            courseDTO.setId(data.getId());
+            courseDTO.setName(data.getName());
+            courseDTO.setPrice(data.getPrice());
+            courseDTO.setDiscount(data.getDiscount());
+            courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
+            courseDTO.setImage(cloudinaryService.getImageUrl(data.getImage()));
+            courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
+            courseDTO.setCreateDate(data.getCreateDate());
+
+            dtoList.add(courseDTO);
+        }
+        return dtoList;
     }
 
     @Override

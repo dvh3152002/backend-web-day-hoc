@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CourseService {
     Page<Courses> getAllCourse(CustomCourseQuery.CourseFilterParam param, PageRequest pageRequest);
@@ -17,5 +18,7 @@ public interface CourseService {
     CoursesDTO getCourseById(int id);
     void save(CreateCourseRequest courseResponse, MultipartFile file);
     void updateCourse(int id,CreateCourseRequest createCourseRequest, MultipartFile file);
+
+    List<CoursesDTO> getCourseByIds(Set<Integer> ids);
     double calculatorRating(List<RatingCourse> listRating);
 }

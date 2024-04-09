@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -73,6 +74,12 @@ public class CourseController {
                     return courseDTO;
                 }).collect(Collectors.toList());
         return BaseResponse.successListData(coursesDTOS,(int) page.getTotalElements());
+    }
+
+    @GetMapping("/cart")
+    public BaseResponse getCourseByIds(@RequestParam Set<Integer> ids){
+        List<CoursesDTO> dtoList=courseService.getCourseByIds(ids);
+        return BaseResponse.successListData(dtoList,dtoList.size());
     }
 
     @GetMapping("/{id}")

@@ -18,6 +18,15 @@ public class Orders {
     @Column(name = "create_date")
     private Date createDate;
 
+    @Column(name = "total_cost")
+    private int totalCost;
+
+    @Column(name = "vnp_BankCode")
+    private String vnpBankCode;
+
+    @Column(name = "isSuccess")
+    private boolean isSuccess;
+
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
