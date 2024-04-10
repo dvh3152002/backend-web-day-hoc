@@ -8,6 +8,6 @@ import java.util.Date;
 public class OrderDetailDTO {
     private Integer idOrder;
     private Integer idCourse;
-    private Double price;
+    private Integer price;
     private Date createDate;
 }

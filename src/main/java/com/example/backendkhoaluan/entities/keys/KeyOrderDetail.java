@@ -2,18 +2,20 @@ package com.example.backendkhoaluan.entities.keys;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Data
 @Embeddable
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class KeyOrderDetail implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @Column(name = "id_order", nullable = false,insertable=false, updatable=false)
+    @Column(name = "id_order")
     private Integer idOrder;
 
-    @Column(name = "id_course", nullable = false,insertable=false, updatable=false)
+    @Column(name = "id_course")
     private Integer idCourse;
 }

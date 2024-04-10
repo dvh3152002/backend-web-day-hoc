@@ -16,6 +16,7 @@ public class CoursesDTO {
     private Double rating;
     private UsersDTO user;
     private Date createDate;
+    private int count;
 
     private CategoriesDTO category;
 }

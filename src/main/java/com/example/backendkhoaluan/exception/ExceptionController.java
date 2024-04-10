@@ -138,4 +138,13 @@ public class ExceptionController {
         log.error("FileException: {}", ex);
         return BaseResponse.error(ErrorCodeDefs.ERR_FILE, ex.getMessage());
     }
+
+    @ResponseStatus(OK)
+    @ResponseBody
+    @ExceptionHandler(value = {PaymentException.class})
+    @Order(1)
+    public BaseResponse handlePaymentException(PaymentException ex) {
+        log.error("PaymentException: {}", ex);
+        return BaseResponse.error(ErrorCodeDefs.ERR_FILE, ex.getMessage());
+    }
 }

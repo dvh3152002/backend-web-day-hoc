@@ -70,6 +70,7 @@ public class CourseController {
                     courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
                     courseDTO.setRating(courseService.calculatorRating(data.getListRatingCourses()));
                     courseDTO.setCreateDate(data.getCreateDate());
+                    courseDTO.setCount(data.getListCourseDetail().size());
 
                     return courseDTO;
                 }).collect(Collectors.toList());

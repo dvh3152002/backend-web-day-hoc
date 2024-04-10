@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -21,16 +22,16 @@ public class Orders {
     @Column(name = "total_cost")
     private int totalCost;
 
-    @Column(name = "vnp_BankCode")
+    @Column(name = "vnp_bank_code")
     private String vnpBankCode;
 
-    @Column(name = "isSuccess")
+    @Column(name = "is_success")
     private boolean isSuccess;
 
     @ManyToOne
     @JoinColumn(name = "id_user")
     private User user;
 
-    @OneToMany(mappedBy = "order")
-    private Set<OrderDetail> listOrderDetails;
+    @OneToMany(mappedBy = "order",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private List<OrderDetail> listOrderDetails;
 }

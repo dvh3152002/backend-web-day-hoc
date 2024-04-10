@@ -1,10 +1,14 @@
 package com.example.backendkhoaluan.service;
 
+import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.RolesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
+import com.example.backendkhoaluan.entities.CourseDetail;
+import com.example.backendkhoaluan.entities.Courses;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
+import com.example.backendkhoaluan.repository.CourseDetailRepository;
 import com.example.backendkhoaluan.repository.UsersRepository;
 import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;

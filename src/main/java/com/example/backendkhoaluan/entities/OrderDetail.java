@@ -3,6 +3,7 @@ package com.example.backendkhoaluan.entities;
 import com.example.backendkhoaluan.entities.keys.KeyOrderDetail;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -10,10 +11,11 @@ import java.util.Date;
 
 @Data
 @Entity
+@ToString
 @Table(name = "order_detail")
 public class OrderDetail{
     @EmbeddedId
-    private KeyOrderDetail keyOrderDetail;
+    private KeyOrderDetail id;
 
     @Column(name = "price")
     private Integer price;
@@ -22,10 +24,12 @@ public class OrderDetail{
     private Date createDate;
 
     @ManyToOne
-    @JoinColumn(name = "id_order")
+    @MapsId("id_order")
+    @JoinColumn(name = "id_order", referencedColumnName = "id", insertable = false, updatable = false)
     private Orders order;
 
     @ManyToOne
-    @JoinColumn(name = "id_course")
+    @MapsId("id_course")
+    @JoinColumn(name = "id_course", referencedColumnName = "id", insertable = false, updatable = false)
     private Courses course;
 }

@@ -15,6 +15,7 @@ public class ErrorCodeDefs {
 
     public static final int ERR_FILE = ERR_OK + 11;
     public static final int ERR_RUN_CODE = ERR_OK + 12;
+    public static final int ERR_PAYMENT_FAILED = ERR_OK + 13;
     public static final int ERR_BAD_REQUEST = 400;
     public static final int ERR_PERMISSION_INVALID = 401;
     public static final int ERR_ACCESS_FORBIDDEN = 403;
@@ -78,6 +79,8 @@ public class ErrorCodeDefs {
                 return "Lỗi file";
             case ERR_RUN_CODE:
                 return "Lỗi chạy code";
+            case ERR_PAYMENT_FAILED:
+                return "Lỗi thanh toán";
             case ERR_OTHER:
                 return "Các lỗi khác";
             case ERR_BAD_REQUEST:

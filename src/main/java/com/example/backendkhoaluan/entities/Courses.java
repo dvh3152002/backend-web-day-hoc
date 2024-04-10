@@ -53,4 +53,7 @@ public class Courses {
 
     @OneToMany(mappedBy = "course")
     private List<Lessons> listLessons;
+
+    @OneToMany(mappedBy = "course",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private List<CourseDetail> listCourseDetail;
 }

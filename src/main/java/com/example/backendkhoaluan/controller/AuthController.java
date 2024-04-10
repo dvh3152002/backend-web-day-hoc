@@ -1,6 +1,7 @@
 package com.example.backendkhoaluan.controller;
 
 import com.example.backendkhoaluan.constant.ErrorCodeDefs;
+import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.request.CreateUserRequest;
@@ -8,6 +9,7 @@ import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
 import com.example.backendkhoaluan.service.imp.AuthService;
+import com.example.backendkhoaluan.service.imp.CourseService;
 import com.example.backendkhoaluan.service.imp.UserService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
@@ -19,12 +21,17 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api")
 public class AuthController {
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private CourseService courseService;
 
     @Autowired
     private UserService userService;
@@ -88,5 +95,15 @@ public class AuthController {
             }
         }
         return BaseResponse.error(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED, ErrorCodeDefs.getMessage(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED));
+    }
+
+    @GetMapping("/my-course")
+    public BaseResponse getListCourse(@RequestHeader("Authorization") String header) {
+        String token = header.substring(7);
+        String jwt = jwtUtilsHelper.verifyToken(token);
+
+        UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+        List<CoursesDTO> list = courseService.getListCourse(user.getId());
+        return BaseResponse.successListData(list,list.size());
     }
 }

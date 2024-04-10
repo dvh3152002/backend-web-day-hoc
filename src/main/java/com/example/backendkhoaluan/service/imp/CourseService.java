@@ -20,5 +20,8 @@ public interface CourseService {
     void updateCourse(int id,CreateCourseRequest createCourseRequest, MultipartFile file);
 
     List<CoursesDTO> getCourseByIds(Set<Integer> ids);
+
+    List<CoursesDTO> getListCourse(int idUser);
+
     double calculatorRating(List<RatingCourse> listRating);
 }

@@ -4,10 +4,7 @@ import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.CategoriesDTO;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
-import com.example.backendkhoaluan.entities.Categories;
-import com.example.backendkhoaluan.entities.Courses;
-import com.example.backendkhoaluan.entities.RatingCourse;
-import com.example.backendkhoaluan.entities.User;
+import com.example.backendkhoaluan.entities.*;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.InsertException;
@@ -46,6 +43,9 @@ public class CourseServiceImp implements CourseService {
 
     @Autowired
     private RatingCourseRepository ratingCourseRepository;
+
+    @Autowired
+    private CourseDetailRepository courseDetailRepository;
 
     @Value("${root.path.image}")
     private String path;
@@ -179,6 +179,25 @@ public class CourseServiceImp implements CourseService {
             courseDTO.setCreateDate(data.getCreateDate());
 
             dtoList.add(courseDTO);
+        }
+        return dtoList;
+    }
+
+    @Override
+    public List<CoursesDTO> getListCourse(int idUser) {
+        List<CourseDetail> detailList=courseDetailRepository.findAllByIdUser(idUser);
+        List<CoursesDTO> dtoList=new ArrayList<>();
+        for (CourseDetail courseDetail:detailList){
+            Courses courses=courseDetail.getCourse();
+            CoursesDTO dto=new CoursesDTO();
+            dto.setId(courses.getId());
+            dto.setName(courses.getName());
+            dto.setSlug(courses.getSlug());
+            dto.setImage(cloudinaryService.getImageUrl(courses.getImage()));
+            dto.setUser(modelMapper.map(courses.getUser(),UsersDTO.class));
+            dto.setRating(calculatorRating(courses.getListRatingCourses()));
+
+            dtoList.add(dto);
         }
         return dtoList;
     }
