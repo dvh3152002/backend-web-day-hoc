@@ -70,6 +70,12 @@ public interface Constants {
         String NOT_FIND_LESSON_BY_ID = "Không tìm thấy bài học có ID là: ";
     }
 
+    interface ErrorMessageOrderValidation {
+        String NOT_FIND_ORDER_BY_ID = "Không tìm thấy đơn hàng có ID là: ";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String LIMIT_SIZE = "Số lượng bài viết trong một trang là từ 5 đến 50 bài viết";
+    }
+
     interface SortType {
         String DESC = "DESC";
         String ASC = "ASC";

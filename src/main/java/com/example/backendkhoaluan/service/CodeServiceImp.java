@@ -93,7 +93,7 @@ public class CodeServiceImp implements CodeService {
 
     @Override
     public List<CodesDTO> getAll(CustomCodeQuery.CodeFilterParam param) {
-        Specification<Codes> specification = CustomCodeQuery.getFilterCourse(param);
+        Specification<Codes> specification = CustomCodeQuery.getFilterCode(param);
         List<Codes> list = codesRepository.findAll(specification);
         List<CodesDTO> dtoList = list.stream().map(data -> modelMapper.map(data, CodesDTO.class))
                 .collect(Collectors.toList());

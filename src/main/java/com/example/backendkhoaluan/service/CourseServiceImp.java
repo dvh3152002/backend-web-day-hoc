@@ -69,6 +69,7 @@ public class CourseServiceImp implements CourseService {
             cloudinaryService.deleteFile(data.getImage());
             ratingCourseRepository.deleteAll(data.getListRatingCourses());
             lessonService.deleteAll(data.getListLessons());
+            courseDetailRepository.deleteAll(data.getListCourseDetail());
             coursesRepository.delete(data);
         } catch (Exception e) {
             throw new DeleteException("Xóa khóa học thất bại", e.getLocalizedMessage());
@@ -210,4 +211,14 @@ public class CourseServiceImp implements CourseService {
         }
         return totalPoint == 0 ? 0 : totalPoint / listRating.size();
     }
+
+    @Override
+    public boolean isCoursePurchased(int idUser, int idCourse) {
+        Courses courses=new Courses();
+        courses.setId(idCourse);
+        Optional<CourseDetail> courseDetailOptional=courseDetailRepository.findByCourseAndIdUser(courses,idUser);
+        return courseDetailOptional.isPresent();
+    }
+
+
 }

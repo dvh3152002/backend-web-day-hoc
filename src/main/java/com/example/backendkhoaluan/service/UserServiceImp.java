@@ -174,10 +174,10 @@ public class UserServiceImp implements UserService {
                 if (userEntity.getAvatar() != null) {
                     if (!userEntity.getAvatar().trim().equals("")) {
                         cloudinaryService.deleteFile(userEntity.getAvatar());
-                        String fileName = cloudinaryService.uploadFile(avatar);
-                        userEntity.setAvatar(fileName);
                     }
                 }
+                String fileName = cloudinaryService.uploadFile(avatar);
+                userEntity.setAvatar(fileName);
             }
             checkRoleUserExists(userEntity, request.getRoles());
             usersRepository.save(userEntity);

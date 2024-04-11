@@ -24,4 +24,6 @@ public interface CourseService {
     List<CoursesDTO> getListCourse(int idUser);
 
     double calculatorRating(List<RatingCourse> listRating);
+
+    boolean isCoursePurchased(int idUser,int idCourse);
 }

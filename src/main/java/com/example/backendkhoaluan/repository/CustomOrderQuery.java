@@ -11,32 +11,45 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class CustomCodeQuery {
-    private CustomCodeQuery() {
+public class CustomOrderQuery {
+    private CustomOrderQuery() {
     }
 
     @Data
     @NoArgsConstructor
-    public static class CodeFilterParam {
-        private String keywords;
-        private Integer idPost;
+    public static class OrderFilterParam {
+        private Integer totalCost;
+        private String vnpBankCode;
+        private Integer status;
+        private Integer idUser;
+        private Long startDate = new Date().getTime() - (12L * 30L * 24L * 60L * 60L * 1000L);
+        private Long endDate = new Date().getTime();
         private String sortField;
         private String sortType;
     }
 
-    public static Specification<Codes> getFilterCode(CodeFilterParam param) {
+    public static Specification<Orders> getFilterOrder(OrderFilterParam param) {
         return ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (!Strings.isEmpty(param.keywords)) {
-                predicates.add(CriteriaBuilderUtils.createPredicateForSearchInsensitive(root, criteriaBuilder, param.keywords,
-                        "title"));
+            if (param.idUser != null) {
+                Join<Orders, User> userJoin = root.join("user");
+                predicates.add(criteriaBuilder.equal(userJoin.get("id"), (param.idUser)));
             }
-            if (param.idPost != null) {
-                Join<Codes, Post> postJoin = root.join("post");
-                predicates.add(criteriaBuilder.equal(postJoin.get("id"), (param.idPost)));
+
+            // Kiểm tra liệu bạn muốn lấy tất cả các đơn hàng (bao gồm isSuccess=true và isSuccess=false) hay chỉ một trong hai loại.
+            if (param.status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), param.status)); // Lấy các đơn hàng với isSuccess=true
             }
+
+            if (param.startDate != null && param.endDate != null) {
+                Date startDateValue = new Date(param.startDate);
+                Date endDateValue = new Date(param.endDate);
+                predicates.add(criteriaBuilder.between(root.get("createDate"), startDateValue, endDateValue));
+            }
+
             if (param.sortField != null && !param.sortField.equals("")) {
                 if (param.sortType.equals(Constants.SortType.DESC) || param.sortType.equals("")) {
                     query.orderBy(criteriaBuilder.desc(root.get(param.sortField)));

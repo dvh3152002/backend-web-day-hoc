@@ -20,7 +20,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -36,6 +38,8 @@ public class AuthServiceImp implements AuthService {
     private ModelMapper modelMapper=new ModelMapper();
 
     private Gson gson = new Gson();
+    @Autowired
+    private CourseDetailRepository courseDetailRepository;
 
     @Override
     public AuthResponse signIn(SignInRequest request) {
@@ -72,5 +76,15 @@ public class AuthServiceImp implements AuthService {
             response.setRefreshToken(authResponse.getAccessToken());
         }
         return response;
+    }
+
+    @Override
+    public Set<Integer> getCoursePurchased(int idUser) {
+        List<CourseDetail> list = courseDetailRepository.findAllByIdUser(idUser);
+        Set<Integer> set=new HashSet<>();
+        for (CourseDetail courseDetail:list){
+            set.add(courseDetail.getCourse().getId());
+        }
+        return set;
     }
 }

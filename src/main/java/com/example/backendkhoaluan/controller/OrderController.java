@@ -1,15 +1,24 @@
 package com.example.backendkhoaluan.controller;
 
 import com.example.backendkhoaluan.config.VNPayConfig;
+import com.example.backendkhoaluan.dto.LessonsDTO;
+import com.example.backendkhoaluan.dto.OrdersDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
+import com.example.backendkhoaluan.entities.Lessons;
 import com.example.backendkhoaluan.entities.Orders;
+import com.example.backendkhoaluan.payload.request.GetLessonRequest;
+import com.example.backendkhoaluan.payload.request.OrderRequest;
 import com.example.backendkhoaluan.payload.request.PayRequest;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
 import com.example.backendkhoaluan.service.imp.OrderService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -18,6 +27,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/order")
@@ -30,6 +40,8 @@ public class OrderController {
 
     private final Gson gson = new Gson();
 
+    private ModelMapper modelMapper=new ModelMapper();
+
     @GetMapping("/payment-callback")
     public void paymentCallback(@RequestParam Map<String, String> queryParams, HttpServletResponse response) throws IOException {
         String vnp_ResponseCode = queryParams.get("vnp_ResponseCode");
@@ -40,16 +52,16 @@ public class OrderController {
                 // Giao dịch thành công
                 // Thực hiện các xử lý cần thiết, ví dụ: cập nhật CSDL
                 orderService.updateOrder(queryParams);
-                response.sendRedirect("http://localhost:3000/payment?idSuccess="+true);
+                response.sendRedirect("http://localhost:3000/payment?isSuccess="+true);
             } else {
                 // Giao dịch thất bại
                 // Thực hiện các xử lý cần thiết, ví dụ: không cập nhật CSDL\
-                response.sendRedirect("http://localhost:3000/payment?idSuccess="+false);
+                response.sendRedirect("http://localhost:3000/payment?isSuccess="+false);
             }
         }else {
             // Giao dịch thất bại
             // Thực hiện các xử lý cần thiết, ví dụ: không cập nhật CSDL\
-            response.sendRedirect("http://localhost:3000/payment?idSuccess="+false);
+            response.sendRedirect("http://localhost:3000/payment?isSuccess="+false);
         }
     }
 
@@ -63,5 +75,27 @@ public class OrderController {
         String paymentUrl=orderService.createOrder(request);
 
         return BaseResponse.success(paymentUrl);
+    }
+
+    @DeleteMapping("/{id}")
+    public BaseResponse deleteOrder(@PathVariable int id){
+        orderService.deleteOrder(id);
+        return BaseResponse.success("Xóa đơn hàng thành công");
+    }
+
+    @GetMapping("/{id}")
+    public BaseResponse getById(@PathVariable int id){
+        OrdersDTO dto= orderService.findById(id);
+        return BaseResponse.success(dto);
+    }
+
+    @GetMapping("")
+    public BaseResponse getListOrders(@Valid OrderRequest request,@RequestHeader("Authorization") String header){
+        Page<Orders> page=orderService.getListOrder(request, PageRequest.of(request.getStart(),request.getLimit()),header);
+        return BaseResponse.successListData(page.getContent().stream()
+                .map(data->{
+                    OrdersDTO ordersDTO=modelMapper.map(data,OrdersDTO.class);
+                    return ordersDTO;
+                }).collect(Collectors.toList()), (int) page.getTotalElements());
     }
 }

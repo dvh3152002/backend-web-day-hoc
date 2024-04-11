@@ -54,7 +54,7 @@ public class CustomeRatingCourseQuery {
             if (param.startDate != null && param.endDate!=null) {
                 Date startDateValue=new Date(param.startDate);
                 Date endDateValue=new Date(param.endDate);
-                predicates.add(criteriaBuilder.between(root.get("create_date"),startDateValue,endDateValue));
+                predicates.add(criteriaBuilder.between(root.get("createDate"),startDateValue,endDateValue));
             }
             if (param.sortField != null && !param.sortField.equals("")) {
                 if (param.sortType.equals(Constants.SortType.DESC) || param.sortType.equals("")) {

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -105,5 +106,15 @@ public class AuthController {
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
         List<CoursesDTO> list = courseService.getListCourse(user.getId());
         return BaseResponse.successListData(list,list.size());
+    }
+
+    @GetMapping("/course-purchased")
+    public BaseResponse getCoursePurchased(@RequestHeader("Authorization") String header){
+        String token = header.substring(7);
+        String jwt = jwtUtilsHelper.verifyToken(token);
+
+        UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+        Set<Integer> set=authService.getCoursePurchased(user.getId());
+        return BaseResponse.success(set);
     }
 }

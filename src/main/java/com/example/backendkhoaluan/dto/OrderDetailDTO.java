@@ -10,4 +10,5 @@ public class OrderDetailDTO {
     private Integer idCourse;
     private Integer price;
     private Date createDate;
+    private String description;
 }

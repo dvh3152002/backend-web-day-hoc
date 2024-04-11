@@ -5,8 +5,11 @@ import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AuthService {
     AuthResponse signIn(SignInRequest request);
     AuthResponse refreshToken(AuthResponse authResponse);
+
+    Set<Integer> getCoursePurchased(int idUser);
 }

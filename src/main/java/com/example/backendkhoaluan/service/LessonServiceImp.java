@@ -54,6 +54,7 @@ public class LessonServiceImp implements LessonService {
         LessonsDTO lessonsDTO = new LessonsDTO();
         lessonsDTO.setId(lessons.getId());
         lessonsDTO.setTitle(lessons.getTitle());
+        lessonsDTO.setIdCourse(lessons.getCourse().getId());
         lessonsDTO.setVideo(lessons.getVideo());
 
         return lessonsDTO;

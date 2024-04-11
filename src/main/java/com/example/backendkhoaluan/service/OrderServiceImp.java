@@ -1,19 +1,27 @@
 package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.config.VNPayConfig;
+import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.OrderDetailDTO;
+import com.example.backendkhoaluan.dto.OrdersDTO;
+import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.*;
 import com.example.backendkhoaluan.entities.keys.KeyOrderDetail;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.PaymentException;
 import com.example.backendkhoaluan.payload.request.PayRequest;
-import com.example.backendkhoaluan.repository.CourseDetailRepository;
-import com.example.backendkhoaluan.repository.OrderDetailRepository;
-import com.example.backendkhoaluan.repository.OrdersRepository;
+import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.OrderService;
+import com.example.backendkhoaluan.utils.HelperUtils;
+import com.example.backendkhoaluan.utils.JwtUtilsHelper;
+import com.google.gson.Gson;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +41,19 @@ public class OrderServiceImp implements OrderService {
     @Autowired
     private CourseDetailRepository courseDetailRepository;
 
+    @Autowired
+    private JwtUtilsHelper jwtUtilsHelper;
+
+    private Gson gson = new Gson();
+
     private ModelMapper modelMapper=new ModelMapper();
 
     @Override
     public void deleteOrder(int id) {
         Optional<Orders> orders=ordersRepository.findById(id);
+        if(!orders.isPresent()){
+            throw new DataNotFoundException(Constants.ErrorMessageOrderValidation.NOT_FIND_ORDER_BY_ID+id);
+        }
         deleteOrder(orders.get());
     }
 
@@ -63,8 +79,9 @@ public class OrderServiceImp implements OrderService {
             User user = new User();
             user.setId(request.getIdUser());
             orders.setUser(user);
+            orders.setCreateDate(new Date());
             orders.setTotalCost(request.getTotalCost());
-            orders.setSuccess(false);
+            orders.setStatus(0);
 
             Orders order = ordersRepository.save(orders);
 
@@ -167,7 +184,7 @@ public class OrderServiceImp implements OrderService {
             int orderId=Integer.parseInt(queryParams.get("orderId"));
             Orders orders = ordersRepository.findById(orderId)
                     .orElseThrow(() -> new DataNotFoundException("Không tồn tại đơn hàng có ID là: "+orderId));
-            orders.setSuccess(true);
+            orders.setStatus(1);
             orders.setCreateDate(new Date());
             orders.setVnpBankCode(queryParams.get("vnp_BankCode"));
 
@@ -190,5 +207,32 @@ public class OrderServiceImp implements OrderService {
     @Override
     public List<Orders> findByUser(User user) {
         return ordersRepository.findByUser(user);
+    }
+
+    @Override
+    public Page<Orders> getListOrder(CustomOrderQuery.OrderFilterParam param,
+                                     PageRequest pageRequest,
+                                     String header) {
+        Set<String> roles=HelperUtils.getAuthorities();
+        if(!roles.contains("ROLE_ADMIN")){
+            String token = header.substring(7);
+            String jwt = jwtUtilsHelper.verifyToken(token);
+
+            UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+            param.setIdUser(user.getId());
+        }
+        Specification<Orders> specification = CustomOrderQuery.getFilterOrder(param);
+        return ordersRepository.findAll(specification,pageRequest);
+    }
+
+    @Override
+    public OrdersDTO findById(int id) {
+        Optional<Orders> ordersOptional=ordersRepository.findById(id);
+        if(!ordersOptional.isPresent()){
+            throw new DataNotFoundException(Constants.ErrorMessageOrderValidation.NOT_FIND_ORDER_BY_ID+id);
+        }
+        Orders orders=ordersOptional.get();
+        OrdersDTO ordersDTO=modelMapper.map(orders,OrdersDTO.class);
+        return ordersDTO;
     }
 }

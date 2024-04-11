@@ -10,4 +10,5 @@ public class LessonsDTO {
     private String title;
     private String video;
     private Date createDate;
+    private int idCourse;
 }
