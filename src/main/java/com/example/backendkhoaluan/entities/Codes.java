@@ -19,6 +19,9 @@ public class Codes {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "language")
+    private String language;
+
     @Column(name = "code")
     private String code;
 

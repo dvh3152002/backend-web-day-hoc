@@ -16,6 +16,8 @@ public class CodeRequest {
     private String description;
     @NotBlank(message = Constants.ErrorMessageCodeValidation.CODE_NOT_BLANK)
     private String code;
+    @NotBlank(message = Constants.ErrorMessageCodeValidation.CODE_NOT_BLANK)
+    private String language;
     @NumberNotNull(message = Constants.ErrorMessageCodeValidation.ID_POST_NOT_BLANK)
     private Integer idPost;
 }

@@ -8,5 +8,6 @@ public class CodesDTO {
     private String title;
     private String description;
     private String code;
+    private String language;
     private Integer idPost;
 }

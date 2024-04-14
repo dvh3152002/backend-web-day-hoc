@@ -38,6 +38,7 @@ public interface Constants {
 
     interface ErrorMessageCodeValidation {
         String CODE_NOT_BLANK="Code không được để trống";
+        String LANGUAGE_NOT_BLANK="Ngôn ngữ lập trình không được để trống";
 
         String ID_POST_NOT_BLANK="ID bài viết không được để trống";
 
