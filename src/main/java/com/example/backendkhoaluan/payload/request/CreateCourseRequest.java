@@ -21,7 +21,11 @@ public class CreateCourseRequest {
     private String description;
 
     @NumberNotNull(message = Constants.ErrorMessageCourseValidation.USER_ID_NOT_BLANK)
-    private int userId;
+    private int teacherId;
+
+    private boolean free;
+
+    private float limitTime;
 
     @NumberNotNull(message = Constants.ErrorMessageCourseValidation.CATEGORY_ID_NOT_BLANK)
     private int categoryId;

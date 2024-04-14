@@ -81,7 +81,7 @@ public class OrderServiceImp implements OrderService {
             orders.setUser(user);
             orders.setCreateDate(new Date());
             orders.setTotalCost(request.getTotalCost());
-            orders.setStatus(0);
+            orders.setStatus(false);
 
             Orders order = ordersRepository.save(orders);
 
@@ -100,6 +100,7 @@ public class OrderServiceImp implements OrderService {
 
                 Courses courses=new Courses();
                 courses.setId(dto.getIdCourse());
+                orderDetail.setDescription(dto.getDescription());
                 orderDetail.setCourse(courses);
                 orderDetails.add(orderDetail);
             }
@@ -184,7 +185,7 @@ public class OrderServiceImp implements OrderService {
             int orderId=Integer.parseInt(queryParams.get("orderId"));
             Orders orders = ordersRepository.findById(orderId)
                     .orElseThrow(() -> new DataNotFoundException("Không tồn tại đơn hàng có ID là: "+orderId));
-            orders.setStatus(1);
+            orders.setStatus(true);
             orders.setCreateDate(new Date());
             orders.setVnpBankCode(queryParams.get("vnp_BankCode"));
 
@@ -194,6 +195,7 @@ public class OrderServiceImp implements OrderService {
                 CourseDetail courseDetail=new CourseDetail();
                 courseDetail.setIdUser(orders.getUser().getId());
                 courseDetail.setCourse(orderDetail.getCourse());
+                courseDetail.setEndDate(HelperUtils.getLimitDateTime(orderDetail.getCourse().getLimitTime()));
 
                 courseDetailRepository.save(courseDetail);
             }

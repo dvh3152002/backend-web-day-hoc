@@ -3,6 +3,7 @@ package com.example.backendkhoaluan.dto;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class CoursesDTO {
@@ -14,9 +15,15 @@ public class CoursesDTO {
     private String description;
     private String image;
     private Double rating;
-    private UsersDTO user;
+    private UsersDTO teacher;
+    private float limitTime;
     private Date createDate;
     private int count;
+    private boolean free;
 
     private CategoriesDTO category;
+
+    private Integer idStart;
+
+    private List<LessonsDTO> lessons;
 }

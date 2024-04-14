@@ -24,6 +24,10 @@ public class Post {
     @Column(name = "create_date")
     private Date createDate;
 
+    @ManyToOne
+    @JoinColumn(name = "id_category")
+    private Categories category;
+
     @OneToMany(mappedBy = "post",fetch = FetchType.EAGER)
     private List<Codes> listCodes;
 }

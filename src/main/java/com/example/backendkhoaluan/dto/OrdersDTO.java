@@ -12,7 +12,7 @@ public class OrdersDTO {
     private Date createDate;
     private Integer totalCost;
     private String vnpBankCode;
-    private Integer status = 0;
+    private Boolean status;
 
     private List<OrderDetailDTO> orderDetails;
 }

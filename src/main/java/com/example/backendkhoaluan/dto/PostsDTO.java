@@ -1,5 +1,6 @@
 package com.example.backendkhoaluan.dto;
 
+import com.example.backendkhoaluan.entities.Categories;
 import com.example.backendkhoaluan.entities.Codes;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class PostsDTO {
     private String description;
     private Date createDate;
     private int countCode;
+    private CategoriesDTO category;
     private List<Codes> listCodes;
 }

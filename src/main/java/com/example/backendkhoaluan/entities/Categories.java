@@ -21,4 +21,8 @@ public class Categories {
     @JsonIgnore
     @OneToMany(mappedBy = "category",orphanRemoval = true)
     private List<Courses> listCourses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "category",orphanRemoval = true)
+    private List<Post> listPosts;
 }

@@ -47,6 +47,6 @@ public class User {
     @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Orders> listOrders;
 
-    @OneToMany(mappedBy = "user",orphanRemoval = true)
+    @OneToMany(mappedBy = "teacher",orphanRemoval = true)
     private List<Courses> listCourses;
 }

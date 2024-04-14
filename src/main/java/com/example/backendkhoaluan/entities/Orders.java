@@ -26,7 +26,7 @@ public class Orders {
     private String vnpBankCode;
 
     @Column(name = "status")
-    private Integer status=0;
+    private Boolean status;
 
     @ManyToOne
     @JoinColumn(name = "id_user")

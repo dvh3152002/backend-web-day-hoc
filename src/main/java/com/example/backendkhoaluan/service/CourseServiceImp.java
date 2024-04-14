@@ -3,6 +3,7 @@ package com.example.backendkhoaluan.service;
 import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.CategoriesDTO;
 import com.example.backendkhoaluan.dto.CoursesDTO;
+import com.example.backendkhoaluan.dto.LessonsDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.*;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
@@ -91,10 +92,15 @@ public class CourseServiceImp implements CourseService {
         courseDTO.setPrice(data.getPrice());
         courseDTO.setDiscount(data.getDiscount());
         courseDTO.setImage(cloudinaryService.getImageUrl(data.getImage()));
-        courseDTO.setUser(modelMapper.map(data.getUser(),UsersDTO.class));
+        courseDTO.setTeacher(modelMapper.map(data.getTeacher(),UsersDTO.class));
         courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
         courseDTO.setCreateDate(data.getCreateDate());
+        courseDTO.setLimitTime(data.getLimitTime());
         courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
+        courseDTO.setFree(data.isFree());
+
+        List<LessonsDTO> list=modelMapper.map(data.getListLessons(),List.class);
+        courseDTO.setLessons(list);
 
         return courseDTO;
     }
@@ -108,20 +114,22 @@ public class CourseServiceImp implements CourseService {
             Courses courseEntity = new Courses();
             courseEntity.setName(createCourseRequest.getName());
             courseEntity.setDescription(createCourseRequest.getDescription());
-            courseEntity.setDiscount(createCourseRequest.getDiscount());
+            courseEntity.setDiscount(createCourseRequest.isFree()?0:createCourseRequest.getDiscount());
             courseEntity.setImage(fileName);
-            courseEntity.setPrice(createCourseRequest.getPrice());
+            courseEntity.setPrice(createCourseRequest.isFree()?0:createCourseRequest.getPrice());
             courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));
             courseEntity.setCreateDate(new Date());
+            courseEntity.setFree(createCourseRequest.isFree());
+            courseEntity.setLimitTime(createCourseRequest.getLimitTime());
 
             Categories categories=new Categories();
             categories.setId(createCourseRequest.getCategoryId());
             courseEntity.setCategory(categories);
 
             User userEntity = new User();
-            userEntity.setId(createCourseRequest.getUserId());
+            userEntity.setId(createCourseRequest.getTeacherId());
 
-            courseEntity.setUser(userEntity);
+            courseEntity.setTeacher(userEntity);
 
             coursesRepository.save(courseEntity);
         } catch (Exception e) {
@@ -140,23 +148,25 @@ public class CourseServiceImp implements CourseService {
             Courses courseEntity=coursesOptional.get();
             courseEntity.setName(createCourseRequest.getName());
             courseEntity.setDescription(createCourseRequest.getDescription());
-            courseEntity.setDiscount(createCourseRequest.getDiscount());
+            courseEntity.setDiscount(createCourseRequest.isFree()?0:createCourseRequest.getDiscount());
             if(file!=null){
                 String fileName = cloudinaryService.uploadFile(file);
                 courseEntity.setImage(fileName);
             }
-            courseEntity.setPrice(createCourseRequest.getPrice());
+            courseEntity.setPrice(createCourseRequest.isFree()?0:createCourseRequest.getPrice());
+            courseEntity.setFree(createCourseRequest.isFree());
             courseEntity.setCreateDate(new Date());
             courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));
+            courseEntity.setLimitTime(createCourseRequest.getLimitTime());
 
             Categories categories=new Categories();
             categories.setId(createCourseRequest.getCategoryId());
             courseEntity.setCategory(categories);
 
             User userEntity = new User();
-            userEntity.setId(createCourseRequest.getUserId());
+            userEntity.setId(createCourseRequest.getTeacherId());
 
-            courseEntity.setUser(userEntity);
+            courseEntity.setTeacher(userEntity);
 
             coursesRepository.save(courseEntity);
         } catch (Exception e) {
@@ -174,10 +184,12 @@ public class CourseServiceImp implements CourseService {
             courseDTO.setName(data.getName());
             courseDTO.setPrice(data.getPrice());
             courseDTO.setDiscount(data.getDiscount());
-            courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
+            courseDTO.setFree(data.isFree());
+            courseDTO.setTeacher(modelMapper.map(data.getTeacher(), UsersDTO.class));
             courseDTO.setImage(cloudinaryService.getImageUrl(data.getImage()));
             courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
             courseDTO.setCreateDate(data.getCreateDate());
+            courseDTO.setLimitTime(data.getLimitTime());
 
             dtoList.add(courseDTO);
         }
@@ -195,9 +207,13 @@ public class CourseServiceImp implements CourseService {
             dto.setName(courses.getName());
             dto.setSlug(courses.getSlug());
             dto.setImage(cloudinaryService.getImageUrl(courses.getImage()));
-            dto.setUser(modelMapper.map(courses.getUser(),UsersDTO.class));
+            dto.setTeacher(modelMapper.map(courses.getTeacher(),UsersDTO.class));
             dto.setRating(calculatorRating(courses.getListRatingCourses()));
-
+            dto.setFree(courses.isFree());
+            if(courses.getListLessons().size()>0){
+                dto.setIdStart(courses.getListLessons().get(0).getId());
+            }
+            dto.setLimitTime(courses.getLimitTime());
             dtoList.add(dto);
         }
         return dtoList;
@@ -214,11 +230,17 @@ public class CourseServiceImp implements CourseService {
 
     @Override
     public boolean isCoursePurchased(int idUser, int idCourse) {
+        boolean isSuccess=false;
         Courses courses=new Courses();
         courses.setId(idCourse);
         Optional<CourseDetail> courseDetailOptional=courseDetailRepository.findByCourseAndIdUser(courses,idUser);
-        return courseDetailOptional.isPresent();
+        if(courseDetailOptional.isPresent()){
+            CourseDetail courseDetail=courseDetailOptional.get();
+            isSuccess=courseDetail.getEndDate().after(new Date());
+            System.out.println("date: "+new Date());
+            System.out.println("limit: "+courseDetail.getEndDate());
+        }
+
+        return isSuccess;
     }
-
-
 }

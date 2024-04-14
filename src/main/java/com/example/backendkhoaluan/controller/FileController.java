@@ -65,14 +65,13 @@ public class FileController {
                 .body(resource);
     }
 
-    @GetMapping(value = "/video/{id}/{idCourse}", produces = "video/mp4")
+    @GetMapping(value = "/video/{id}", produces = "video/mp4")
     public void downloadVideoFile(@PathVariable int id,
                                   HttpServletResponse response,
                                   @RequestHeader("Authorization") String header) {
         Set<String> roles = HelperUtils.getAuthorities();
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
-
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
         LessonsDTO lessonsDTO = lessonService.getLessonsById(id);
         if (roles.contains("ROLE_ADMIN")) {
@@ -80,7 +79,7 @@ public class FileController {
         } else if (roles.contains("ROLE_TEACHER")) {
             CoursesDTO coursesDTO = courseService.getCourseById(lessonsDTO.getIdCourse());
 
-            if (coursesDTO.getUser().getId() == user.getId()) {
+            if (coursesDTO.getTeacher().getId() == user.getId()) {
                 getVideo(lessonsDTO,response);
             }
         } else if (roles.contains("ROLE_USER")) {

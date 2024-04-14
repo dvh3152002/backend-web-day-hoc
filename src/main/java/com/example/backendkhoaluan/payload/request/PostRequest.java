@@ -11,4 +11,6 @@ public class PostRequest {
 
     @NotBlank(message = Constants.ErrorMessagePostValidation.DESCRIPTION_NOT_BLANK)
     private String description;
+
+    private int categoryId;
 }

@@ -25,9 +25,10 @@ public class CustomCourseQuery {
         private String keywords;
         private Integer minPrice;
         private Integer maxPrice;
-        private Integer idUser;
+        private Integer idTeacher;
         private Integer idCategory;
         private Double rating;
+        private Boolean free;
         private String sortField;
         private String sortType;
     }
@@ -39,13 +40,16 @@ public class CustomCourseQuery {
                 predicates.add(CriteriaBuilderUtils.createPredicateForSearchInsensitive(root, criteriaBuilder, param.keywords,
                         "name"));
             }
-            if (param.idUser != null) {
-                Join<Courses, User> courseJoin = root.join("user");
-                predicates.add(criteriaBuilder.equal(courseJoin.get("id"), (param.idCategory)));
+            if (param.idTeacher != null) {
+                Join<Courses, User> courseJoin = root.join("teacher");
+                predicates.add(criteriaBuilder.equal(courseJoin.get("id"), (param.idTeacher)));
             }
             if (param.idCategory != null) {
                 Join<Courses, Categories> categoriesJoin = root.join("category");
                 predicates.add(criteriaBuilder.equal(categoriesJoin.get("id"), (param.idCategory)));
+            }
+            if (param.free != null) {
+                predicates.add(criteriaBuilder.equal(root.get("free"), (param.free)));
             }
             if (param.maxPrice != null && param.minPrice != null) {
                 predicates.add(criteriaBuilder.between(root.get("price"), param.minPrice, param.maxPrice));

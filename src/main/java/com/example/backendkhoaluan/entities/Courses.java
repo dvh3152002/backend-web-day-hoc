@@ -37,9 +37,15 @@ public class Courses {
     @Column(name = "create_date")
     private Date createDate;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "id_user")
-    private User user;
+    @Column(name = "free")
+    private boolean free;
+
+    @Column(name = "limit_time")
+    private Float limitTime;
+
+    @ManyToOne
+    @JoinColumn(name = "id_teacher")
+    private User teacher;
 
     @ManyToOne
     @JoinColumn(name = "id_category")
@@ -51,7 +57,7 @@ public class Courses {
     @OneToMany(mappedBy = "course")
     private List<OrderDetail> listOrderDetails;
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Lessons> listLessons;
 
     @OneToMany(mappedBy = "course",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)

@@ -4,7 +4,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 public class HelperUtils {
@@ -25,5 +30,17 @@ public class HelperUtils {
         }
 
         return authoritiesSet;
+    }
+
+    public static Date getLimitDateTime(float month){
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        // Thêm số tháng đã nhập vào ngày và giờ hiện tại
+        LocalDateTime futureDateTime = currentDateTime.plusMonths((long) month);
+
+        // Chuyển đổi từ LocalDateTime sang Date
+        Date futureDate = Date.from(futureDateTime.atZone(ZoneId.systemDefault()).toInstant());
+
+        return futureDate;
     }
 }

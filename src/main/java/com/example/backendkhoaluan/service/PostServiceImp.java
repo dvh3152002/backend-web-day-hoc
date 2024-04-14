@@ -1,7 +1,9 @@
 package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
+import com.example.backendkhoaluan.dto.CategoriesDTO;
 import com.example.backendkhoaluan.dto.PostsDTO;
+import com.example.backendkhoaluan.entities.Categories;
 import com.example.backendkhoaluan.entities.Post;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
@@ -11,6 +13,7 @@ import com.example.backendkhoaluan.repository.CodesRepository;
 import com.example.backendkhoaluan.repository.CustomePostQuery;
 import com.example.backendkhoaluan.repository.PostsRepository;
 import com.example.backendkhoaluan.service.imp.PostService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +32,8 @@ public class PostServiceImp implements PostService {
     @Autowired
     private CodesRepository codesRepository;
 
+    private ModelMapper modelMapper=new ModelMapper();
+
     @Override
     @Transactional
     public PostsDTO getById(int id) {
@@ -37,13 +42,14 @@ public class PostServiceImp implements PostService {
             throw new DataNotFoundException(Constants.ErrorMessagePostValidation.NOT_FIND_POST_BY_ID + id);
         }
         PostsDTO postDTO = new PostsDTO();
-
         Post data = post.get();
         postDTO.setDescription(data.getDescription());
         postDTO.setCreateDate(data.getCreateDate());
         postDTO.setListCodes(data.getListCodes());
         postDTO.setId(data.getId());
         postDTO.setTitle(data.getTitle());
+
+        postDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
         return postDTO;
     }
 
@@ -65,6 +71,10 @@ public class PostServiceImp implements PostService {
             post.setDescription(request.getDescription());
             post.setCreateDate(new Date());
             post.setTitle(request.getTitle());
+
+            Categories categories=new Categories();
+            categories.setId(request.getCategoryId());
+            post.setCategory(categories);
 
             postsRepository.save(post);
         } catch (Exception e) {
@@ -97,6 +107,10 @@ public class PostServiceImp implements PostService {
             post.setDescription(request.getDescription());
             post.setCreateDate(new Date());
             post.setTitle(request.getTitle());
+
+            Categories categories=new Categories();
+            categories.setId(request.getCategoryId());
+            post.setCategory(categories);
 
             postsRepository.save(post);
         } catch (Exception e) {

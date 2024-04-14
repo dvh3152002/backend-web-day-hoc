@@ -23,7 +23,7 @@ public class CustomOrderQuery {
     public static class OrderFilterParam {
         private Integer totalCost;
         private String vnpBankCode;
-        private Integer status;
+        private Boolean status;
         private Integer idUser;
         private Long startDate = new Date().getTime() - (12L * 30L * 24L * 60L * 60L * 1000L);
         private Long endDate = new Date().getTime();

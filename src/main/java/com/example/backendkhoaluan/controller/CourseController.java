@@ -65,11 +65,12 @@ public class CourseController {
                     courseDTO.setSlug(data.getSlug());
                     courseDTO.setPrice(data.getPrice());
                     courseDTO.setDiscount(data.getDiscount());
-                    courseDTO.setUser(modelMapper.map(data.getUser(), UsersDTO.class));
+                    courseDTO.setTeacher(modelMapper.map(data.getTeacher(), UsersDTO.class));
                     courseDTO.setImage(cloudinaryService.getImageUrl(data.getImage()));
                     courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
                     courseDTO.setRating(courseService.calculatorRating(data.getListRatingCourses()));
                     courseDTO.setCreateDate(data.getCreateDate());
+                    courseDTO.setFree(data.isFree());
                     courseDTO.setCount(data.getListCourseDetail().size());
 
                     return courseDTO;

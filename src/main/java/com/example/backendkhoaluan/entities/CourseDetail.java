@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -17,6 +18,9 @@ public class CourseDetail {
 
     @Column(name = "id_user")
     private int idUser;
+
+    @Column(name = "end_date")
+    private Date endDate;
 
     @ManyToOne
     @JoinColumn(name = "id_course")
