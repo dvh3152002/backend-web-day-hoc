@@ -1,11 +1,14 @@
 package com.example.backendkhoaluan.service;
 
+import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.RolesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.CourseDetail;
 import com.example.backendkhoaluan.entities.Courses;
 import com.example.backendkhoaluan.entities.User;
+import com.example.backendkhoaluan.exception.DataNotFoundException;
+import com.example.backendkhoaluan.payload.request.ChangePasswordRequest;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.repository.CourseDetailRepository;
@@ -19,12 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -36,6 +37,9 @@ public class AuthServiceImp implements AuthService {
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private ModelMapper modelMapper=new ModelMapper();
 
@@ -90,5 +94,19 @@ public class AuthServiceImp implements AuthService {
             set.add(courseDetail.getCourse().getId());
         }
         return set;
+    }
+
+    @Override
+    public void changePassword(Integer id, ChangePasswordRequest request) {
+        Optional<User> userOptional = usersRepository.findById(id);
+        if (!userOptional.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
+        }
+        User user=userOptional.get();
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new DataNotFoundException("Email hoặc mật khẩu không đúng");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        usersRepository.save(user);
     }
 }

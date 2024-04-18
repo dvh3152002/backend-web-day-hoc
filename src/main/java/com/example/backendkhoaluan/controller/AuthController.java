@@ -3,6 +3,7 @@ package com.example.backendkhoaluan.controller;
 import com.example.backendkhoaluan.constant.ErrorCodeDefs;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
+import com.example.backendkhoaluan.payload.request.ChangePasswordRequest;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.request.CreateUserRequest;
 import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
@@ -121,5 +122,16 @@ public class AuthController {
         param.setIdUser(user.getId());
         Set<Integer> set=authService.getCoursePurchased(param);
         return BaseResponse.success(set);
+    }
+
+    @PutMapping("/change-password")
+    public BaseResponse changePassword(@Valid @RequestBody ChangePasswordRequest request,
+                                       @RequestHeader("Authorization") String header){
+        String token = header.substring(7);
+        String jwt = jwtUtilsHelper.verifyToken(token);
+
+        UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+        authService.changePassword(user.getId(),request);
+        return BaseResponse.success("Đổi mật khẩu thành công");
     }
 }
