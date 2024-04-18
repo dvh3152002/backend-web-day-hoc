@@ -41,12 +41,15 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"))
     private List<Role> roles;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<RatingCourse> listRatingCourses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user",orphanRemoval = true)
     private List<Orders> listOrders;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "teacher",orphanRemoval = true)
     private List<Courses> listCourses;
 }

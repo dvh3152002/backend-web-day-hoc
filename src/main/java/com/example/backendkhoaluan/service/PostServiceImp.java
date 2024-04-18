@@ -49,7 +49,10 @@ public class PostServiceImp implements PostService {
         postDTO.setId(data.getId());
         postDTO.setTitle(data.getTitle());
 
-        postDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
+        CategoriesDTO categoriesDTO=new CategoriesDTO();
+        categoriesDTO.setId(data.getCategory().getId());
+        categoriesDTO.setName(data.getCategory().getName());
+        postDTO.setCategory(categoriesDTO);
         return postDTO;
     }
 

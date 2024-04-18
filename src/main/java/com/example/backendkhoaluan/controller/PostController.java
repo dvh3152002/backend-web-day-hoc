@@ -1,5 +1,6 @@
 package com.example.backendkhoaluan.controller;
 
+import com.example.backendkhoaluan.dto.CategoriesDTO;
 import com.example.backendkhoaluan.dto.PostsDTO;
 import com.example.backendkhoaluan.entities.Post;
 import com.example.backendkhoaluan.payload.request.GetPostRequest;
@@ -21,7 +22,7 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("/{id}")
     public BaseResponse getById(@PathVariable int id) {
@@ -29,7 +30,7 @@ public class PostController {
     }
 
     @PostMapping("")
-    public BaseResponse createPost( @Valid @RequestBody PostRequest request) {
+    public BaseResponse createPost(@Valid @RequestBody PostRequest request) {
         postService.createPost(request);
         return BaseResponse.success("Cập nhật bài viết thành công");
     }
@@ -51,9 +52,19 @@ public class PostController {
         Page<Post> page = postService.getListPost(request, PageRequest.of(request.getStart(), request.getLimit()));
         return BaseResponse.successListData(
                 page.getContent().stream().map(data -> {
-                    PostsDTO postsDTO = modelMapper.map(data, PostsDTO.class);
-                    postsDTO.setCountCode(postsDTO.getListCodes().size());
-                    return postsDTO;
+                    PostsDTO postDTO = new PostsDTO();
+                    postDTO.setDescription(data.getDescription());
+                    postDTO.setCreateDate(data.getCreateDate());
+                    postDTO.setListCodes(data.getListCodes());
+                    postDTO.setId(data.getId());
+                    postDTO.setTitle(data.getTitle());
+
+                    CategoriesDTO categoriesDTO = new CategoriesDTO();
+                    categoriesDTO.setId(data.getCategory().getId());
+                    categoriesDTO.setName(data.getCategory().getName());
+                    postDTO.setCategory(categoriesDTO);
+                    postDTO.setCountCode(data.getListCodes().size());
+                    return postDTO;
                 }).collect(Collectors.toList()), (int) page.getTotalElements());
     }
 }

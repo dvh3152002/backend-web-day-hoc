@@ -4,6 +4,7 @@ import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.entities.Courses;
 import com.example.backendkhoaluan.entities.RatingCourse;
 import com.example.backendkhoaluan.payload.request.CreateCourseRequest;
+import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
 import com.example.backendkhoaluan.repository.CustomCourseQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +22,7 @@ public interface CourseService {
 
     List<CoursesDTO> getCourseByIds(Set<Integer> ids);
 
-    List<CoursesDTO> getListCourse(int idUser);
+    List<CoursesDTO> getListCourse(CustomCourseDetailQuery.CourseDetailFilterParam param);
 
     double calculatorRating(List<RatingCourse> listRating);
 

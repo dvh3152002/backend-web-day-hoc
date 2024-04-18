@@ -11,7 +11,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseDetailRepository extends JpaRepository<CourseDetail,Integer>, JpaSpecificationExecutor<CourseDetail> {
-    List<CourseDetail> findAllByIdUser(int idUser);
-
     Optional<CourseDetail> findByCourseAndIdUser(Courses courses, int id);
 }

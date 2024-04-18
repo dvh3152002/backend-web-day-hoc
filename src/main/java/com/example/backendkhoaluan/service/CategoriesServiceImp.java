@@ -2,7 +2,9 @@ package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.CategoriesDTO;
+import com.example.backendkhoaluan.dto.PostsDTO;
 import com.example.backendkhoaluan.entities.Categories;
+import com.example.backendkhoaluan.entities.Post;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.InsertException;
@@ -45,7 +47,12 @@ public class CategoriesServiceImp implements CategoriesService {
 //            dtoList = gson.fromJson(data, listType);
 //        } else {
         List<Categories> list = categoriesRepository.findAll();
-        dtoList = list.stream().map(data -> modelMapper.map(data, CategoriesDTO.class))
+        dtoList = list.stream().map(data -> {
+            CategoriesDTO categoriesDTO=new CategoriesDTO();
+            categoriesDTO.setId(data.getId());
+            categoriesDTO.setName(data.getName());
+            return categoriesDTO;
+                })
                 .collect(Collectors.toList());
 //        String gsonList = gson.toJson(dtoList);
 //            redisTemplate.opsForValue().set("categories", gsonList);
@@ -90,6 +97,16 @@ public class CategoriesServiceImp implements CategoriesService {
         CategoriesDTO categoriesDTO = new CategoriesDTO();
         categoriesDTO.setId(categories.getId());
         categoriesDTO.setName(categories.getName());
+
+        List<PostsDTO> list=new ArrayList<>();
+        for (Post post:categories.getListPosts()){
+            PostsDTO postsDTO=new PostsDTO();
+            postsDTO.setId(post.getId());
+            postsDTO.setTitle(post.getTitle());
+
+            list.add(postsDTO);
+        }
+        categoriesDTO.setPosts(list);
         return categoriesDTO;
     }
 

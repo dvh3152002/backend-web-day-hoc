@@ -51,7 +51,8 @@ public class CourseServiceImp implements CourseService {
     @Value("${root.path.image}")
     private String path;
 
-    private ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper = new ModelMapper();
+
     @Override
     public Page<Courses> getAllCourse(CustomCourseQuery.CourseFilterParam param, PageRequest pageRequest) {
         Specification<Courses> specification = CustomCourseQuery.getFilterCourse(param);
@@ -92,14 +93,31 @@ public class CourseServiceImp implements CourseService {
         courseDTO.setPrice(data.getPrice());
         courseDTO.setDiscount(data.getDiscount());
         courseDTO.setImage(cloudinaryService.getImageUrl(data.getImage()));
-        courseDTO.setTeacher(modelMapper.map(data.getTeacher(),UsersDTO.class));
+
+        UsersDTO teacher = modelMapper.map(data.getTeacher(), UsersDTO.class);
+        String avatarTeacher = teacher.getAvatar();
+
+        if (avatarTeacher != null) {
+            avatarTeacher = cloudinaryService.getImageUrl(avatarTeacher);
+            teacher.setAvatar(avatarTeacher);
+        }
+        courseDTO.setTeacher(teacher);
+
         courseDTO.setRating(calculatorRating(data.getListRatingCourses()));
         courseDTO.setCreateDate(data.getCreateDate());
         courseDTO.setLimitTime(data.getLimitTime());
-        courseDTO.setCategory(modelMapper.map(data.getCategory(), CategoriesDTO.class));
-        courseDTO.setFree(data.isFree());
+        courseDTO.setCount(data.getListCourseDetail().size());
 
-        List<LessonsDTO> list=modelMapper.map(data.getListLessons(),List.class);
+        CategoriesDTO categoriesDTO = new CategoriesDTO();
+        categoriesDTO.setId(data.getCategory().getId());
+        categoriesDTO.setName(data.getCategory().getName());
+        courseDTO.setCategory(categoriesDTO);
+        courseDTO.setFree(data.isFree());
+        if (data.getListLessons().size() > 0) {
+            courseDTO.setIdStart(data.getListLessons().get(0).getId());
+        }
+
+        List<LessonsDTO> list = modelMapper.map(data.getListLessons(), List.class);
         courseDTO.setLessons(list);
 
         return courseDTO;
@@ -114,15 +132,15 @@ public class CourseServiceImp implements CourseService {
             Courses courseEntity = new Courses();
             courseEntity.setName(createCourseRequest.getName());
             courseEntity.setDescription(createCourseRequest.getDescription());
-            courseEntity.setDiscount(createCourseRequest.isFree()?0:createCourseRequest.getDiscount());
+            courseEntity.setDiscount(createCourseRequest.isFree() ? 0 : createCourseRequest.getDiscount());
             courseEntity.setImage(fileName);
-            courseEntity.setPrice(createCourseRequest.isFree()?0:createCourseRequest.getPrice());
+            courseEntity.setPrice(createCourseRequest.isFree() ? 0 : createCourseRequest.getPrice());
             courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));
             courseEntity.setCreateDate(new Date());
             courseEntity.setFree(createCourseRequest.isFree());
             courseEntity.setLimitTime(createCourseRequest.getLimitTime());
 
-            Categories categories=new Categories();
+            Categories categories = new Categories();
             categories.setId(createCourseRequest.getCategoryId());
             courseEntity.setCategory(categories);
 
@@ -139,27 +157,27 @@ public class CourseServiceImp implements CourseService {
 
     @Transactional(rollbackFor = {UpdateException.class, Exception.class})
     @Override
-    public void updateCourse(int id,CreateCourseRequest createCourseRequest, MultipartFile file) {
+    public void updateCourse(int id, CreateCourseRequest createCourseRequest, MultipartFile file) {
         try {
             Optional<Courses> coursesOptional = coursesRepository.findById(id);
             if (!coursesOptional.isPresent()) {
                 throw new DataNotFoundException(Constants.ErrorMessageCourseValidation.NOT_FIND_COURSE_BY_ID + id);
             }
-            Courses courseEntity=coursesOptional.get();
+            Courses courseEntity = coursesOptional.get();
             courseEntity.setName(createCourseRequest.getName());
             courseEntity.setDescription(createCourseRequest.getDescription());
-            courseEntity.setDiscount(createCourseRequest.isFree()?0:createCourseRequest.getDiscount());
-            if(file!=null){
+            courseEntity.setDiscount(createCourseRequest.isFree() ? 0 : createCourseRequest.getDiscount());
+            if (file != null) {
                 String fileName = cloudinaryService.uploadFile(file);
                 courseEntity.setImage(fileName);
             }
-            courseEntity.setPrice(createCourseRequest.isFree()?0:createCourseRequest.getPrice());
+            courseEntity.setPrice(createCourseRequest.isFree() ? 0 : createCourseRequest.getPrice());
             courseEntity.setFree(createCourseRequest.isFree());
             courseEntity.setCreateDate(new Date());
             courseEntity.setSlug(SlugUtils.toSlug(createCourseRequest.getName()));
             courseEntity.setLimitTime(createCourseRequest.getLimitTime());
 
-            Categories categories=new Categories();
+            Categories categories = new Categories();
             categories.setId(createCourseRequest.getCategoryId());
             courseEntity.setCategory(categories);
 
@@ -176,10 +194,10 @@ public class CourseServiceImp implements CourseService {
 
     @Override
     public List<CoursesDTO> getCourseByIds(Set<Integer> ids) {
-        List<Courses> courses=coursesRepository.findAllById(ids);
-        List<CoursesDTO> dtoList=new ArrayList<>();
-        for (Courses data:courses){
-            CoursesDTO courseDTO=new CoursesDTO();
+        List<Courses> courses = coursesRepository.findAllById(ids);
+        List<CoursesDTO> dtoList = new ArrayList<>();
+        for (Courses data : courses) {
+            CoursesDTO courseDTO = new CoursesDTO();
             courseDTO.setId(data.getId());
             courseDTO.setName(data.getName());
             courseDTO.setPrice(data.getPrice());
@@ -197,20 +215,21 @@ public class CourseServiceImp implements CourseService {
     }
 
     @Override
-    public List<CoursesDTO> getListCourse(int idUser) {
-        List<CourseDetail> detailList=courseDetailRepository.findAllByIdUser(idUser);
-        List<CoursesDTO> dtoList=new ArrayList<>();
-        for (CourseDetail courseDetail:detailList){
-            Courses courses=courseDetail.getCourse();
-            CoursesDTO dto=new CoursesDTO();
+    public List<CoursesDTO> getListCourse(CustomCourseDetailQuery.CourseDetailFilterParam param) {
+        Specification specification = CustomCourseDetailQuery.getFilterCourse(param);
+        List<CourseDetail> detailList = courseDetailRepository.findAll(specification);
+        List<CoursesDTO> dtoList = new ArrayList<>();
+        for (CourseDetail courseDetail : detailList) {
+            Courses courses = courseDetail.getCourse();
+            CoursesDTO dto = new CoursesDTO();
             dto.setId(courses.getId());
             dto.setName(courses.getName());
             dto.setSlug(courses.getSlug());
             dto.setImage(cloudinaryService.getImageUrl(courses.getImage()));
-            dto.setTeacher(modelMapper.map(courses.getTeacher(),UsersDTO.class));
+            dto.setTeacher(modelMapper.map(courses.getTeacher(), UsersDTO.class));
             dto.setRating(calculatorRating(courses.getListRatingCourses()));
             dto.setFree(courses.isFree());
-            if(courses.getListLessons().size()>0){
+            if (courses.getListLessons().size() > 0) {
                 dto.setIdStart(courses.getListLessons().get(0).getId());
             }
             dto.setLimitTime(courses.getLimitTime());
@@ -230,15 +249,13 @@ public class CourseServiceImp implements CourseService {
 
     @Override
     public boolean isCoursePurchased(int idUser, int idCourse) {
-        boolean isSuccess=false;
-        Courses courses=new Courses();
+        boolean isSuccess = false;
+        Courses courses = new Courses();
         courses.setId(idCourse);
-        Optional<CourseDetail> courseDetailOptional=courseDetailRepository.findByCourseAndIdUser(courses,idUser);
-        if(courseDetailOptional.isPresent()){
-            CourseDetail courseDetail=courseDetailOptional.get();
-            isSuccess=courseDetail.getEndDate().after(new Date());
-            System.out.println("date: "+new Date());
-            System.out.println("limit: "+courseDetail.getEndDate());
+        Optional<CourseDetail> courseDetailOptional = courseDetailRepository.findByCourseAndIdUser(courses, idUser);
+        if (courseDetailOptional.isPresent()) {
+            CourseDetail courseDetail = courseDetailOptional.get();
+            isSuccess = courseDetail.getEndDate().after(new Date());
         }
 
         return isSuccess;

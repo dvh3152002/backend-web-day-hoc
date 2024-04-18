@@ -24,7 +24,7 @@ public interface Constants {
         String USER_ID_NOT_BLANK="Thiếu người dạy khóa học";
         String CATEGORY_ID_NOT_BLANK="Thiếu danh mục khóa học";
         String START_SIZE="Số trang phải bắt đầu từ 0";
-        String LIMIT_SIZE = "Số lượng khóa học trong một trang là từ 5 đến 30 khóa học";
+        String LIMIT_SIZE = "Số lượng khóa học trong một trang là từ 3 đến 30 khóa học";
         String NOT_FIND_COURSE_BY_ID = "Không tìm thấy khóa học có ID là: ";
     }
 

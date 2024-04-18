@@ -8,6 +8,7 @@ import com.example.backendkhoaluan.payload.request.CreateUserRequest;
 import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
+import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
 import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.service.imp.CourseService;
 import com.example.backendkhoaluan.service.imp.UserService;
@@ -99,22 +100,26 @@ public class AuthController {
     }
 
     @GetMapping("/my-course")
-    public BaseResponse getListCourse(@RequestHeader("Authorization") String header) {
+    public BaseResponse getListCourse(@ModelAttribute CustomCourseDetailQuery.CourseDetailFilterParam param,
+                                      @RequestHeader("Authorization") String header) {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
 
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
-        List<CoursesDTO> list = courseService.getListCourse(user.getId());
+        param.setIdUser(user.getId());
+        List<CoursesDTO> list = courseService.getListCourse(param);
         return BaseResponse.successListData(list,list.size());
     }
 
     @GetMapping("/course-purchased")
-    public BaseResponse getCoursePurchased(@RequestHeader("Authorization") String header){
+    public BaseResponse getCoursePurchased(@ModelAttribute CustomCourseDetailQuery.CourseDetailFilterParam param,
+                                           @RequestHeader("Authorization") String header){
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
 
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
-        Set<Integer> set=authService.getCoursePurchased(user.getId());
+        param.setIdUser(user.getId());
+        Set<Integer> set=authService.getCoursePurchased(param);
         return BaseResponse.success(set);
     }
 }

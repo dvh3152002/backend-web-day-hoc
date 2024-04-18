@@ -9,12 +9,14 @@ import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.payload.request.SignInRequest;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.repository.CourseDetailRepository;
+import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
 import com.example.backendkhoaluan.repository.UsersRepository;
 import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -79,9 +81,11 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public Set<Integer> getCoursePurchased(int idUser) {
-        List<CourseDetail> list = courseDetailRepository.findAllByIdUser(idUser);
+    public Set<Integer> getCoursePurchased(CustomCourseDetailQuery.CourseDetailFilterParam param) {
+        Specification<CourseDetail> specification=CustomCourseDetailQuery.getFilterCourse(param);
+        List<CourseDetail> list = courseDetailRepository.findAll(specification);
         Set<Integer> set=new HashSet<>();
+
         for (CourseDetail courseDetail:list){
             set.add(courseDetail.getCourse().getId());
         }

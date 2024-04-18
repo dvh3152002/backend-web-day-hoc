@@ -22,7 +22,6 @@ public class Categories {
     @OneToMany(mappedBy = "category",orphanRemoval = true)
     private List<Courses> listCourses;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "category",orphanRemoval = true)
+    @OneToMany(mappedBy = "category",cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Post> listPosts;
 }
