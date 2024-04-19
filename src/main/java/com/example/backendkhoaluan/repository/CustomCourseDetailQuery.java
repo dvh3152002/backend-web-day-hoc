@@ -26,6 +26,7 @@ public class CustomCourseDetailQuery {
     @NoArgsConstructor
     public static class CourseDetailFilterParam {
         private Long date;
+        private Boolean isFinish=false;
         private Integer idUser;
         private String sortField;
         private String sortType;
@@ -38,7 +39,11 @@ public class CustomCourseDetailQuery {
                 predicates.add(criteriaBuilder.equal(root.get("idUser"), (param.idUser)));
             }
             if (param.date != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), (param.date)));
+                if(param.isFinish){
+                    predicates.add(criteriaBuilder.lessThan(root.get("endDate"), (param.date)));
+                }else{
+                    predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), (param.date)));
+                }
             }
             if (param.sortField != null && !param.sortField.equals("")) {
                 if (param.sortType.equals(Constants.SortType.DESC) || param.sortType.equals("")) {

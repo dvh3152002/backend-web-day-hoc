@@ -104,7 +104,7 @@ public class AuthServiceImp implements AuthService {
         }
         User user=userOptional.get();
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new DataNotFoundException("Email hoặc mật khẩu không đúng");
+            throw new DataNotFoundException("Mật khẩu không đúng");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         usersRepository.save(user);
