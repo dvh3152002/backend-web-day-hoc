@@ -75,17 +75,24 @@ public class FileController {
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
         LessonsDTO lessonsDTO = lessonService.getLessonsById(id);
         if (roles.contains("ROLE_ADMIN")) {
-            getVideo(lessonsDTO,response);
-        } else if (roles.contains("ROLE_TEACHER")) {
+            getVideo(lessonsDTO, response);
+        } else {
             CoursesDTO coursesDTO = courseService.getCourseById(lessonsDTO.getIdCourse());
+            if (coursesDTO.isFree()) {
+                getVideo(lessonsDTO, response);
+            } else {
+                if (roles.contains("ROLE_TEACHER")) {
 
-            if (coursesDTO.getTeacher().getId() == user.getId()) {
-                getVideo(lessonsDTO,response);
+                    if (coursesDTO.getTeacher().getId() == user.getId()) {
+                        getVideo(lessonsDTO, response);
+                    }
+                } else if (roles.contains("ROLE_USER")) {
+                    if (courseService.isCoursePurchased(user.getId(), lessonsDTO.getIdCourse())) {
+                        getVideo(lessonsDTO, response);
+                    }
+                }
             }
-        } else if (roles.contains("ROLE_USER")) {
-            if(courseService.isCoursePurchased(user.getId(),lessonsDTO.getIdCourse())){
-                getVideo(lessonsDTO,response);
-            }
+
         }
     }
 
