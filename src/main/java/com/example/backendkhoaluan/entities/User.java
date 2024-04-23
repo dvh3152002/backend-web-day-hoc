@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -33,6 +34,15 @@ public class User {
 
     @Column(name = "avatar")
     private String avatar;
+
+    @Column(name = "active")
+    private boolean active;
+
+    @Column(name = "otp")
+    private String otp;
+
+    @Column(name = "otp_generated_time")
+    private LocalDateTime otpGeneratedTime;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(

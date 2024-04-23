@@ -144,6 +144,7 @@ public class UserServiceImp implements UserService {
             }
 
             User userEntity = modelMapper.map(createUserRequest, User.class);
+            userEntity.setActive(true);
             userEntity.setPassword(passwordEncoder.encode(createUserRequest.getPassword()));
             if (avatar != null) {
                 String fileName = cloudinaryService.uploadFile(avatar);

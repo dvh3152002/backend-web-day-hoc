@@ -3,10 +3,7 @@ package com.example.backendkhoaluan.controller;
 import com.example.backendkhoaluan.constant.ErrorCodeDefs;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
-import com.example.backendkhoaluan.payload.request.ChangePasswordRequest;
-import com.example.backendkhoaluan.payload.request.SignInRequest;
-import com.example.backendkhoaluan.payload.request.CreateUserRequest;
-import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
+import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
 import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
@@ -59,9 +56,18 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public BaseResponse signup(@Valid @RequestBody CreateUserRequest createUserRequest,
-                               @RequestPart(name = "file", required = false) MultipartFile file) {
-        return BaseResponse.success(userService.createUser(createUserRequest, file));
+    public BaseResponse register(@Valid @RequestBody CreateUserRequest createUserRequest) {
+        return BaseResponse.success(authService.register(createUserRequest));
+    }
+
+    @PutMapping("verify-account")
+    public BaseResponse verifyAccount(@RequestBody VerifyAccountRequest request){
+        return BaseResponse.success(authService.verifyAccount(request));
+    }
+
+    @PutMapping("regenerate-otp")
+    public BaseResponse regenerateOTP(@RequestParam String email){
+        return BaseResponse.success(authService.regenerateOTP(email));
     }
 
     @PutMapping("/profile")

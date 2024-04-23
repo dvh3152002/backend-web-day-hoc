@@ -45,6 +45,16 @@ public interface Constants {
         String NOT_FIND_CODE_BY_ID = "Không tìm thấy code có ID là: ";
     }
 
+    interface ErrorMessageRoleValidation {
+        String NOT_FIND_ROLE_BY_ID = "Không tìm thấy role có ID là: ";
+    }
+
+    interface ErrorMessageVerifyValidation {
+        String OTP_NOT_BLANK = "OTP không được để trống";
+
+        String EMAIL_NOT_BLANK = "Email không được để trống";
+    }
+
     interface ErrorMessageRatingValidation {
         String CONTENT_NOT_BLANK="Nhận xét khóa học không được để trống";
         String COURSE_NOT_BLANK="Không có ID khóa học";

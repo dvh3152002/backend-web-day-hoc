@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestControllerAdvice
 @Slf4j
-public class ExceptionController {
+public class RestResponseEntityExceptionHandler {
     @ExceptionHandler({Exception.class})
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -146,5 +146,14 @@ public class ExceptionController {
     public BaseResponse handlePaymentException(PaymentException ex) {
         log.error("PaymentException: {}", ex);
         return BaseResponse.error(ErrorCodeDefs.ERR_FILE, ex.getMessage());
+    }
+
+    @ResponseStatus(OK)
+    @ResponseBody
+    @ExceptionHandler(value = {EmailException.class})
+    @Order(1)
+    public BaseResponse handlePaymentException(EmailException ex) {
+        log.error("EmailException: {}", ex);
+        return BaseResponse.error(ErrorCodeDefs.ERR_EMAIL_FAILED, ex.getMessage());
     }
 }

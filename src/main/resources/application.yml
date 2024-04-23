@@ -17,6 +17,11 @@ spring:
       max-request-size: 30MB
       file-size-threshold: 2KB
       resolve-lazily: true
+  mail:
+    host: smtp.gmail.com
+    password: rgxcdilbyklxmisv
+    username: dvh31502@gmail.com
+    port: 587
 jwt:
   privateKey: UvmX3g7ww8TZ/PNE+GdL/HaQPlOGs0V3pCoGpB8hxkE=
 root:
