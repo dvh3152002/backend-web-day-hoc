@@ -12,6 +12,7 @@ public interface Constants {
         String LIMIT_SIZE = "Số lượng người dùng trong một trang là từ 5 đến 30 người";
         String NOT_FIND_USER_BY_ID = "Không tìm thấy người dùng có ID là: ";
         String EMAIL_IS_EXIST = "Email đã tồn tại";
+        String OTP_NOT_BLANK = "OTP không được để trống";
         String NOT_FIND_USER_BY_EMAIL= "Không tìm thấy người dùng có email là: ";
     }
 

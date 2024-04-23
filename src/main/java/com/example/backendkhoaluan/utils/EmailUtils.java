@@ -17,7 +17,7 @@ public class EmailUtils {
             MimeMessage mimeMessage=javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage,true);
             mimeMessageHelper.setTo(email);
-            mimeMessageHelper.setSubject("Verify OTP");
+            mimeMessageHelper.setSubject("Xác thực OTP");
             mimeMessageHelper.setText("""
                     Your OTP: <b>%s</b>
                     """.formatted(otp),true);

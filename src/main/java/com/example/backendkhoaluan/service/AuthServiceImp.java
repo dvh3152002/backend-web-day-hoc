@@ -11,10 +11,7 @@ import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.EmailException;
 import com.example.backendkhoaluan.exception.ErrorDetailException;
-import com.example.backendkhoaluan.payload.request.ChangePasswordRequest;
-import com.example.backendkhoaluan.payload.request.CreateUserRequest;
-import com.example.backendkhoaluan.payload.request.SignInRequest;
-import com.example.backendkhoaluan.payload.request.VerifyAccountRequest;
+import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.ErrorDetail;
 import com.example.backendkhoaluan.repository.CourseDetailRepository;
@@ -164,6 +161,25 @@ public class AuthServiceImp implements AuthService {
         usersRepository.save(user);
         emailUtils.sendOtpEmail(email,otp);
         return "Email đã gửi... Hãy xác thực trong 1 phút";
+    }
+
+    @Override
+    public String forgotPassword(ForgotPasswordRequest request) {
+        String email=request.getEmail();
+        Optional<User> userOptional = usersRepository.findByEmail(email);
+        if (!userOptional.isPresent()) {
+            throw new DataNotFoundException("Không tồn tại người dùng có email là: " + email);
+        }
+        User user = userOptional.get();
+        if (user.getOtp().equals(request.getOtp()) &&
+                Duration.between(user.getOtpGeneratedTime(), LocalDateTime.now()).getSeconds() < (1 * 60)) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+            usersRepository.save(user);
+            return "OTP đã xác thực thành công.";
+        } else {
+            throw new RuntimeException("Hãy tạo lại OTP và thử lại.");
+        }
     }
 
     @Override

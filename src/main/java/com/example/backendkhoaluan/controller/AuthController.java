@@ -70,6 +70,11 @@ public class AuthController {
         return BaseResponse.success(authService.regenerateOTP(email));
     }
 
+    @PutMapping("forgot-password")
+    public BaseResponse forgotPassword(@RequestBody ForgotPasswordRequest request){
+        return BaseResponse.success(authService.forgotPassword(request));
+    }
+
     @PutMapping("/profile")
     public BaseResponse updateProfile(@Valid @ModelAttribute UpdateUserRequest request,
                                       @RequestPart(name = "file", required = false) MultipartFile file,

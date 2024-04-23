@@ -1,10 +1,7 @@
 package com.example.backendkhoaluan.service.imp;
 
 import com.example.backendkhoaluan.dto.CoursesDTO;
-import com.example.backendkhoaluan.payload.request.ChangePasswordRequest;
-import com.example.backendkhoaluan.payload.request.CreateUserRequest;
-import com.example.backendkhoaluan.payload.request.SignInRequest;
-import com.example.backendkhoaluan.payload.request.VerifyAccountRequest;
+import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
 
@@ -19,6 +16,9 @@ public interface AuthService {
     String verifyAccount(VerifyAccountRequest request);
 
     String regenerateOTP(String email);
+
+    String forgotPassword(ForgotPasswordRequest request);
+
 
     AuthResponse refreshToken(AuthResponse authResponse);
 
