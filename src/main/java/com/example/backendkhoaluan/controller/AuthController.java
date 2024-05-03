@@ -145,4 +145,9 @@ public class AuthController {
         authService.changePassword(user.getId(),request);
         return BaseResponse.success("Đổi mật khẩu thành công");
     }
+
+    @GetMapping("/dashboard")
+    public BaseResponse getDashBoard(){
+        return BaseResponse.success(authService.getDashBoard());
+    }
 }

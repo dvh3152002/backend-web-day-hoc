@@ -11,6 +11,7 @@ import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.PaymentException;
 import com.example.backendkhoaluan.payload.request.PayRequest;
+import com.example.backendkhoaluan.payload.response.MonthlySaleResponse;
 import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.OrderService;
 import com.example.backendkhoaluan.utils.HelperUtils;
@@ -28,6 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -236,5 +240,31 @@ public class OrderServiceImp implements OrderService {
         Orders orders=ordersOptional.get();
         OrdersDTO ordersDTO=modelMapper.map(orders,OrdersDTO.class);
         return ordersDTO;
+    }
+
+    @Override
+    public List<MonthlySaleResponse> getMonthlySale(int year) {
+        // Khởi tạo danh sách chứa giá trị mặc định ban đầu cho các tháng từ tháng 1 đến tháng 12
+        List<Double> monthlyTotalList = new ArrayList<>(Arrays.asList(new Double[12]));
+        Collections.fill(monthlyTotalList, 0.0);
+
+// Lấy kết quả từ cơ sở dữ liệu
+        List<Object[]> results = ordersRepository.getTotalCostByMonthInYear(year);
+
+// Duyệt qua kết quả và cập nhật giá trị tương ứng cho các tháng trong danh sách
+        for (Object[] result : results) {
+            int month = ((Number) result[0]).intValue(); // Lấy tháng từ kết quả
+            double totalCost = ((Number) result[2]).doubleValue(); // Lấy tổng số tiền từ kết quả
+            monthlyTotalList.set(month - 1, totalCost); // Cập nhật giá trị cho tháng tương ứng
+        }
+
+// Tạo danh sách chứa các đối tượng MonthlySaleResponse từ danh sách tổng số tiền của các tháng
+        List<MonthlySaleResponse> monthlyTotals = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            double totalCost = monthlyTotalList.get(i); // Lấy giá trị từ danh sách tổng số tiền của các tháng
+            monthlyTotals.add(new MonthlySaleResponse(totalCost, "Tháng " + (i + 1))); // Thêm vào danh sách MonthlySaleResponse
+        }
+
+        return monthlyTotals;
     }
 }

@@ -3,6 +3,7 @@ package com.example.backendkhoaluan.service.imp;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
+import com.example.backendkhoaluan.payload.response.DashBoardResponse;
 import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface AuthService {
     Set<Integer> getCoursePurchased(CustomCourseDetailQuery.CourseDetailFilterParam param);
 
     void changePassword(Integer id, ChangePasswordRequest request);
+
+    DashBoardResponse getDashBoard();
 }

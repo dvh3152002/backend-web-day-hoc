@@ -13,6 +13,7 @@ import com.example.backendkhoaluan.exception.EmailException;
 import com.example.backendkhoaluan.exception.ErrorDetailException;
 import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
+import com.example.backendkhoaluan.payload.response.DashBoardResponse;
 import com.example.backendkhoaluan.payload.response.ErrorDetail;
 import com.example.backendkhoaluan.repository.CourseDetailRepository;
 import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
@@ -220,6 +221,11 @@ public class AuthServiceImp implements AuthService {
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         usersRepository.save(user);
+    }
+
+    @Override
+    public DashBoardResponse getDashBoard() {
+        return null;
     }
 
     private void checkRoleUserExists(User user, Set<Integer> idRole) {

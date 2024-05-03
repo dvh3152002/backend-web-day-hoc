@@ -10,6 +10,7 @@ import com.example.backendkhoaluan.payload.request.GetLessonRequest;
 import com.example.backendkhoaluan.payload.request.OrderRequest;
 import com.example.backendkhoaluan.payload.request.PayRequest;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
+import com.example.backendkhoaluan.payload.response.MonthlySaleResponse;
 import com.example.backendkhoaluan.service.imp.OrderService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
@@ -97,5 +98,11 @@ public class OrderController {
                     OrdersDTO ordersDTO=modelMapper.map(data,OrdersDTO.class);
                     return ordersDTO;
                 }).collect(Collectors.toList()), (int) page.getTotalElements());
+    }
+
+    @GetMapping("/dashboard/{year}")
+    public BaseResponse getMonthlySale(@PathVariable int year){
+        List<MonthlySaleResponse> list=orderService.getMonthlySale(year);
+        return BaseResponse.successListData(list,list.size());
     }
 }

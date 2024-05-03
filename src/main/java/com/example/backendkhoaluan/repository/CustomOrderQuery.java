@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

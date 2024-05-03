@@ -4,6 +4,7 @@ import com.example.backendkhoaluan.dto.OrdersDTO;
 import com.example.backendkhoaluan.entities.Orders;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.payload.request.PayRequest;
+import com.example.backendkhoaluan.payload.response.MonthlySaleResponse;
 import com.example.backendkhoaluan.repository.CustomOrderQuery;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,4 +25,6 @@ public interface OrderService {
     Page<Orders> getListOrder(CustomOrderQuery.OrderFilterParam param, PageRequest pageRequest,String header);
 
     OrdersDTO findById(int id);
+
+    List<MonthlySaleResponse> getMonthlySale(int year);
 }

@@ -30,16 +30,16 @@ public class RoleServiceImp implements RoleService {
     @Override
     public List<RolesDTO> getListRole() {
         List<RolesDTO> dtoList;
-        if(redisTemplate.hasKey("roles")){
-            String data = redisTemplate.opsForValue().get("roles").toString();
-            Type listType = new TypeToken<List<RolesDTO>>() {
-            }.getType();
-            dtoList = gson.fromJson(data, listType);
-        }else {
+//        if(redisTemplate.hasKey("roles")){
+//            String data = redisTemplate.opsForValue().get("roles").toString();
+//            Type listType = new TypeToken<List<RolesDTO>>() {
+//            }.getType();
+//            dtoList = gson.fromJson(data, listType);
+//        }else {
             List<Role> list = rolesRepository.findAll();
             dtoList = list.stream().map(data -> modelMapper.map(data, RolesDTO.class))
                     .collect(Collectors.toList());
-        }
+//        }
         return dtoList;
     }
 }
