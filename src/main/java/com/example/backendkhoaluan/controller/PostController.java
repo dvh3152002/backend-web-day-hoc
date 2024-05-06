@@ -32,7 +32,7 @@ public class PostController {
     @PostMapping("")
     public BaseResponse createPost(@Valid @RequestBody PostRequest request) {
         postService.createPost(request);
-        return BaseResponse.success("Cập nhật bài viết thành công");
+        return BaseResponse.success("Thêm bài viết thành công");
     }
 
     @DeleteMapping("/{id}")

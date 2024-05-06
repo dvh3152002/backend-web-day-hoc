@@ -37,6 +37,14 @@ public interface Constants {
         String NOT_FIND_POST_BY_ID = "Không tìm thấy bài viết có ID là: ";
     }
 
+    interface ErrorMessageNewValidation {
+        String TITLE_NOT_BLANK="Tiêu đề tin tức không được để trống";
+        String DESCRIPTION_NOT_BLANK="Mô tả tin tức không được để trống";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String LIMIT_SIZE = "Số lượng tin tức trong một trang là từ 5 đến 50 bài viết";
+        String NOT_FIND_NEW_BY_ID = "Không tìm thấy tin tức có ID là: ";
+    }
+
     interface ErrorMessageCodeValidation {
         String CODE_NOT_BLANK="Code không được để trống";
         String LANGUAGE_NOT_BLANK="Ngôn ngữ lập trình không được để trống";
