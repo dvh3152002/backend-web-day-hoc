@@ -27,5 +27,5 @@ public interface AuthService {
 
     void changePassword(Integer id, ChangePasswordRequest request);
 
-    DashBoardResponse getDashBoard();
+    DashBoardResponse getDashBoard(int year);
 }

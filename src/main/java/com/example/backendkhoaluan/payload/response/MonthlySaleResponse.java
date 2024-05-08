@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class MonthlySaleResponse {
-    private double totalCost;
+    private int totalCost;
     private String month;
 }

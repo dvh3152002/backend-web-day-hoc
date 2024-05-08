@@ -6,6 +6,8 @@ import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
+import com.example.backendkhoaluan.payload.response.DashBoardResponse;
+import com.example.backendkhoaluan.payload.response.MonthlySaleResponse;
 import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
 import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.service.imp.CourseService;
@@ -61,17 +63,17 @@ public class AuthController {
     }
 
     @PutMapping("verify-account")
-    public BaseResponse verifyAccount(@RequestBody VerifyAccountRequest request){
+    public BaseResponse verifyAccount(@RequestBody VerifyAccountRequest request) {
         return BaseResponse.success(authService.verifyAccount(request));
     }
 
     @PutMapping("regenerate-otp")
-    public BaseResponse regenerateOTP(@RequestParam String email){
+    public BaseResponse regenerateOTP(@RequestParam String email) {
         return BaseResponse.success(authService.regenerateOTP(email));
     }
 
     @PutMapping("forgot-password")
-    public BaseResponse forgotPassword(@RequestBody ForgotPasswordRequest request){
+    public BaseResponse forgotPassword(@RequestBody ForgotPasswordRequest request) {
         return BaseResponse.success(authService.forgotPassword(request));
     }
 
@@ -120,34 +122,35 @@ public class AuthController {
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
         param.setIdUser(user.getId());
         List<CoursesDTO> list = courseService.getListCourse(param);
-        return BaseResponse.successListData(list,list.size());
+        return BaseResponse.successListData(list, list.size());
     }
 
     @GetMapping("/course-purchased")
     public BaseResponse getCoursePurchased(@ModelAttribute CustomCourseDetailQuery.CourseDetailFilterParam param,
-                                           @RequestHeader("Authorization") String header){
+                                           @RequestHeader("Authorization") String header) {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
 
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
         param.setIdUser(user.getId());
-        Set<Integer> set=authService.getCoursePurchased(param);
+        Set<Integer> set = authService.getCoursePurchased(param);
         return BaseResponse.success(set);
     }
 
     @PutMapping("/change-password")
     public BaseResponse changePassword(@Valid @RequestBody ChangePasswordRequest request,
-                                       @RequestHeader("Authorization") String header){
+                                       @RequestHeader("Authorization") String header) {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
 
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
-        authService.changePassword(user.getId(),request);
+        authService.changePassword(user.getId(), request);
         return BaseResponse.success("Đổi mật khẩu thành công");
     }
 
-    @GetMapping("/dashboard")
-    public BaseResponse getDashBoard(){
-        return BaseResponse.success(authService.getDashBoard());
+    @GetMapping("/dashboard/{year}")
+    public BaseResponse getDashboard(@PathVariable int year) {
+        DashBoardResponse data = authService.getDashBoard(year);
+        return BaseResponse.success(data);
     }
 }

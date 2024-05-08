@@ -50,13 +50,13 @@ public class OrderServiceImp implements OrderService {
 
     private Gson gson = new Gson();
 
-    private ModelMapper modelMapper=new ModelMapper();
+    private ModelMapper modelMapper = new ModelMapper();
 
     @Override
     public void deleteOrder(int id) {
-        Optional<Orders> orders=ordersRepository.findById(id);
-        if(!orders.isPresent()){
-            throw new DataNotFoundException(Constants.ErrorMessageOrderValidation.NOT_FIND_ORDER_BY_ID+id);
+        Optional<Orders> orders = ordersRepository.findById(id);
+        if (!orders.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessageOrderValidation.NOT_FIND_ORDER_BY_ID + id);
         }
         deleteOrder(orders.get());
     }
@@ -65,13 +65,13 @@ public class OrderServiceImp implements OrderService {
     @Override
     public void deleteOrder(Orders orders) {
         try {
-            List<OrderDetail> listOrderDetails=orderDetailRepository.findByOrder(orders);
+            List<OrderDetail> listOrderDetails = orderDetailRepository.findByOrder(orders);
             listOrderDetails.forEach(orderDetail -> {
                 orderDetailRepository.delete(orderDetail);
             });
             ordersRepository.delete(orders);
-        }catch (Exception e){
-            throw new DeleteException("Lỗi xóa giỏ hàng",e.getLocalizedMessage());
+        } catch (Exception e) {
+            throw new DeleteException("Lỗi xóa giỏ hàng", e.getLocalizedMessage());
         }
     }
 
@@ -102,7 +102,7 @@ public class OrderServiceImp implements OrderService {
                 orderDetail.setCreateDate(new Date());
                 orderDetail.setOrder(order);
 
-                Courses courses=new Courses();
+                Courses courses = new Courses();
                 courses.setId(dto.getIdCourse());
                 orderDetail.setDescription(dto.getDescription());
                 orderDetail.setCourse(courses);
@@ -137,7 +137,7 @@ public class OrderServiceImp implements OrderService {
             vnp_Params.put("vnp_OrderType", orderType);
 
             vnp_Params.put("vnp_Locale", "vn");
-            vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl+"?orderId="+order.getId());
+            vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl + "?orderId=" + order.getId());
             vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
             Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -177,7 +177,7 @@ public class OrderServiceImp implements OrderService {
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
             return paymentUrl;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new PaymentException(e.getLocalizedMessage());
         }
     }
@@ -185,18 +185,18 @@ public class OrderServiceImp implements OrderService {
     @Override
     @Transactional
     public void updateOrder(Map<String, String> queryParams) {
-        try{
-            int orderId=Integer.parseInt(queryParams.get("orderId"));
+        try {
+            int orderId = Integer.parseInt(queryParams.get("orderId"));
             Orders orders = ordersRepository.findById(orderId)
-                    .orElseThrow(() -> new DataNotFoundException("Không tồn tại đơn hàng có ID là: "+orderId));
+                    .orElseThrow(() -> new DataNotFoundException("Không tồn tại đơn hàng có ID là: " + orderId));
             orders.setStatus(true);
             orders.setCreateDate(new Date());
             orders.setVnpBankCode(queryParams.get("vnp_BankCode"));
 
-            List<OrderDetail> set=orders.getListOrderDetails();
+            List<OrderDetail> set = orders.getListOrderDetails();
 
-            for(OrderDetail orderDetail:set){
-                CourseDetail courseDetail=new CourseDetail();
+            for (OrderDetail orderDetail : set) {
+                CourseDetail courseDetail = new CourseDetail();
                 courseDetail.setIdUser(orders.getUser().getId());
                 courseDetail.setCourse(orderDetail.getCourse());
                 courseDetail.setEndDate(HelperUtils.getLimitDateTime(orderDetail.getCourse().getLimitTime()));
@@ -205,7 +205,7 @@ public class OrderServiceImp implements OrderService {
             }
 
             ordersRepository.save(orders);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new PaymentException(e.getLocalizedMessage());
         }
     }
@@ -219,8 +219,8 @@ public class OrderServiceImp implements OrderService {
     public Page<Orders> getListOrder(CustomOrderQuery.OrderFilterParam param,
                                      PageRequest pageRequest,
                                      String header) {
-        Set<String> roles=HelperUtils.getAuthorities();
-        if(!roles.contains("ROLE_ADMIN")){
+        Set<String> roles = HelperUtils.getAuthorities();
+        if (!roles.contains("ROLE_ADMIN")) {
             String token = header.substring(7);
             String jwt = jwtUtilsHelper.verifyToken(token);
 
@@ -228,43 +228,17 @@ public class OrderServiceImp implements OrderService {
             param.setIdUser(user.getId());
         }
         Specification<Orders> specification = CustomOrderQuery.getFilterOrder(param);
-        return ordersRepository.findAll(specification,pageRequest);
+        return ordersRepository.findAll(specification, pageRequest);
     }
 
     @Override
     public OrdersDTO findById(int id) {
-        Optional<Orders> ordersOptional=ordersRepository.findById(id);
-        if(!ordersOptional.isPresent()){
-            throw new DataNotFoundException(Constants.ErrorMessageOrderValidation.NOT_FIND_ORDER_BY_ID+id);
+        Optional<Orders> ordersOptional = ordersRepository.findById(id);
+        if (!ordersOptional.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessageOrderValidation.NOT_FIND_ORDER_BY_ID + id);
         }
-        Orders orders=ordersOptional.get();
-        OrdersDTO ordersDTO=modelMapper.map(orders,OrdersDTO.class);
+        Orders orders = ordersOptional.get();
+        OrdersDTO ordersDTO = modelMapper.map(orders, OrdersDTO.class);
         return ordersDTO;
-    }
-
-    @Override
-    public List<MonthlySaleResponse> getMonthlySale(int year) {
-        // Khởi tạo danh sách chứa giá trị mặc định ban đầu cho các tháng từ tháng 1 đến tháng 12
-        List<Double> monthlyTotalList = new ArrayList<>(Arrays.asList(new Double[12]));
-        Collections.fill(monthlyTotalList, 0.0);
-
-// Lấy kết quả từ cơ sở dữ liệu
-        List<Object[]> results = ordersRepository.getTotalCostByMonthInYear(year);
-
-// Duyệt qua kết quả và cập nhật giá trị tương ứng cho các tháng trong danh sách
-        for (Object[] result : results) {
-            int month = ((Number) result[0]).intValue(); // Lấy tháng từ kết quả
-            double totalCost = ((Number) result[2]).doubleValue(); // Lấy tổng số tiền từ kết quả
-            monthlyTotalList.set(month - 1, totalCost); // Cập nhật giá trị cho tháng tương ứng
-        }
-
-// Tạo danh sách chứa các đối tượng MonthlySaleResponse từ danh sách tổng số tiền của các tháng
-        List<MonthlySaleResponse> monthlyTotals = new ArrayList<>();
-        for (int i = 0; i < 12; i++) {
-            double totalCost = monthlyTotalList.get(i); // Lấy giá trị từ danh sách tổng số tiền của các tháng
-            monthlyTotals.add(new MonthlySaleResponse(totalCost, "Tháng " + (i + 1))); // Thêm vào danh sách MonthlySaleResponse
-        }
-
-        return monthlyTotals;
     }
 }

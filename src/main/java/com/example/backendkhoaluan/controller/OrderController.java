@@ -99,10 +99,4 @@ public class OrderController {
                     return ordersDTO;
                 }).collect(Collectors.toList()), (int) page.getTotalElements());
     }
-
-    @GetMapping("/dashboard/{year}")
-    public BaseResponse getMonthlySale(@PathVariable int year){
-        List<MonthlySaleResponse> list=orderService.getMonthlySale(year);
-        return BaseResponse.successListData(list,list.size());
-    }
 }

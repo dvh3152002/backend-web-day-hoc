@@ -4,10 +4,7 @@ import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.CoursesDTO;
 import com.example.backendkhoaluan.dto.RolesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
-import com.example.backendkhoaluan.entities.CourseDetail;
-import com.example.backendkhoaluan.entities.Courses;
-import com.example.backendkhoaluan.entities.Role;
-import com.example.backendkhoaluan.entities.User;
+import com.example.backendkhoaluan.entities.*;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.EmailException;
 import com.example.backendkhoaluan.exception.ErrorDetailException;
@@ -15,10 +12,8 @@ import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.AuthResponse;
 import com.example.backendkhoaluan.payload.response.DashBoardResponse;
 import com.example.backendkhoaluan.payload.response.ErrorDetail;
-import com.example.backendkhoaluan.repository.CourseDetailRepository;
-import com.example.backendkhoaluan.repository.CustomCourseDetailQuery;
-import com.example.backendkhoaluan.repository.RolesRepository;
-import com.example.backendkhoaluan.repository.UsersRepository;
+import com.example.backendkhoaluan.payload.response.MonthlySaleResponse;
+import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.AuthService;
 import com.example.backendkhoaluan.utils.EmailUtils;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
@@ -35,8 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.*;
 
 @Service
@@ -50,6 +44,15 @@ public class AuthServiceImp implements AuthService {
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
+    private OrdersRepository ordersRepository;
+
+    @Autowired
+    private CoursesRepository coursesRepository;
+
+    @Autowired
+    private NewsRepository newsRepository;
 
     @Autowired
     private RolesRepository rolesRepository;
@@ -224,8 +227,43 @@ public class AuthServiceImp implements AuthService {
     }
 
     @Override
-    public DashBoardResponse getDashBoard() {
-        return null;
+    public DashBoardResponse getDashBoard(int year) {
+        LocalDate startDate = Year.of(year).atDay(1);
+        LocalDate endDate = Year.of(year).atDay(1).plusYears(1).minusDays(1);
+
+        // Convert LocalDate to Date for JPA query
+        long start = startDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long end = endDate.atStartOfDay(ZoneId.systemDefault()).plusDays(1).toInstant().toEpochMilli();
+        DashBoardResponse response=new DashBoardResponse();
+
+        List<MonthlySaleResponse> list=getMonthlySale(year);
+        response.setListSale(list);
+        response.setCountUser((int) usersRepository.count());
+
+        CustomCourseQuery.CourseFilterParam courseParam=new GetCourseRequest();
+        courseParam.setStartDate(start);
+        courseParam.setEndDate(end);
+        Specification<Courses> courseSpecification=CustomCourseQuery.getFilterCourse(courseParam);
+        response.setCountCourse((int) coursesRepository.count(courseSpecification));
+
+        CustomeNewQuery.NewFilterParam newParam=new GetNewRequest();
+        newParam.setStartDate(start);
+        newParam.setEndDate(end);
+        Specification<News> newSpecification=CustomeNewQuery.getFilterNew(newParam);
+        response.setCountNew((int) newsRepository.count(newSpecification));
+
+        CustomOrderQuery.OrderFilterParam orderParam=new OrderRequest();
+        orderParam.setStartDate(start);
+        orderParam.setEndDate(end);
+        Specification<Orders> ordersSpecification=CustomOrderQuery.getFilterOrder(orderParam);
+        response.setCountOrder((int) ordersRepository.count(ordersSpecification));
+
+        int totalCost=0;
+        for (MonthlySaleResponse data:list){
+            totalCost+=data.getTotalCost();
+        }
+        response.setTotalCost(totalCost);
+        return response;
     }
 
     private void checkRoleUserExists(User user, Set<Integer> idRole) {
@@ -246,5 +284,30 @@ public class AuthServiceImp implements AuthService {
             }
             user.setRoles(roles);
         }
+    }
+
+    private List<MonthlySaleResponse> getMonthlySale(int year) {
+        // Khởi tạo danh sách chứa giá trị mặc định ban đầu cho các tháng từ tháng 1 đến tháng 12
+        List<Integer> monthlyTotalList = new ArrayList<>(Arrays.asList(new Integer[12]));
+        Collections.fill(monthlyTotalList, 0);
+
+// Lấy kết quả từ cơ sở dữ liệu
+        List<Object[]> results = ordersRepository.getTotalCostByMonthInYear(year);
+
+// Duyệt qua kết quả và cập nhật giá trị tương ứng cho các tháng trong danh sách
+        for (Object[] result : results) {
+            int month = ((Number) result[0]).intValue(); // Lấy tháng từ kết quả
+            int totalCost = ((Number) result[2]).intValue(); // Lấy tổng số tiền từ kết quả
+            monthlyTotalList.set(month - 1, totalCost); // Cập nhật giá trị cho tháng tương ứng
+        }
+
+// Tạo danh sách chứa các đối tượng MonthlySaleResponse từ danh sách tổng số tiền của các tháng
+        List<MonthlySaleResponse> monthlyTotals = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            int totalCost = monthlyTotalList.get(i); // Lấy giá trị từ danh sách tổng số tiền của các tháng
+            monthlyTotals.add(new MonthlySaleResponse(totalCost, "Tháng " + (i + 1))); // Thêm vào danh sách MonthlySaleResponse
+        }
+
+        return monthlyTotals;
     }
 }

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CustomCourseQuery {
@@ -29,6 +30,8 @@ public class CustomCourseQuery {
         private Integer idCategory;
         private Double rating;
         private Boolean free;
+        private Long startDate;
+        private Long endDate;
         private String sortField;
         private String sortType;
     }
@@ -61,6 +64,11 @@ public class CustomCourseQuery {
             if (param.rating != null) {
                 query.groupBy(root.get("id"));
                 query.having(criteriaBuilder.between(criteriaBuilder.avg(root.get("listRatingCourses").get("ratePoint")), 0d,param.rating));
+            }
+            if (param.startDate != null && param.endDate != null) {
+                Date startDateValue = new Date(param.startDate);
+                Date endDateValue = new Date(param.endDate);
+                predicates.add(criteriaBuilder.between(root.get("createDate"), startDateValue, endDateValue));
             }
             if (param.sortField != null && !param.sortField.equals("")) {
                 if (param.sortType.equals(Constants.SortType.DESC) || param.sortType.equals("")) {

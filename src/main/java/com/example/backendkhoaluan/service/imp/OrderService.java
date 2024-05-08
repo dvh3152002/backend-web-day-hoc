@@ -25,6 +25,4 @@ public interface OrderService {
     Page<Orders> getListOrder(CustomOrderQuery.OrderFilterParam param, PageRequest pageRequest,String header);
 
     OrdersDTO findById(int id);
-
-    List<MonthlySaleResponse> getMonthlySale(int year);
 }
