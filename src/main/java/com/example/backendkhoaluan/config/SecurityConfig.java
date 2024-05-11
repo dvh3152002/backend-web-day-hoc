@@ -59,9 +59,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/signin","/api/signup","/api/refreshToken",
                         "/api/file/image/**","/api/code/run","/api/order/payment-callback",
-                        "/api/verify-account","/api/regenerate-otp","/api/forgot-password","/api/order/dashboard").permitAll()
+                        "/api/verify-account","/api/regenerate-otp","/api/forgot-password",
+                        "/api/order/dashboard","/api/file/upload").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**",
-                        "/api/post/**","/api/rating/**").permitAll()
+                        "/api/post/**","/api/rating/**","api/question/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/lesson/**").hasAnyRole("USER","TEACHER","ADMIN")
                 .requestMatchers("/api/lesson/**").hasAnyRole("TEACHER","ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/course/**").hasAnyRole("TEACHER","ADMIN")

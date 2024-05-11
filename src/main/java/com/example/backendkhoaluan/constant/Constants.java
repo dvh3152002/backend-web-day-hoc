@@ -54,6 +54,27 @@ public interface Constants {
         String NOT_FIND_CODE_BY_ID = "Không tìm thấy code có ID là: ";
     }
 
+    interface ErrorMessageQuestionValidation {
+        String TITLE_NOT_BLANK="Tiêu đề không được để trống";
+        String DESCRIPTION_NOT_BLANK="Mô tả không được để trống";
+
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+
+        String LIMIT_SIZE = "Số lượng câu hỏi trong một trang là từ 10 đến 50 câu hỏi";
+
+        String NOT_FIND_QUESTION_BY_ID = "Không tìm thấy câu hỏi có ID là: ";
+    }
+
+    interface ErrorMessageAnswerValidation {
+        String DESCRIPTION_NOT_BLANK="Mô tả không được để trống";
+
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+
+        String LIMIT_SIZE = "Số lượng câu hỏi trong một trang là từ 2 đến 10 câu hỏi";
+
+        String NOT_FIND_QUESTION_BY_ID = "Không tìm thấy câu hỏi có ID là: ";
+    }
+
     interface ErrorMessageRoleValidation {
         String NOT_FIND_ROLE_BY_ID = "Không tìm thấy role có ID là: ";
     }

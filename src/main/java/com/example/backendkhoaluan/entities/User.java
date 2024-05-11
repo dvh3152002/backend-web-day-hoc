@@ -62,4 +62,8 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "teacher",orphanRemoval = true)
     private List<Courses> listCourses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",orphanRemoval = true)
+    private List<Questions> listQuestions;
 }

@@ -134,6 +134,6 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam MultipartFile file) throws IOException {
         String url = cloudinaryService.uploadFile(file);
-        return ResponseEntity.ok().body(url);
+        return ResponseEntity.ok().body(cloudinaryService.getImageUrl(url));
     }
 }
