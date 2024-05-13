@@ -2,21 +2,17 @@ package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.dto.AnswerDTO;
-import com.example.backendkhoaluan.dto.QuestionDTO;
 import com.example.backendkhoaluan.entities.Answers;
 import com.example.backendkhoaluan.entities.Questions;
 import com.example.backendkhoaluan.entities.User;
+import com.example.backendkhoaluan.entities.VoteAnswer;
+import com.example.backendkhoaluan.enums.VoteType;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.payload.request.AnswerRequest;
-import com.example.backendkhoaluan.payload.request.QuestionRequest;
-import com.example.backendkhoaluan.repository.AnswerRepository;
-import com.example.backendkhoaluan.repository.CustomeAnswerQuery;
-import com.example.backendkhoaluan.repository.CustomeQuestionQuery;
-import com.example.backendkhoaluan.repository.QuestionRepository;
+import com.example.backendkhoaluan.payload.request.VoteAnswerRequest;
+import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.AnswerService;
-import com.example.backendkhoaluan.service.imp.QuestionService;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
@@ -36,6 +33,9 @@ public class AnswerServiceImp implements AnswerService {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private VoteAnswerRepository voteAnswerRepository;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -50,7 +50,7 @@ public class AnswerServiceImp implements AnswerService {
             }
             Answers answers = new Answers();
             answers.setBody(request.getBody());
-            User user=new User();
+            User user = new User();
             user.setId(request.getIdUser());
             answers.setUser(user);
             answers.setQuestion(questions.get());
@@ -68,7 +68,34 @@ public class AnswerServiceImp implements AnswerService {
 
     @Override
     public Page<Answers> getListAnswer(CustomeAnswerQuery.AnswerFilterParam param, PageRequest pageRequest) {
-        Specification<Answers> specification=CustomeAnswerQuery.getFilterAnswer(param);
-        return answerRepository.findAll(specification,pageRequest);
+        Specification<Answers> specification = CustomeAnswerQuery.getFilterAnswer(param);
+        return answerRepository.findAll(specification, pageRequest);
+    }
+
+    @Override
+    @Transactional
+    public void voteAnswer(VoteAnswerRequest request) {
+        Optional<Answers> answersOptional = answerRepository.findById(request.getIdAnswer());
+        if (!answersOptional.isPresent()) {
+            throw new DataNotFoundException(Constants.ErrorMessageAnswerValidation.NOT_FIND_ANSWER_BY_ID + request.getIdAnswer());
+        }
+        User user = new User();
+        user.setId(request.getIdUser());
+
+        Answers answers = answersOptional.get();
+
+        VoteAnswer voteAnswer = new VoteAnswer();
+        voteAnswer.setAnswer(answers);
+        voteAnswer.setVoteType(request.getVoteType());
+        voteAnswer.setUser(user);
+
+        if (request.getVoteType() == VoteType.UPVOTE) {
+            answers.setCountVote(answers.getCountVote() + 1);
+        } else if (request.getVoteType() == VoteType.DOWNVOTE && answers.getCountVote() > 0) {
+            answers.setCountVote(answers.getCountVote() - 1);
+        }
+
+        voteAnswerRepository.save(voteAnswer);
+        answerRepository.save(answers);
     }
 }

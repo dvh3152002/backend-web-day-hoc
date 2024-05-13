@@ -1,10 +1,10 @@
 server:
-  port: 8081
+  port: ${PORT}
 spring:
   datasource:
-    username: avnadmin
-    password: AVNS_vOdG4TcssW0ElmjjADl
-    url: jdbc:mysql://webkhoahoc-dvh31502-6d92.f.aivencloud.com:18004/khoaluan
+    username: ${USERNAME_DB}
+    password: ${PASSWORD_DB}
+    url: ${URL_DB}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     open-in-view: false
@@ -19,12 +19,12 @@ spring:
       file-size-threshold: 2KB
       resolve-lazily: true
   mail:
-    host: smtp.gmail.com
-    password: rgxcdilbyklxmisv
-    username: dvh31502@gmail.com
-    port: 587
+    host: ${HOST_MAIL}
+    password: ${PASSWORD_MAIL}
+    username: ${USERNAME_MAIL}
+    port: ${PORT_MAIL}
 jwt:
-  privateKey: UvmX3g7ww8TZ/PNE+GdL/HaQPlOGs0V3pCoGpB8hxkE=
+  privateKey: ${PRIVATE_KEY}
 root:
   path:
     image: images

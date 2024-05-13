@@ -11,4 +11,5 @@ public class AnswerDTO {
     private String body;
     private Date createDate;
     private String userName;
+    private Integer countVote;
 }

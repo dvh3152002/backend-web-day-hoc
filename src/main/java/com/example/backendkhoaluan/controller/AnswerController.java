@@ -1,13 +1,11 @@
 package com.example.backendkhoaluan.controller;
 
+import com.example.backendkhoaluan.dto.AnswerDTO;
 import com.example.backendkhoaluan.dto.QuestionDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.Answers;
 import com.example.backendkhoaluan.entities.Questions;
-import com.example.backendkhoaluan.payload.request.AnswerRequest;
-import com.example.backendkhoaluan.payload.request.GetAnswerRequest;
-import com.example.backendkhoaluan.payload.request.GetQuestionRequest;
-import com.example.backendkhoaluan.payload.request.QuestionRequest;
+import com.example.backendkhoaluan.payload.request.*;
 import com.example.backendkhoaluan.payload.response.BaseResponse;
 import com.example.backendkhoaluan.service.imp.AnswerService;
 import com.example.backendkhoaluan.service.imp.QuestionService;
@@ -53,9 +51,21 @@ public class AnswerController {
         Page<Answers> page=answerService.getListAnswer(request, PageRequest.of(request.getStart(), request.getLimit()));
         return BaseResponse.successListData(page.getContent()
                 .stream().map(data->{
-                    QuestionDTO questionDTO= modelMapper.map(data, QuestionDTO.class);
-                    questionDTO.setUserName(data.getUser().getFullname());
-                    return questionDTO;
+                    AnswerDTO answerDTO= modelMapper.map(data, AnswerDTO.class);
+                    answerDTO.setUserName(data.getUser().getFullname());
+                    return answerDTO;
                 }).collect(Collectors.toList()),(int) page.getTotalElements());
+    }
+
+    @PostMapping("/vote")
+    public BaseResponse voteAnswer(@RequestBody VoteAnswerRequest request,
+                                   @RequestHeader("Authorization") String header){
+        String token = header.substring(7);
+        String jwt = jwtUtilsHelper.verifyToken(token);
+
+        UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+        request.setIdUser(user.getId());
+        answerService.voteAnswer(request);
+        return BaseResponse.success("Vote trả lời thành công");
     }
 }

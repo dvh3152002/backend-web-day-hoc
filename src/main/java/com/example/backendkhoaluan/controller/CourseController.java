@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,9 @@ public class CourseController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Value("${spring.datasource.username}")
+    private String useran;
 
     private final ModelMapper modelMapper=new ModelMapper();
 

@@ -21,6 +21,9 @@ public class Answers {
     @Column(name = "body")
     private String body;
 
+    @Column(name = "count_vote")
+    private Integer countVote=0;
+
     @Column(name = "create_date")
     private Date createDate;
 
@@ -35,4 +38,8 @@ public class Answers {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private Questions question;
+
+    @OneToMany(mappedBy = "answer",cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<VoteAnswer> voteAnswerList;
 }

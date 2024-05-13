@@ -103,9 +103,6 @@ public class RatingServiceImp implements RatingService {
         courses.setId(idCourse);
         Optional<RatingCourse> ratingCourseOptional=ratingCourseRepository.findByUserAndAndCourse(user,courses);
 
-        if(!ratingCourseOptional.isPresent()){
-            throw new DataNotFoundException("Không tìm thấy đánh giá có idCourse: "+idCourse+" idUser: "+idUser);
-        }
         RatingCourse ratingCourse=ratingCourseOptional.get();
         RatingCourseDTO dto=new RatingCourseDTO();
 
