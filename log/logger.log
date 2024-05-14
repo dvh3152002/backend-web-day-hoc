@@ -481,3 +481,68 @@ Caused by: java.io.IOException: An established connection was aborted by the sof
 2024-05-14T00:48:26.759+07:00  INFO 21432 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2024-05-14T00:48:26.772+07:00  INFO 21432 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2024-05-14T00:48:27.229+07:00  INFO 21432 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-05-14T10:23:50.896+07:00  INFO 5452 --- [main] c.e.b.BackendKhoaLuanApplication         : Starting BackendKhoaLuanApplication v0.0.1-SNAPSHOT using Java 17.0.7 with PID 5452 (D:\front-end\khoaluan\backend-web-day-hoc\backend-khoa-luan.jar started by HP in D:\front-end\khoaluan\backend-web-day-hoc)
+2024-05-14T10:23:50.898+07:00  INFO 5452 --- [main] c.e.b.BackendKhoaLuanApplication         : No active profile set, falling back to 1 default profile: "default"
+2024-05-14T10:23:51.616+07:00  WARN 5452 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [com.example.backendkhoaluan.BackendKhoaLuanApplication]: Error processing condition on org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+2024-05-14T10:23:51.624+07:00  INFO 5452 --- [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2024-05-14T10:23:51.641+07:00 ERROR 5452 --- [main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [com.example.backendkhoaluan.BackendKhoaLuanApplication]: Error processing condition on org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:544) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.lambda$processGroupImports$1(ConfigurationClassParser.java:746) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at java.base/java.lang.Iterable.forEach(Iterable.java:75) ~[na:na]
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.processGroupImports(ConfigurationClassParser.java:743) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorHandler.process(ConfigurationClassParser.java:714) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:183) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:416) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:289) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:349) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:118) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:788) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:606) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:334) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1354) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at com.example.backendkhoaluan.BackendKhoaLuanApplication.main(BackendKhoaLuanApplication.java:11) ~[!/:0.0.1-SNAPSHOT]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:91) ~[backend-khoa-luan.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:53) ~[backend-khoa-luan.jar:0.0.1-SNAPSHOT]
+	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:58) ~[backend-khoa-luan.jar:0.0.1-SNAPSHOT]
+Caused by: java.lang.IllegalStateException: Error processing condition on org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:60) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:108) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:220) ~[spring-context-6.1.3.jar!/:6.1.3]
+	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:534) ~[spring-context-6.1.3.jar!/:6.1.3]
+	... 25 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'HOST_MAIL' in value "${HOST_MAIL}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:180) ~[spring-core-6.1.3.jar!/:6.1.3]
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126) ~[spring-core-6.1.3.jar!/:6.1.3]
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239) ~[spring-core-6.1.3.jar!/:6.1.3]
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210) ~[spring-core-6.1.3.jar!/:6.1.3]
+	at org.springframework.core.env.AbstractPropertyResolver.resolveNestedPlaceholders(AbstractPropertyResolver.java:230) ~[spring-core-6.1.3.jar!/:6.1.3]
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:79) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:60) ~[spring-boot-3.2.2.jar!/:3.2.2]
+	at org.springframework.core.env.AbstractEnvironment.getProperty(AbstractEnvironment.java:552) ~[spring-core-6.1.3.jar!/:6.1.3]
+	at org.springframework.boot.autoconfigure.condition.OnPropertyCondition$Spec.collectProperties(OnPropertyCondition.java:121) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.OnPropertyCondition.determineOutcome(OnPropertyCondition.java:71) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.OnPropertyCondition.getMatchOutcome(OnPropertyCondition.java:58) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberOutcomes.getConditionOutcome(AbstractNestedCondition.java:195) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberOutcomes.<init>(AbstractNestedCondition.java:189) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberConditions.lambda$getMatchOutcomes$0(AbstractNestedCondition.java:169) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at java.base/java.util.LinkedHashMap.forEach(LinkedHashMap.java:721) ~[na:na]
+	at org.springframework.util.MultiValueMapAdapter.forEach(MultiValueMapAdapter.java:179) ~[spring-core-6.1.3.jar!/:6.1.3]
+	at java.base/java.util.Collections$UnmodifiableMap.forEach(Collections.java:1553) ~[na:na]
+	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberConditions.getMatchOutcomes(AbstractNestedCondition.java:169) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberMatchOutcomes.<init>(AbstractNestedCondition.java:78) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition.getMatchOutcome(AbstractNestedCondition.java:63) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:47) ~[spring-boot-autoconfigure-3.2.2.jar!/:3.2.2]
+	... 28 common frames omitted
+
