@@ -14,8 +14,8 @@ spring:
     allow-circular-references: true
   servlet:
     multipart:
-      max-file-size: 30MB
-      max-request-size: 30MB
+      max-file-size: 800MB
+      max-request-size: 800MB
       file-size-threshold: 2KB
       resolve-lazily: true
   mail:
@@ -38,3 +38,5 @@ logging:
 redis:
   host: localhost
   port: 6380
+frontend:
+  url: {FRONTEND_URL}

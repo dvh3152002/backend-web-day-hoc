@@ -48,9 +48,9 @@ public class RatingServiceImp implements RatingService {
         try {
             Optional<RatingCourse> ratingCourse = ratingCourseRepository.findById(id);
             if (!ratingCourse.isPresent()) {
-                throw new DataNotFoundException(Constants.ErrorMessageUserValidation.NOT_FIND_USER_BY_ID + id);
+                throw new DataNotFoundException(Constants.ErrorMessageRatingValidation.NOT_FIND_RATING_BY_ID + id);
             }
-            ratingCourseRepository.delete(ratingCourse.get());
+            ratingCourseRepository.deleteById(id);
             return "Xóa đánh giá thành công";
         }catch (Exception e){
             throw new DeleteException("Lỗi xóa rating",e.getLocalizedMessage());

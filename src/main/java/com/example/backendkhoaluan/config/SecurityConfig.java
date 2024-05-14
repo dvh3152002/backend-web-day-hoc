@@ -4,6 +4,7 @@ import com.example.backendkhoaluan.security.CustomJwtFilter;
 import com.example.backendkhoaluan.security.CustomUserDetailService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,6 +35,9 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtFilter customJwtFilter;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
@@ -46,7 +50,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("https://frontend-web-day-hoc.vercel.app/");
+        config.addAllowedOrigin(frontendUrl);
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
@@ -63,7 +67,7 @@ public class SecurityConfig {
                         "/api/verify-account","/api/regenerate-otp","/api/forgot-password",
                         "/api/order/dashboard","/api/file/upload").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**",
-                        "/api/post/**","/api/rating/**","api/question/**").permitAll()
+                        "/api/post/**","/api/rating/**","/api/question/**","/api/answer/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/lesson/**").hasAnyRole("USER","TEACHER","ADMIN")
                 .requestMatchers("/api/lesson/**").hasAnyRole("TEACHER","ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/course/**").hasAnyRole("TEACHER","ADMIN")
