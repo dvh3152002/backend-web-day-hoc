@@ -1,0 +1,5 @@
+# Created at 2024-05-15T08:36:14.589
+Boot Manifest-JAR contains absolute paths in classpath 'D:\front-end\khoaluan\backend-web-day-hoc\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
