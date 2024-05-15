@@ -103,6 +103,10 @@ public class RatingServiceImp implements RatingService {
         courses.setId(idCourse);
         Optional<RatingCourse> ratingCourseOptional=ratingCourseRepository.findByUserAndAndCourse(user,courses);
 
+        if(!ratingCourseOptional.isPresent()){
+            return null;
+        }
+
         RatingCourse ratingCourse=ratingCourseOptional.get();
         RatingCourseDTO dto=new RatingCourseDTO();
 

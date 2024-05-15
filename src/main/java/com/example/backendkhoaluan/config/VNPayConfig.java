@@ -1,6 +1,8 @@
 package com.example.backendkhoaluan.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -15,12 +17,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+@Configuration
 public class VNPayConfig {
-    public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "http://localhost:8081/api/order/payment-callback";
-    public static String vnp_TmnCode = "MAEUNYV2";
-    public static String secretKey = "LEEVEYKSZILHJSHVREICKDHBYHKFRJMW";
-    public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+    @Value("${root.vnpay.pay-url}")
+    public static String vnp_PayUrl;
+
+    @Value("${root.vnpay.url-return}")
+    public static String vnp_ReturnUrl;
+
+    @Value("${root.vnpay.tmn-code}")
+    public static String vnp_TmnCode;
+
+    @Value("${root.vnpay.key}")
+    public static String secretKey;
+
+    @Value("${root.vnpay.pay-url}")
+    public static String vnp_ApiUrl;
 
     public static String md5(String message) {
         String digest = null;

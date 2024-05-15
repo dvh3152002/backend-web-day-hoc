@@ -19,6 +19,7 @@ import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -47,6 +48,18 @@ public class OrderServiceImp implements OrderService {
 
     @Autowired
     private JwtUtilsHelper jwtUtilsHelper;
+
+    @Value("${root.vnpay.pay-url}")
+    public String vnp_PayUrl;
+
+    @Value("${root.vnpay.url-return}")
+    public String vnp_ReturnUrl;
+
+    @Value("${root.vnpay.tmn-code}")
+    public String vnp_TmnCode;
+
+    @Value("${root.vnpay.key}")
+    public String secretKey;
 
     private Gson gson = new Gson();
 
@@ -120,8 +133,6 @@ public class OrderServiceImp implements OrderService {
             String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
             String vnp_IpAddr = "127.0.0.1";
 
-            String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
-
             Map<String, String> vnp_Params = new HashMap<>();
             vnp_Params.put("vnp_Version", vnp_Version);
             vnp_Params.put("vnp_Command", vnp_Command);
@@ -137,7 +148,7 @@ public class OrderServiceImp implements OrderService {
             vnp_Params.put("vnp_OrderType", orderType);
 
             vnp_Params.put("vnp_Locale", "vn");
-            vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl + "?orderId=" + order.getId());
+            vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl + "?orderId=" + order.getId());
             vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
             Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -173,9 +184,9 @@ public class OrderServiceImp implements OrderService {
                 }
             }
             String queryUrl = query.toString();
-            String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
+            String vnp_SecureHash = VNPayConfig.hmacSHA512(secretKey, hashData.toString());
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-            String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
+            String paymentUrl = vnp_PayUrl + "?" + queryUrl;
             return paymentUrl;
         } catch (Exception e) {
             throw new PaymentException(e.getLocalizedMessage());

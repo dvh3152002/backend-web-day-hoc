@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,9 @@ public class OrderController {
     @Autowired
     private JwtUtilsHelper jwtUtilsHelper;
 
+    @Value("${root.frontend.url}")
+    private String frontendUrl;
+
     private final Gson gson = new Gson();
 
     private ModelMapper modelMapper=new ModelMapper();
@@ -53,16 +57,16 @@ public class OrderController {
                 // Giao dịch thành công
                 // Thực hiện các xử lý cần thiết, ví dụ: cập nhật CSDL
                 orderService.updateOrder(queryParams);
-                response.sendRedirect("http://localhost:3000/payment?isSuccess="+true);
+                response.sendRedirect(frontendUrl+"/payment?isSuccess="+true);
             } else {
                 // Giao dịch thất bại
                 // Thực hiện các xử lý cần thiết, ví dụ: không cập nhật CSDL\
-                response.sendRedirect("http://localhost:3000/payment?isSuccess="+false);
+                response.sendRedirect(frontendUrl+"/payment?isSuccess="+false);
             }
         }else {
             // Giao dịch thất bại
             // Thực hiện các xử lý cần thiết, ví dụ: không cập nhật CSDL\
-            response.sendRedirect("http://localhost:3000/payment?isSuccess="+false);
+            response.sendRedirect(frontendUrl+"/payment?isSuccess="+false);
         }
     }
 

@@ -35,7 +35,7 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtFilter customJwtFilter;
 
-    @Value("${frontend.url}")
+    @Value("${root.frontend.url}")
     private String frontendUrl;
 
     @Bean

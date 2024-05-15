@@ -29,6 +29,18 @@ root:
   path:
     image: images
     video: videos/
+  frontend:
+    url: ${FRONTEND_URL}
+  vnpay:
+    key: ${SECRET_KEY_VNPAY}
+    tmn-code: ${TMN_CODE_VNPAY}
+    url-return: ${URL_RETURN_VNPAY}
+    pay-url: ${PAY_URL}
+    api-pay-url: ${API-PAY_URL}
+  cloud:
+    name: ${CLOUD_NAME}
+    key: ${CLOUD_API_KEY}
+    secret: ${CLOUD_API_SECRET}
 logging:
   file:
     name: D:\front-end\khoaluan\backend-web-day-hoc\log\logger.log
@@ -38,5 +50,3 @@ logging:
 redis:
   host: localhost
   port: 6380
-frontend:
-  url: {FRONTEND_URL}
