@@ -22,7 +22,7 @@ public interface OrderService {
 
     List<Orders> findByUser(User user);
 
-    Page<Orders> getListOrder(CustomOrderQuery.OrderFilterParam param, PageRequest pageRequest,String header);
+    Page<Orders> getListOrder(CustomOrderQuery.OrderFilterParam param, PageRequest pageRequest);
 
     OrdersDTO findById(int id);
 }

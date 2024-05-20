@@ -63,6 +63,7 @@ public interface Constants {
         String LIMIT_SIZE = "Số lượng câu hỏi trong một trang là từ 10 đến 50 câu hỏi";
 
         String NOT_FIND_QUESTION_BY_ID = "Không tìm thấy câu hỏi có ID là: ";
+        String TAG_NOT_NULL = "Tag không được để trống";
     }
 
     interface ErrorMessageAnswerValidation {

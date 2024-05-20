@@ -187,6 +187,7 @@ public class OrderServiceImp implements OrderService {
             String vnp_SecureHash = VNPayConfig.hmacSHA512(secretKey, hashData.toString());
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             String paymentUrl = vnp_PayUrl + "?" + queryUrl;
+            System.out.println("key: "+secretKey);
             return paymentUrl;
         } catch (Exception e) {
             throw new PaymentException(e.getLocalizedMessage());
@@ -228,16 +229,7 @@ public class OrderServiceImp implements OrderService {
 
     @Override
     public Page<Orders> getListOrder(CustomOrderQuery.OrderFilterParam param,
-                                     PageRequest pageRequest,
-                                     String header) {
-        Set<String> roles = HelperUtils.getAuthorities();
-        if (!roles.contains("ROLE_ADMIN")) {
-            String token = header.substring(7);
-            String jwt = jwtUtilsHelper.verifyToken(token);
-
-            UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
-            param.setIdUser(user.getId());
-        }
+                                     PageRequest pageRequest) {
         Specification<Orders> specification = CustomOrderQuery.getFilterOrder(param);
         return ordersRepository.findAll(specification, pageRequest);
     }

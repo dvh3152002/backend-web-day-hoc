@@ -95,8 +95,8 @@ public class OrderController {
     }
 
     @GetMapping("")
-    public BaseResponse getListOrders(@Valid OrderRequest request,@RequestHeader("Authorization") String header){
-        Page<Orders> page=orderService.getListOrder(request, PageRequest.of(request.getStart(),request.getLimit()),header);
+    public BaseResponse getListOrders(@Valid OrderRequest request){
+        Page<Orders> page=orderService.getListOrder(request, PageRequest.of(request.getStart(),request.getLimit()));
         return BaseResponse.successListData(page.getContent().stream()
                 .map(data->{
                     OrdersDTO ordersDTO=modelMapper.map(data,OrdersDTO.class);

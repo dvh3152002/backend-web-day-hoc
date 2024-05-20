@@ -65,13 +65,13 @@ public class SecurityConfig {
                 .requestMatchers("/api/signin","/api/signup","/api/refreshToken",
                         "/api/file/image/**","/api/code/run","/api/order/payment-callback",
                         "/api/verify-account","/api/regenerate-otp","/api/forgot-password",
-                        "/api/order/dashboard","/api/file/upload").permitAll()
+                        "/api/file/upload").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**",
                         "/api/post/**","/api/rating/**","/api/question/**","/api/answer/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/lesson/**").hasAnyRole("USER","TEACHER","ADMIN")
                 .requestMatchers("/api/lesson/**").hasAnyRole("TEACHER","ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/api/course/**").hasAnyRole("TEACHER","ADMIN")
-                .requestMatchers("/api/course/**","/api/user/**","/api/categories/**","/api/post/**").hasRole("ADMIN")
+                .requestMatchers("/api/course/**","/api/user/**","/api/categories/**","/api/post/**","/api/order/dashboard").hasRole("ADMIN")
                 .anyRequest().authenticated();
         httpSecurity.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
