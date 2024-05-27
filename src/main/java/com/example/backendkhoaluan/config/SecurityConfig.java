@@ -50,9 +50,9 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList(frontendUrl,"http://localhost:3000"));
+        config.setAllowedOrigins(Arrays.asList(frontendUrl, "http://localhost:3000"));
         config.addAllowedHeader("*");
-        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
@@ -60,10 +60,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .cors((cors) -> cors
-                        .configurationSource(corsConfigurationSource())
-                );
+        httpSecurity.cors((cors) -> cors.configurationSource(corsConfigurationSource()));
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -73,12 +70,13 @@ public class SecurityConfig {
                                 "/api/verify-account", "/api/regenerate-otp", "/api/forgot-password",
                                 "/api/file/upload").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/course/**", "/api/categories/**", "/api/new/**",
-                                "/api/post/**", "/api/rating/**", "/api/question/**", "/api/answer/**").permitAll()
+                                "/api/post/**", "/api/rating/**", "/api/question/**", "/api/answer/**",
+                                "/api/product/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lesson/**").hasAnyRole("USER", "TEACHER", "ADMIN")
                         .requestMatchers("/api/lesson/**").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/course/**").hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers("/api/course/**", "/api/user/**", "/api/categories/**", "/api/post/**",
-                                "/api/order/dashboard", "/api/product/**","/api/new/**").hasRole("ADMIN")
+                                "/api/order/dashboard", "/api/product/**", "/api/new/**").hasRole("ADMIN")
                         .anyRequest().authenticated());
         httpSecurity.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
