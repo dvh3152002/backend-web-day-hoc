@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class OrderController {
     }
 
     @PostMapping("/pay")
-    public BaseResponse getPay(@RequestBody PayRequest request,
+    public ResponseEntity<?> getPay(@RequestBody PayRequest request,
                                @RequestHeader("Authorization") String header) throws UnsupportedEncodingException {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
@@ -83,19 +84,19 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse deleteOrder(@PathVariable int id){
+    public ResponseEntity<?> deleteOrder(@PathVariable int id){
         orderService.deleteOrder(id);
         return BaseResponse.success("Xóa đơn hàng thành công");
     }
 
     @GetMapping("/{id}")
-    public BaseResponse getById(@PathVariable int id){
+    public ResponseEntity<?> getById(@PathVariable int id){
         OrdersDTO dto= orderService.findById(id);
         return BaseResponse.success(dto);
     }
 
     @GetMapping("")
-    public BaseResponse getListOrders(@Valid OrderRequest request){
+    public ResponseEntity<?> getListOrders(@Valid OrderRequest request){
         Page<Orders> page=orderService.getListOrder(request, PageRequest.of(request.getStart(),request.getLimit()));
         return BaseResponse.successListData(page.getContent().stream()
                 .map(data->{

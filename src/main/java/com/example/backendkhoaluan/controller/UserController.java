@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +36,7 @@ public class UserController {
     private ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("")
-    public BaseListResponse<UsersDTO> getAllUser(@Valid @ModelAttribute GetUserRequest request) {
+    public ResponseEntity<?> getAllUser(@Valid @ModelAttribute GetUserRequest request) {
         Page<User> page = userService.getAllUser(request, PageRequest.of(request.getStart(), request.getLimit()));
 
         return BaseResponse.successListData(page.getContent().stream()
@@ -51,12 +52,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public BaseResponse getDetailUser(@PathVariable("id") int id) {
+    public ResponseEntity<?> getDetailUser(@PathVariable("id") int id) {
         return BaseResponse.success(userService.findById(id));
     }
 
     @PutMapping(value = "/{id}")
-    public BaseResponse updateUser(@PathVariable("id") int id, @Valid @ModelAttribute UpdateUserRequest request,
+    public ResponseEntity<?> updateUser(@PathVariable("id") int id, @Valid @ModelAttribute UpdateUserRequest request,
                                         @RequestParam(name = "file", required = false) MultipartFile file) {
         log.info("user :{}", request);
         log.info("file :{}", file);
@@ -65,7 +66,7 @@ public class UserController {
     }
 
     @PostMapping(value = "")
-    public BaseResponse createUser(@Valid @ModelAttribute CreateUserRequest request,
+    public ResponseEntity<?> createUser(@Valid @ModelAttribute CreateUserRequest request,
                                    @RequestParam(name = "file", required = false) MultipartFile file) {
         log.info("user :{}", request);
         log.info("file :{}", file);
@@ -74,7 +75,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse deleteUser(@PathVariable("id") int id) {
+    public ResponseEntity<?> deleteUser(@PathVariable("id") int id) {
         log.info("id: ", id);
         userService.deleteUser(id);
         return BaseResponse.success("Xóa thành công");

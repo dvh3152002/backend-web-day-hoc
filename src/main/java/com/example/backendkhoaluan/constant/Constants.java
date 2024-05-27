@@ -41,8 +41,18 @@ public interface Constants {
         String TITLE_NOT_BLANK="Tiêu đề tin tức không được để trống";
         String DESCRIPTION_NOT_BLANK="Mô tả tin tức không được để trống";
         String START_SIZE="Số trang phải bắt đầu từ 0";
-        String LIMIT_SIZE = "Số lượng tin tức trong một trang là từ 5 đến 50 bài viết";
+        String LIMIT_SIZE = "Số lượng tin tức trong một trang là từ 5 đến 50 tin tức";
         String NOT_FIND_NEW_BY_ID = "Không tìm thấy tin tức có ID là: ";
+    }
+
+    interface ErrorMessageProductValidation {
+        String TITLE_NOT_BLANK="Tiêu đề sản phẩm không được để trống";
+        String DESCRIPTION_NOT_BLANK="Mô tả sản phẩm không được để trống";
+        String START_SIZE="Số trang phải bắt đầu từ 0";
+        String LIMIT_SIZE = "Số lượng tin tức trong một trang là từ 5 đến 50 sản phẩm";
+        String NOT_FIND_PRODUCT_BY_ID = "Không tìm thấy sản phẩm có ID là: ";
+        String INTRODUCTION_NOT_BLANK = "Giới thiệu sản phẩm không được để trống";
+        String LINK_NOT_BLANK = "Liên hệ sản phẩm không được để trống";
     }
 
     interface ErrorMessageCodeValidation {

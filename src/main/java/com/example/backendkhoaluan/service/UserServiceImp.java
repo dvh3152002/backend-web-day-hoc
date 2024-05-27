@@ -10,7 +10,6 @@ import com.example.backendkhoaluan.payload.request.UpdateUserRequest;
 import com.example.backendkhoaluan.payload.response.ErrorDetail;
 import com.example.backendkhoaluan.repository.*;
 import com.example.backendkhoaluan.service.imp.CloudinaryService;
-import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -51,8 +50,8 @@ public class UserServiceImp implements UserService {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Override
-    public Page<User> getAllUser(CustomeUserQuery.UserFilterParam param, PageRequest pageRequest) {
-        Specification<User> specification = CustomeUserQuery.getFilterUser(param);
+    public Page<User> getAllUser(CustomUserQuery.UserFilterParam param, PageRequest pageRequest) {
+        Specification<User> specification = CustomUserQuery.getFilterUser(param);
         return usersRepository.findAll(specification, pageRequest);
     }
 

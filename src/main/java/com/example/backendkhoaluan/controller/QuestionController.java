@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -35,8 +36,8 @@ public class QuestionController {
     private ModelMapper modelMapper=new ModelMapper();
 
     @PostMapping("")
-    public BaseResponse addQuestion(@RequestBody QuestionRequest request,
-                                    @RequestHeader("Authorization") String header){
+    public ResponseEntity<?> addQuestion(@RequestBody QuestionRequest request,
+                                         @RequestHeader("Authorization") String header){
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
 
@@ -47,7 +48,7 @@ public class QuestionController {
     }
 
     @GetMapping("")
-    public BaseResponse getAllQuestion(GetQuestionRequest request){
+    public ResponseEntity<?> getAllQuestion(GetQuestionRequest request){
         log.info("request: {}",request);
         Page<Questions> page=questionService.getListQuestion(request, PageRequest.of(request.getStart(), request.getLimit()));
         return BaseResponse.successListData(page.getContent()
@@ -61,7 +62,7 @@ public class QuestionController {
     }
 
     @GetMapping("/auth")
-    public BaseResponse getMyQuestion(GetQuestionRequest request,
+    public ResponseEntity<?> getMyQuestion(GetQuestionRequest request,
                                       @RequestHeader("Authorization") String header){
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
@@ -81,7 +82,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{id}")
-    public BaseResponse getQuestionById(@PathVariable int id){
+    public ResponseEntity<?> getQuestionById(@PathVariable int id){
         QuestionDTO questionDTO=questionService.getById(id);
         return BaseResponse.success(questionDTO);
     }

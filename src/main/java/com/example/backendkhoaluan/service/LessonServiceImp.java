@@ -8,7 +8,7 @@ import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.payload.request.LessonRequest;
-import com.example.backendkhoaluan.repository.CustomeLessonQuery;
+import com.example.backendkhoaluan.repository.CustomLessonQuery;
 import com.example.backendkhoaluan.repository.LessonsRepository;
 import com.example.backendkhoaluan.service.imp.FilesStorageService;
 import com.example.backendkhoaluan.service.imp.LessonService;
@@ -39,8 +39,8 @@ public class LessonServiceImp implements LessonService {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @Override
-    public Page<Lessons> getListLesson(CustomeLessonQuery.LessonFilterParam param, PageRequest pageRequest) {
-        Specification<Lessons> specification = CustomeLessonQuery.getFilterLesson(param);
+    public Page<Lessons> getListLesson(CustomLessonQuery.LessonFilterParam param, PageRequest pageRequest) {
+        Specification<Lessons> specification = CustomLessonQuery.getFilterLesson(param);
         return lessonsRepository.findAll(specification, pageRequest);
     }
 

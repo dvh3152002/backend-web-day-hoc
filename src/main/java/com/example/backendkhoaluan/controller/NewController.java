@@ -18,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,31 +36,31 @@ public class NewController {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("/{id}")
-    public BaseResponse getById(@PathVariable int id) {
+    public ResponseEntity<?> getById(@PathVariable int id) {
         return BaseResponse.success(newService.getById(id));
     }
 
     @PostMapping("")
-    public BaseResponse createNew(@Valid @ModelAttribute NewRequest request, @RequestParam MultipartFile file) {
+    public ResponseEntity<?> createNew(@Valid @ModelAttribute NewRequest request, @RequestParam MultipartFile file) {
         newService.createNew(request,file);
         return BaseResponse.success("Thêm tin tức thành công");
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse deleteById(@PathVariable int id) {
+    public ResponseEntity<?> deleteById(@PathVariable int id) {
         newService.deleteById(id);
         return BaseResponse.success("Xóa tin tức thành công");
     }
 
     @PutMapping("/{id}")
-    public BaseResponse updateNew(@PathVariable int id, @Valid @ModelAttribute NewRequest request,
+    public ResponseEntity<?> updateNew(@PathVariable int id, @Valid @ModelAttribute NewRequest request,
                                   @RequestParam(required = false) MultipartFile file) {
         newService.updateNew(id, request,file);
         return BaseResponse.success("Cập nhật bài viết thành công");
     }
 
     @GetMapping("")
-    public BaseResponse getListPost(GetNewRequest request) {
+    public ResponseEntity<?> getListPost(GetNewRequest request) {
         Page<News> page = newService.getListNew(request, PageRequest.of(request.getStart(), request.getLimit()));
         return BaseResponse.successListData(
                 page.getContent().stream().map(data -> {

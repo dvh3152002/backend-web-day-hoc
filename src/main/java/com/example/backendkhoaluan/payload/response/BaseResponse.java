@@ -1,6 +1,7 @@
 package com.example.backendkhoaluan.payload.response;
 
 import lombok.Data;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -9,16 +10,16 @@ public class BaseResponse {
     private boolean success=false;
     private ErrorResponse error;
 
-    public static <T> BaseItemResponse<T> success(T data){
+    public static <T> ResponseEntity<?> success(T data){
         BaseItemResponse<T> response=new BaseItemResponse<>();
         response.setSuccess(data);
-        return response;
+        return ResponseEntity.ok(response);
     }
 
-    public static <T> BaseListResponse<T> successListData(List<T> rows,Integer total){
+    public static <T> ResponseEntity<?> successListData(List<T> rows,Integer total){
         BaseListResponse<T> response=new BaseListResponse<>();
         response.setResult(rows,total);
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     public static <T> BaseResponse error(int code,String message){

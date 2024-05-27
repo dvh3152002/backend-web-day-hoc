@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
@@ -25,30 +26,30 @@ public class PostController {
     private final ModelMapper modelMapper = new ModelMapper();
 
     @GetMapping("/{id}")
-    public BaseResponse getById(@PathVariable int id) {
+    public ResponseEntity<?> getById(@PathVariable int id) {
         return BaseResponse.success(postService.getById(id));
     }
 
     @PostMapping("")
-    public BaseResponse createPost(@Valid @RequestBody PostRequest request) {
+    public ResponseEntity<?> createPost(@Valid @RequestBody PostRequest request) {
         postService.createPost(request);
         return BaseResponse.success("Thêm bài viết thành công");
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse deleteById(@PathVariable int id) {
+    public ResponseEntity<?> deleteById(@PathVariable int id) {
         postService.deleteById(id);
         return BaseResponse.success("Xóa bài viết thành công");
     }
 
     @PutMapping("/{id}")
-    public BaseResponse updatePost(@PathVariable int id, @Valid @RequestBody PostRequest request) {
+    public ResponseEntity<?> updatePost(@PathVariable int id, @Valid @RequestBody PostRequest request) {
         postService.updatePost(id, request);
         return BaseResponse.success("Cập nhật bài viết thành công");
     }
 
     @GetMapping("")
-    public BaseResponse getListPost(GetPostRequest request) {
+    public ResponseEntity<?> getListPost(GetPostRequest request) {
         Page<Post> page = postService.getListPost(request, PageRequest.of(request.getStart(), request.getLimit()));
         return BaseResponse.successListData(
                 page.getContent().stream().map(data -> {

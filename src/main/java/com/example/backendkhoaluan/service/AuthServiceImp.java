@@ -1,8 +1,6 @@
 package com.example.backendkhoaluan.service;
 
 import com.example.backendkhoaluan.constant.Constants;
-import com.example.backendkhoaluan.dto.CoursesDTO;
-import com.example.backendkhoaluan.dto.RolesDTO;
 import com.example.backendkhoaluan.dto.UsersDTO;
 import com.example.backendkhoaluan.entities.*;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
@@ -76,13 +74,15 @@ public class AuthServiceImp implements AuthService {
     @Override
     public AuthResponse signIn(SignInRequest request) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             Optional<User> userOptional = usersRepository.findByEmail(request.getEmail());
             if (!userOptional.isPresent()) {
-                throw new DataNotFoundException("Không tồn tại người dùng có email là: " + request.getEmail());
+                throw new DataNotFoundException("Tài khoản hoặc mật khẩu không chính xác");
             }
             User user = userOptional.get();
-
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                throw new DataNotFoundException("Tài khoản hoặc mật khẩu không chính xác");
+            }
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
             if (user.isActive()) {
                 UsersDTO usersDTO = new UsersDTO();
                 usersDTO.setEmail(user.getEmail());
@@ -246,10 +246,10 @@ public class AuthServiceImp implements AuthService {
         Specification<Courses> courseSpecification=CustomCourseQuery.getFilterCourse(courseParam);
         response.setCountCourse((int) coursesRepository.count(courseSpecification));
 
-        CustomeNewQuery.NewFilterParam newParam=new GetNewRequest();
+        CustomNewQuery.NewFilterParam newParam=new GetNewRequest();
         newParam.setStartDate(start);
         newParam.setEndDate(end);
-        Specification<News> newSpecification=CustomeNewQuery.getFilterNew(newParam);
+        Specification<News> newSpecification= CustomNewQuery.getFilterNew(newParam);
         response.setCountNew((int) newsRepository.count(newSpecification));
 
         CustomOrderQuery.OrderFilterParam orderParam=new OrderRequest();

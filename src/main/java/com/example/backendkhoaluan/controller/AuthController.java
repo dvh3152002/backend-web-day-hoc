@@ -24,6 +24,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -54,80 +55,69 @@ public class AuthController {
 
     private final Gson gson = new Gson();
 
-    private ModelMapper modelMapper=new ModelMapper();
+    private ModelMapper modelMapper = new ModelMapper();
 
     @PostMapping("/signin")
-    public BaseResponse signin(@Valid @RequestBody SignInRequest data) {
+    public ResponseEntity<?> signin(@Valid @RequestBody SignInRequest data) {
         AuthResponse authResponse = authService.signIn(data);
 
         return BaseResponse.success(authResponse);
     }
 
     @PostMapping("/refreshToken")
-    public BaseResponse refreshToken(@RequestBody AuthResponse data) {
+    public ResponseEntity<?> refreshToken(@RequestBody AuthResponse data) {
         AuthResponse authResponse = authService.refreshToken(data);
 
         return BaseResponse.success(authResponse);
     }
 
     @PostMapping("/signup")
-    public BaseResponse register(@Valid @RequestBody CreateUserRequest createUserRequest) {
+    public ResponseEntity<?> register(@Valid @RequestBody CreateUserRequest createUserRequest) {
         return BaseResponse.success(authService.register(createUserRequest));
     }
 
     @PutMapping("verify-account")
-    public BaseResponse verifyAccount(@RequestBody VerifyAccountRequest request) {
+    public ResponseEntity<?> verifyAccount(@RequestBody VerifyAccountRequest request) {
         return BaseResponse.success(authService.verifyAccount(request));
     }
 
     @PutMapping("regenerate-otp")
-    public BaseResponse regenerateOTP(@RequestParam String email) {
+    public ResponseEntity<?> regenerateOTP(@RequestParam String email) {
         return BaseResponse.success(authService.regenerateOTP(email));
     }
 
     @PutMapping("forgot-password")
-    public BaseResponse forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         return BaseResponse.success(authService.forgotPassword(request));
     }
 
     @PutMapping("/profile")
-    public BaseResponse updateProfile(@Valid @ModelAttribute UpdateUserRequest request,
-                                      @RequestPart(name = "file", required = false) MultipartFile file,
-                                      @RequestHeader("Authorization") String header) {
-        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-            if (token != null) {
-                String jwt = jwtUtilsHelper.verifyToken(token);
+    public ResponseEntity<?> updateProfile(@Valid @ModelAttribute UpdateUserRequest request,
+                                           @RequestPart(name = "file", required = false) MultipartFile file,
+                                           @RequestHeader("Authorization") String header) {
+        String token = header.substring(7);
+        String jwt = jwtUtilsHelper.verifyToken(token);
 
-                if (jwt != null) {
-                    UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
-                    userService.updateUser(user.getId(), request, file);
-                    return BaseResponse.success("Cập nhật thành công");
-                }
-            }
-        }
-        return BaseResponse.error(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED, ErrorCodeDefs.getMessage(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED));
+        UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+        userService.updateUser(user.getId(), request, file);
+        return BaseResponse.success("Cập nhật thành công");
     }
+
 
     @GetMapping("/profile")
-    public BaseResponse getProfile(@RequestHeader("Authorization") String header) {
-        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
-            if (token != null) {
-                String jwt = jwtUtilsHelper.verifyToken(token);
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String header) {
+        String token = header.substring(7);
+        String jwt = jwtUtilsHelper.verifyToken(token);
 
-                if (jwt != null) {
-                    UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
-                    UsersDTO usersDTO = userService.findByEmail(user.getEmail());
-                    return BaseResponse.success(usersDTO);
-                }
-            }
-        }
-        return BaseResponse.error(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED, ErrorCodeDefs.getMessage(ErrorCodeDefs.ERR_HEADER_TOKEN_REQUIRED));
+        UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
+        UsersDTO usersDTO = userService.findByEmail(user.getEmail());
+        return BaseResponse.success(usersDTO);
+
     }
 
+
     @GetMapping("/my-course")
-    public BaseResponse getListCourse(@ModelAttribute CustomCourseDetailQuery.CourseDetailFilterParam param,
+    public ResponseEntity<?> getListCourse(@ModelAttribute CustomCourseDetailQuery.CourseDetailFilterParam param,
                                       @RequestHeader("Authorization") String header) {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
@@ -139,23 +129,23 @@ public class AuthController {
     }
 
     @GetMapping("/my-order")
-    public BaseResponse getListOrder(@ModelAttribute OrderRequest param,
-                                      @RequestHeader("Authorization") String header) {
+    public ResponseEntity<?> getListOrder(@ModelAttribute OrderRequest param,
+                                     @RequestHeader("Authorization") String header) {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
 
         UsersDTO user = gson.fromJson(jwt, UsersDTO.class);
         param.setIdUser(user.getId());
-        Page<Orders> page=orderService.getListOrder(param, PageRequest.of(param.getStart(),param.getLimit()));
+        Page<Orders> page = orderService.getListOrder(param, PageRequest.of(param.getStart(), param.getLimit()));
         return BaseResponse.successListData(page.getContent().stream()
-                .map(data->{
-                    OrdersDTO ordersDTO=modelMapper.map(data,OrdersDTO.class);
+                .map(data -> {
+                    OrdersDTO ordersDTO = modelMapper.map(data, OrdersDTO.class);
                     return ordersDTO;
                 }).collect(Collectors.toList()), (int) page.getTotalElements());
     }
 
     @GetMapping("/course-purchased")
-    public BaseResponse getCoursePurchased(@ModelAttribute CustomCourseDetailQuery.CourseDetailFilterParam param,
+    public ResponseEntity<?> getCoursePurchased(@ModelAttribute CustomCourseDetailQuery.CourseDetailFilterParam param,
                                            @RequestHeader("Authorization") String header) {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
@@ -167,7 +157,7 @@ public class AuthController {
     }
 
     @PutMapping("/change-password")
-    public BaseResponse changePassword(@Valid @RequestBody ChangePasswordRequest request,
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request,
                                        @RequestHeader("Authorization") String header) {
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
@@ -178,7 +168,7 @@ public class AuthController {
     }
 
     @GetMapping("/dashboard/{year}")
-    public BaseResponse getDashboard(@PathVariable int year) {
+    public ResponseEntity<?> getDashboard(@PathVariable int year) {
         DashBoardResponse data = authService.getDashBoard(year);
         return BaseResponse.success(data);
     }

@@ -11,11 +11,13 @@ import com.example.backendkhoaluan.service.imp.AnswerService;
 import com.example.backendkhoaluan.service.imp.QuestionService;
 import com.example.backendkhoaluan.utils.JwtUtilsHelper;
 import com.google.gson.Gson;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
@@ -35,8 +37,8 @@ public class AnswerController {
     private ModelMapper modelMapper=new ModelMapper();
 
     @PostMapping("")
-    public BaseResponse addAnswer(@RequestBody AnswerRequest request,
-                                    @RequestHeader("Authorization") String header){
+    public ResponseEntity<?> addAnswer(@Valid @RequestBody AnswerRequest request,
+                                       @RequestHeader("Authorization") String header){
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
 
@@ -47,7 +49,7 @@ public class AnswerController {
     }
 
     @GetMapping("")
-    public BaseResponse getAllAnswer(GetAnswerRequest request){
+    public ResponseEntity<?> getAllAnswer(GetAnswerRequest request){
         Page<Answers> page=answerService.getListAnswer(request, PageRequest.of(request.getStart(), request.getLimit()));
         return BaseResponse.successListData(page.getContent()
                 .stream().map(data->{
@@ -58,7 +60,7 @@ public class AnswerController {
     }
 
     @PostMapping("/vote")
-    public BaseResponse voteAnswer(@RequestBody VoteAnswerRequest request,
+    public ResponseEntity<?> voteAnswer(@RequestBody VoteAnswerRequest request,
                                    @RequestHeader("Authorization") String header){
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);

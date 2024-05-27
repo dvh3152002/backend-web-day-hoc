@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,33 +47,40 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin(frontendUrl);
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
-        httpSecurity.cors().configurationSource(source);
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .cors((cors) -> cors
+                        .configurationSource(corsConfigurationSource())
+                );
 
-        httpSecurity.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/signin","/api/signup","/api/refreshToken",
-                        "/api/file/image/**","/api/code/run","/api/order/payment-callback",
-                        "/api/verify-account","/api/regenerate-otp","/api/forgot-password",
-                        "/api/file/upload").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/course/**","/api/categories/**",
-                        "/api/post/**","/api/rating/**","/api/question/**","/api/answer/**").permitAll()
-                .requestMatchers(HttpMethod.GET,"/api/lesson/**").hasAnyRole("USER","TEACHER","ADMIN")
-                .requestMatchers("/api/lesson/**").hasAnyRole("TEACHER","ADMIN")
-                .requestMatchers(HttpMethod.PUT,"/api/course/**").hasAnyRole("TEACHER","ADMIN")
-                .requestMatchers("/api/course/**","/api/user/**","/api/categories/**","/api/post/**","/api/order/dashboard").hasRole("ADMIN")
-                .anyRequest().authenticated();
+        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/api/signin", "/api/signup", "/api/refreshToken",
+                                "/api/file/image/**", "/api/code/run", "/api/order/payment-callback",
+                                "/api/verify-account", "/api/regenerate-otp", "/api/forgot-password",
+                                "/api/file/upload").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/course/**", "/api/categories/**", "/api/new/**",
+                                "/api/post/**", "/api/rating/**", "/api/question/**", "/api/answer/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/lesson/**").hasAnyRole("USER", "TEACHER", "ADMIN")
+                        .requestMatchers("/api/lesson/**").hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/course/**").hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers("/api/course/**", "/api/user/**", "/api/categories/**", "/api/post/**",
+                                "/api/order/dashboard", "/api/product/**","/api/new/**").hasRole("ADMIN")
+                        .anyRequest().authenticated());
         httpSecurity.addFilterBefore(customJwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();

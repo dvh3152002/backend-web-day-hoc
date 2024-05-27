@@ -9,6 +9,7 @@ import com.example.backendkhoaluan.repository.RolesRepository;
 import com.example.backendkhoaluan.service.imp.RoleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class RoleController {
     private RoleService roleService;
 
     @GetMapping("")
-    public BaseResponse getListRole(){
+    public ResponseEntity<?> getListRole(){
         List<RolesDTO> list=roleService.getListRole();
         return BaseResponse.successListData(list,list.size());
     }

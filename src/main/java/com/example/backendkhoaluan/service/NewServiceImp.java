@@ -48,8 +48,8 @@ public class NewServiceImp implements NewService {
     }
 
     @Override
-    public Page<News> getListNew(CustomeNewQuery.NewFilterParam param, PageRequest pageRequest) {
-        Specification<News> specification = CustomeNewQuery.getFilterNew(param);
+    public Page<News> getListNew(CustomNewQuery.NewFilterParam param, PageRequest pageRequest) {
+        Specification<News> specification = CustomNewQuery.getFilterNew(param);
         return newsRepository.findAll(specification, pageRequest);
     }
 
@@ -73,7 +73,7 @@ public class NewServiceImp implements NewService {
 
             newsRepository.save(news);
         } catch (Exception e) {
-            throw new UpdateException("Cập nhật bài viết thất bại", e.getLocalizedMessage());
+            throw new UpdateException("Cập nhật tin tức thất bại", e.getLocalizedMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class NewServiceImp implements NewService {
 
             newsRepository.save(news);
         } catch (Exception e) {
-            throw new UpdateException("Thêm bài viết thất bại", e.getLocalizedMessage());
+            throw new UpdateException("Thêm tin tức thất bại", e.getLocalizedMessage());
         }
     }
 }

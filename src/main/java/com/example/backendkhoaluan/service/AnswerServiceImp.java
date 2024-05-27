@@ -67,8 +67,8 @@ public class AnswerServiceImp implements AnswerService {
     }
 
     @Override
-    public Page<Answers> getListAnswer(CustomeAnswerQuery.AnswerFilterParam param, PageRequest pageRequest) {
-        Specification<Answers> specification = CustomeAnswerQuery.getFilterAnswer(param);
+    public Page<Answers> getListAnswer(CustomAnswerQuery.AnswerFilterParam param, PageRequest pageRequest) {
+        Specification<Answers> specification = CustomAnswerQuery.getFilterAnswer(param);
         return answerRepository.findAll(specification, pageRequest);
     }
 

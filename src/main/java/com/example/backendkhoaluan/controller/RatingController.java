@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -35,7 +36,7 @@ public class RatingController {
     private final Gson gson = new Gson();
 
     @GetMapping("")
-    public BaseResponse getListRating(GetRatingCourseRequest request){
+    public ResponseEntity<?> getListRating(GetRatingCourseRequest request){
         log.info("request: {}",request);
         Page<RatingCourse> page=ratingService.getAllRating(request, PageRequest.of(request.getStart(),request.getLimit()));
         return BaseResponse.successListData(page.stream().map(e->{
@@ -51,7 +52,7 @@ public class RatingController {
     }
 
     @PostMapping("")
-    public BaseResponse createRating(@RequestBody CreateRatingRequest request,
+    public ResponseEntity<?> createRating(@RequestBody CreateRatingRequest request,
                                      @RequestHeader("Authorization") String header){
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);
@@ -63,21 +64,21 @@ public class RatingController {
     }
 
     @PutMapping("/{id}")
-    public BaseResponse deleteRating(@PathVariable int id,@RequestBody CreateRatingRequest request){
+    public ResponseEntity<?> deleteRating(@PathVariable int id,@RequestBody CreateRatingRequest request){
         log.info("id: {}",id);
         ratingService.updateRating(id,request);
         return BaseResponse.success("Cập nhật đánh giá thành công");
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse deleteRating(@PathVariable int id){
+    public ResponseEntity<?> deleteRating(@PathVariable int id){
         log.info("id: {}",id);
         return BaseResponse.success(ratingService.deleteRating(id));
     }
 
     @GetMapping("/{idCourse}")
-    public BaseResponse getRating(@PathVariable int idCourse,
-                                  @RequestHeader("Authorization") String header){
+    public ResponseEntity<?> getRating(@PathVariable int idCourse,
+                                       @RequestHeader("Authorization") String header){
         log.info("id: {}",idCourse);
         String token = header.substring(7);
         String jwt = jwtUtilsHelper.verifyToken(token);

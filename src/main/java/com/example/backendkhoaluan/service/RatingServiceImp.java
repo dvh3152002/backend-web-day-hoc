@@ -10,11 +10,10 @@ import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.payload.request.CreateRatingRequest;
-import com.example.backendkhoaluan.repository.CustomeRatingCourseQuery;
+import com.example.backendkhoaluan.repository.CustomRatingCourseQuery;
 import com.example.backendkhoaluan.repository.RatingCourseRepository;
 import com.example.backendkhoaluan.service.imp.CloudinaryService;
 import com.example.backendkhoaluan.service.imp.RatingService;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +36,9 @@ public class RatingServiceImp implements RatingService {
 
     private ModelMapper modelMapper=new ModelMapper();
     @Override
-    public Page<RatingCourse> getAllRating(CustomeRatingCourseQuery.RatingCourseFilterParam param,
+    public Page<RatingCourse> getAllRating(CustomRatingCourseQuery.RatingCourseFilterParam param,
                                            PageRequest pageRequest) {
-        Specification<RatingCourse> specification = CustomeRatingCourseQuery.getFilterRating(param);
+        Specification<RatingCourse> specification = CustomRatingCourseQuery.getFilterRating(param);
         return ratingCourseRepository.findAll(specification,pageRequest);
     }
 

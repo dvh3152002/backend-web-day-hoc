@@ -43,7 +43,7 @@ public class RestResponseEntityExceptionHandler {
         dataResponse.setMessage(e.getTitleError());
         dataResponse.setSuccess(false);
 
-        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getMessage());
+        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getTitleError());
     }
 
     @ExceptionHandler({DeleteException.class})
@@ -57,7 +57,7 @@ public class RestResponseEntityExceptionHandler {
         dataResponse.setMessage(e.getTitleError());
         dataResponse.setSuccess(false);
 
-        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getMessage());
+        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getTitleError());
     }
 
     @ExceptionHandler({UpdateException.class})
@@ -71,7 +71,7 @@ public class RestResponseEntityExceptionHandler {
         dataResponse.setMessage(e.getTitleError());
         dataResponse.setSuccess(false);
 
-        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getMessage());
+        return BaseResponse.error(ErrorCodeDefs.ERR_BAD_REQUEST, e.getTitleError());
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

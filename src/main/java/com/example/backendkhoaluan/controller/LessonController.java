@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +27,7 @@ public class LessonController {
     private ModelMapper modelMapper=new ModelMapper();
 
     @GetMapping("")
-    public BaseResponse getListByPost(@Valid GetLessonRequest request){
+    public ResponseEntity<?> getListByPost(@Valid GetLessonRequest request){
         Page<Lessons> page=lessonService.getListLesson(request, PageRequest.of(request.getStart(),request.getLimit()));
         return BaseResponse.successListData(page.getContent().stream()
         .map(data->{
@@ -37,26 +38,26 @@ public class LessonController {
     }
 
     @GetMapping("/{id}")
-    public BaseResponse getById(@PathVariable int id){
+    public ResponseEntity<?> getById(@PathVariable int id){
         return BaseResponse.success(lessonService.getLessonsById(id));
     }
 
     @PostMapping("")
-    public BaseResponse insertLesson(@Valid @ModelAttribute LessonRequest request,
+    public ResponseEntity<?> insertLesson(@Valid @ModelAttribute LessonRequest request,
                                      @RequestParam(name = "video") MultipartFile file) {
         lessonService.save(request,file);
         return BaseResponse.success("Thêm bài học thành công");
     }
 
     @PutMapping("/{id}")
-    public BaseResponse updateLesson(@PathVariable int id,@Valid @ModelAttribute LessonRequest request,
+    public ResponseEntity<?> updateLesson(@PathVariable int id,@Valid @ModelAttribute LessonRequest request,
                                      @RequestParam(name = "video",required = false) MultipartFile file) {
         lessonService.updateLesson(id,request,file);
         return BaseResponse.success("Cập nhật bài học thành công");
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse deleteById(@PathVariable int id){
+    public ResponseEntity<?> deleteById(@PathVariable int id){
         lessonService.deleteLesson(id);
         return BaseResponse.success("Xóa bài học thành công");
     }

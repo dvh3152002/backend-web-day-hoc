@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,8 +41,8 @@ public class CourseController {
     private final ModelMapper modelMapper=new ModelMapper();
 
     @PostMapping("")
-    public BaseResponse insertCourse(@Valid @ModelAttribute CreateCourseRequest createCourseRequest,
-                                     @RequestParam MultipartFile file) {
+    public ResponseEntity<?> insertCourse(@Valid @ModelAttribute CreateCourseRequest createCourseRequest,
+                                          @RequestParam MultipartFile file) {
         log.info("request: {}",createCourseRequest);
         courseService.save(createCourseRequest, file);
         return BaseResponse.success("Thêm khóa học thành công");
@@ -49,7 +50,7 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    public BaseResponse updateCourse(@PathVariable int id,@ModelAttribute @Valid CreateCourseRequest createCourseRequest,
+    public ResponseEntity<?> updateCourse(@PathVariable int id,@ModelAttribute @Valid CreateCourseRequest createCourseRequest,
                                      @RequestPart(required = false) MultipartFile file) {
         courseService.updateCourse(id,createCourseRequest, file);
         return BaseResponse.success("Cập nhật khóa học thành công");
@@ -57,7 +58,7 @@ public class CourseController {
     }
 
     @GetMapping("")
-    public BaseListResponse<CoursesDTO> getAllCourse(@Valid @ModelAttribute GetCourseRequest request) {
+    public ResponseEntity<?> getAllCourse(@Valid @ModelAttribute GetCourseRequest request) {
         log.info("request: {}",request);
         Page<Courses> page=courseService.getAllCourse(request, PageRequest.of(request.getStart(),request.getLimit()));
         List<CoursesDTO> coursesDTOS=page.getContent().stream()
@@ -88,18 +89,18 @@ public class CourseController {
     }
 
     @GetMapping("/cart")
-    public BaseResponse getCourseByIds(@RequestParam Set<Integer> ids){
+    public ResponseEntity<?> getCourseByIds(@RequestParam Set<Integer> ids){
         List<CoursesDTO> dtoList=courseService.getCourseByIds(ids);
         return BaseResponse.successListData(dtoList,dtoList.size());
     }
 
     @GetMapping("/{id}")
-    public BaseResponse getCourseById(@PathVariable int id) {
+    public ResponseEntity<?> getCourseById(@PathVariable int id) {
         return BaseResponse.success(courseService.getCourseById(id));
     }
 
     @DeleteMapping("/{id}")
-    public BaseResponse deleteCourse(@PathVariable int id) {
+    public ResponseEntity<?> deleteCourse(@PathVariable int id) {
         courseService.deleteCourse(id);
         return BaseResponse.success("Xóa khóa học thành công");
     }

@@ -6,7 +6,7 @@ import com.example.backendkhoaluan.entities.Questions;
 import com.example.backendkhoaluan.exception.DataNotFoundException;
 import com.example.backendkhoaluan.exception.InsertException;
 import com.example.backendkhoaluan.payload.request.QuestionRequest;
-import com.example.backendkhoaluan.repository.CustomeQuestionQuery;
+import com.example.backendkhoaluan.repository.CustomQuestionQuery;
 import com.example.backendkhoaluan.repository.QuestionRepository;
 import com.example.backendkhoaluan.service.imp.QuestionService;
 import jakarta.transaction.Transactional;
@@ -60,8 +60,8 @@ public class QuestionServiceImp implements QuestionService {
     }
 
     @Override
-    public Page<Questions> getListQuestion(CustomeQuestionQuery.QuestionFilterParam param, PageRequest pageRequest) {
-        Specification<Questions> specification=CustomeQuestionQuery.getFilterQuestion(param);
+    public Page<Questions> getListQuestion(CustomQuestionQuery.QuestionFilterParam param, PageRequest pageRequest) {
+        Specification<Questions> specification= CustomQuestionQuery.getFilterQuestion(param);
         return questionRepository.findAll(specification,pageRequest);
     }
 }

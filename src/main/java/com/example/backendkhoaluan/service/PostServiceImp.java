@@ -10,7 +10,7 @@ import com.example.backendkhoaluan.exception.DeleteException;
 import com.example.backendkhoaluan.exception.UpdateException;
 import com.example.backendkhoaluan.payload.request.PostRequest;
 import com.example.backendkhoaluan.repository.CodesRepository;
-import com.example.backendkhoaluan.repository.CustomePostQuery;
+import com.example.backendkhoaluan.repository.CustomPostQuery;
 import com.example.backendkhoaluan.repository.PostsRepository;
 import com.example.backendkhoaluan.service.imp.PostService;
 import org.modelmapper.ModelMapper;
@@ -57,8 +57,8 @@ public class PostServiceImp implements PostService {
     }
 
     @Override
-    public Page<Post> getListPost(CustomePostQuery.PostFilterParam param, PageRequest pageRequest) {
-        Specification<Post> specification = CustomePostQuery.getFilterPost(param);
+    public Page<Post> getListPost(CustomPostQuery.PostFilterParam param, PageRequest pageRequest) {
+        Specification<Post> specification = CustomPostQuery.getFilterPost(param);
         return postsRepository.findAll(specification, pageRequest);
     }
 
