@@ -7,6 +7,6 @@ public class NumberNotNullValidator implements ConstraintValidator<NumberNotNull
 
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
-        return value !=null && value>0;
+        return value !=null && value>=0;
     }
 }
