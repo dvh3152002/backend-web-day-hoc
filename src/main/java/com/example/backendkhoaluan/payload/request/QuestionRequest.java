@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class QuestionRequest {
@@ -18,6 +19,6 @@ public class QuestionRequest {
 
     @NotEmpty(message = Constants.ErrorMessageQuestionValidation.TAG_NOT_NULL)
     @Size(min = 1, message = Constants.ErrorMessageQuestionValidation.TAG_NOT_NULL)
-    private List<String> tags;
+    private Set<String> tags;
     private Integer userId;
 }

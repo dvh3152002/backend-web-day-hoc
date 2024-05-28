@@ -2,6 +2,8 @@ package com.example.backendkhoaluan.repository;
 
 import com.example.backendkhoaluan.constant.Constants;
 import com.example.backendkhoaluan.entities.Questions;
+import com.example.backendkhoaluan.entities.Role;
+import com.example.backendkhoaluan.entities.Tag;
 import com.example.backendkhoaluan.entities.User;
 import com.example.backendkhoaluan.utils.CriteriaBuilderUtils;
 import jakarta.persistence.criteria.Join;
@@ -12,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CustomQuestionQuery {
     private CustomQuestionQuery() {
@@ -21,7 +24,7 @@ public class CustomQuestionQuery {
     @NoArgsConstructor
     public static class QuestionFilterParam {
         private String keywords;
-        private String tags;
+        private Set<String> tags;
         private Integer idUser;
         private String sortField;
         private String sortType;
@@ -35,7 +38,8 @@ public class CustomQuestionQuery {
                         param.keywords, "title","body"));
             }
             if (param.tags != null && !param.tags.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("tags"), "%" + param.tags + "%"));
+                Join<Questions, Tag> tagJoin = root.joinList("tags");
+                predicates.add(tagJoin.get("id").in(param.tags));
             }
             if (param.idUser != null) {
                 Join<Questions, User> userJoin = root.join("user");

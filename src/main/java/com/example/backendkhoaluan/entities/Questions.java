@@ -24,9 +24,6 @@ public class Questions {
     @Column(name = "body")
     private String body;
 
-    @Column(name = "tags")
-    private String tags;
-
     @Column(name = "create_date")
     private Date createDate;
 
@@ -38,4 +35,11 @@ public class Questions {
 
     @OneToMany(mappedBy = "question",orphanRemoval = true,fetch = FetchType.EAGER)
     private List<Answers> listAnswers;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "question_tag",
+            joinColumns = @JoinColumn(name = "id_question", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_tag", referencedColumnName = "id"))
+    private List<Tag> tags;
 }

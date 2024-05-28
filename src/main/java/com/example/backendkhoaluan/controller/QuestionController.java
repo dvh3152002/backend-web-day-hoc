@@ -54,8 +54,6 @@ public class QuestionController {
         return BaseResponse.successListData(page.getContent()
                 .stream().map(data->{
                     QuestionDTO questionDTO= modelMapper.map(data, QuestionDTO.class);
-                    questionDTO.setTags(Arrays.stream(data.getTags().split("-"))
-                            .collect(Collectors.toList()));
                     questionDTO.setUserName(data.getUser().getFullname());
                     return questionDTO;
                 }).collect(Collectors.toList()),(int) page.getTotalElements());
@@ -74,8 +72,6 @@ public class QuestionController {
         return BaseResponse.successListData(page.getContent()
                 .stream().map(data->{
                     QuestionDTO questionDTO= modelMapper.map(data, QuestionDTO.class);
-                    questionDTO.setTags(Arrays.stream(data.getTags().split("-"))
-                            .collect(Collectors.toList()));
                     questionDTO.setUserName(data.getUser().getFullname());
                     return questionDTO;
                 }).collect(Collectors.toList()),(int) page.getTotalElements());

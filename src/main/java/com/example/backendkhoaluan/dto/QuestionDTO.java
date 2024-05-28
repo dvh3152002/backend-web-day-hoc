@@ -10,7 +10,7 @@ public class QuestionDTO {
     private Integer id;
     private String title;
     private String body;
-    private List<String> tags;
+    private List<TagDTO> tags;
     private Date createDate;
     private Integer countAnswer;
     private String userName;
