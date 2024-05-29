@@ -23,6 +23,7 @@ public class CustomUserQuery {
     @NoArgsConstructor
     public static class UserFilterParam {
         private String keywords;
+        private Boolean active;
         private Set<Integer> roles;
         private String sortField;
         private String sortType;
@@ -34,6 +35,9 @@ public class CustomUserQuery {
             if (param.keywords != null) {
                 predicates.add(CriteriaBuilderUtils.createPredicateForSearchInsensitive(root, criteriaBuilder,
                         param.keywords, "name"));
+            }
+            if (param.active != null) {
+                predicates.add(criteriaBuilder.equal(root.get("active"), param.active));
             }
             if (!CollectionUtils.isEmpty(param.roles)) {
                 Join<User, Role> roleJoin = root.joinList("roles");
